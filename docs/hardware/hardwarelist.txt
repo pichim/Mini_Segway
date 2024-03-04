@@ -1,0 +1,49 @@
+NUCLEO-L432KC
+- https://os.mbed.com/platforms/ST-Nucleo-L432KC/
+- https://community.st.com/t5/stm32-mcus-boards-and-hardware/how-to-power-nucleo-f303k8-or-nucleo-l432kc-with-an-external/td-p/111820
+
+MATEKSYS Micro BEC 6-30V to 5V/9V-ADJ
+- https://www.mateksys.com/?portfolio=mbec6s
+- Input 6-30V
+- Output 5V, 1.5A cont., 2.5A max
+
+2x SparkFun 9DoF Sensor Stick
+- https://www.sparkfun.com/products/retired/13944
+- lsm9ds1.pdf
+- 1.9-3.6V
+
+OpenLager
+- https://www.racedayquads.com/products/airbot-openlager-blackbox
+- 3.3-5.5V
+
+TBS CROSSFIRE Nano RX
+- https://www.team-blacksheep.com/products/prod:crossfire_nano_rx
+- tbs-crossfire-nano-quickstart.pdf
+- 5V
+
+Pololu A4990 Dual Motor Driver Carrier
+- https://www.pololu.com/product/2137
+- A4990-Datasheet.pdf
+- a4990-dual-motor-driver-carrier-schematic-diagram.pdf
+- https://www.pololu.com/product/2512
+- https://github.com/pololu/a4990-motor-shield
+- Enable 2.0-5.0V
+- Motor power 6-32V
+
+2x Pololu 298:1 Micro Metal Gearmotor HPCB 12V with Extended Motor Shaft
+- https://www.pololu.com/product/3056
+
+2x Pololu 150:1 Micro Metal Gearmotor HPCB 12V with Extended Motor Shaft
+- https://www.pololu.com/product/3053
+
+Pololu Magnetic Encoder Pair Kit for Micro Metal Gearmotors, 12 CPR, 2.7-18V
+- https://www.pololu.com/product/3081
+- 2.7-18.0V
+
+Optical Encoder Pair Kit for Micro Metal Gearmotors, 5V
+- https://www.pololu.com/product/2590
+
+Pale Blue PB-9V
+- https://www.digitec.ch/en/s1/product/pale-blue-pb-9v-2-pcs-9v-500-mah-batteries-17438462
+- https://paleblueearth.com/products/pale-blue-lithium-ion-rechargeable-9v-batteries
+	
