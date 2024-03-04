@@ -13,7 +13,7 @@ PpmIn::~PpmIn(void)
     _Timeout.detach();
 }
 
-uint32_t PpmIn::getChannelMus(uint8_t idx) const
+uint16_t PpmIn::getChannelMus(uint8_t idx) const
 {
     if (_is_data_valid && (idx < NUM_OF_CHANNELS))
         return _channel_mus[idx];
@@ -21,7 +21,7 @@ uint32_t PpmIn::getChannelMus(uint8_t idx) const
         return 0;
 }
 
-uint32_t PpmIn::period() const
+uint16_t PpmIn::period() const
 {
     if (_is_data_valid)
         return _period_mus;
@@ -31,7 +31,7 @@ uint32_t PpmIn::period() const
 
 bool PpmIn::isLow(uint8_t idx) const
 {
-    const uint32_t channel_us = getChannelMus(idx);
+    const uint16_t channel_us = getChannelMus(idx);
     if (channel_us == 0)
         return false;
     else
@@ -40,7 +40,7 @@ bool PpmIn::isLow(uint8_t idx) const
 
 bool PpmIn::isCenter(uint8_t idx) const
 {
-    const uint32_t channel_us = getChannelMus(idx);
+    const uint16_t channel_us = getChannelMus(idx);
     if (channel_us == 0)
         return false;
     else
@@ -50,7 +50,7 @@ bool PpmIn::isCenter(uint8_t idx) const
 
 bool PpmIn::isHigh(uint8_t idx) const
 {
-    const uint32_t channel_us = getChannelMus(idx);
+    const uint16_t channel_us = getChannelMus(idx);
     if (channel_us == 0)
         return false;
     else
@@ -60,7 +60,7 @@ bool PpmIn::isHigh(uint8_t idx) const
 float PpmIn::getChannelMinusToPlusOne(uint8_t idx) const
 {
     const static float gain = 2.0f / (CHANNEL_MAX_VALUE_MUS - CHANNEL_MIN_VALUE_MUS);
-    const uint32_t channel_us = getChannelMus(idx);
+    const uint16_t channel_us = getChannelMus(idx);
     if (channel_us == 0)
         return 0.0f;
     else
@@ -70,7 +70,7 @@ float PpmIn::getChannelMinusToPlusOne(uint8_t idx) const
 float PpmIn::getChannelZeroToPlusOne(uint8_t idx) const
 {
     const static float gain = 1.0f / (CHANNEL_MAX_VALUE_MUS - CHANNEL_MIN_VALUE_MUS);
-    const uint32_t channel_us = getChannelMus(idx);
+    const uint16_t channel_us = getChannelMus(idx);
     if (channel_us == 0)
         return 0.0f;
     else
@@ -88,7 +88,7 @@ void PpmIn::fall(void)
     static uint8_t channel_cntr = 0;
     static microseconds time_previous_us{0};
 
-    const uint32_t channel_us = duration_cast<microseconds>(_Timer.elapsed_time() - _time_previous_us).count();
+    const uint16_t channel_us = duration_cast<microseconds>(_Timer.elapsed_time() - _time_previous_us).count();
 
     if (channel_us > MAX_Timeout_MUS) {
         _is_data_valid = false;

@@ -36,10 +36,10 @@ public:
     explicit PpmIn(PinName pin);
     virtual ~PpmIn();
 
-    uint32_t getChannelMus(uint8_t idx) const;
+    uint16_t getChannelMus(uint8_t idx) const;
     uint8_t getNumOfChannels() const { return NUM_OF_CHANNELS; }
     bool isDataValid() const { return _is_data_valid; }
-    uint32_t period() const;
+    uint16_t period() const;
     bool isLow(uint8_t idx) const;
     bool isCenter(uint8_t idx) const;
     bool isHigh(uint8_t idx) const;
@@ -52,9 +52,9 @@ private:
     Timeout _Timeout;
 
     microseconds _time_previous_us{0};
-    uint32_t _channel_mus[NUM_OF_CHANNELS] = {0};
+    uint16_t _channel_mus[NUM_OF_CHANNELS] = {0};
     bool _is_data_valid{false};
-    uint32_t _period_mus{0};
+    uint16_t _period_mus{0};
 
     void rise();
     void fall();
