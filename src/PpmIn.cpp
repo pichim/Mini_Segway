@@ -15,7 +15,7 @@ PpmIn::~PpmIn(void)
 
 uint16_t PpmIn::getChannelMus(uint8_t idx) const
 {
-    if (_is_data_valid && (idx < NUM_OF_CHANNELS))
+    if (_is_pkg_valid && (idx < NUM_OF_CHANNELS))
         return _channel_mus[idx];
     else
         return 0;
@@ -23,7 +23,7 @@ uint16_t PpmIn::getChannelMus(uint8_t idx) const
 
 uint16_t PpmIn::period() const
 {
-    if (_is_data_valid)
+    if (_is_pkg_valid)
         return _period_mus;
     else
         return 0;
@@ -77,10 +77,20 @@ float PpmIn::getChannelZeroToPlusOne(uint8_t idx) const
         return static_cast<float>(channel_us - CHANNEL_MIN_VALUE_MUS) * gain;
 }
 
+void PpmIn::copyChannels(uint16_t *channel_mus)
+{
+    if (!_is_pkg_valid)
+        return;
+    else {
+        _is_pkg_valid = false;
+        memcpy(channel_mus, _channel_mus, sizeof(channel_mus));
+    }
+}
+
 void PpmIn::rise(void)
 {
     _time_previous_us = _Timer.elapsed_time();
-    _Timeout.attach(callback(this, &PpmIn::fall), microseconds{MAX_Timeout_MUS});
+    _Timeout.attach(callback(this, &PpmIn::fall), microseconds{MAX_TIMEOUT_MUS});
 }
 
 void PpmIn::fall(void)
@@ -90,8 +100,8 @@ void PpmIn::fall(void)
 
     const uint16_t channel_us = duration_cast<microseconds>(_Timer.elapsed_time() - _time_previous_us).count();
 
-    if (channel_us > MAX_Timeout_MUS) {
-        _is_data_valid = false;
+    if (channel_us > MAX_TIMEOUT_MUS) {
+        _is_pkg_valid = false;
     } else {
         // detect the start of a new data frame
         if ((channel_us > TIME_BETWEEN_DATA_MUS) || (channel_cntr == NUM_OF_CHANNELS)) {
@@ -102,13 +112,17 @@ void PpmIn::fall(void)
             time_previous_us = time_mus;
         } else {
             // update channel
-            _channel_mus[channel_cntr++] = (channel_us < CHANNEL_MIN_VALUE_MUS) ? CHANNEL_MIN_VALUE_MUS :
-                                           (channel_us > CHANNEL_MAX_VALUE_MUS) ? CHANNEL_MAX_VALUE_MUS :
-                                            channel_us;
+            _buffer_mus[channel_cntr++] = (channel_us < CHANNEL_MIN_VALUE_MUS) ? CHANNEL_MIN_VALUE_MUS :
+                                          (channel_us > CHANNEL_MAX_VALUE_MUS) ? CHANNEL_MAX_VALUE_MUS :
+                                           channel_us;
             // check if all channels were written at least once
-            if (!_is_data_valid && (channel_cntr == NUM_OF_CHANNELS))
-                _is_data_valid = true;
+            if (channel_cntr == NUM_OF_CHANNELS) {
+                if (!_is_pkg_valid)
+                    _is_pkg_valid = true;
+                // copy content of buffer to channel   
+                memcpy(_channel_mus, _buffer_mus, sizeof(_channel_mus));
+            }
         }
     }
-    _Timeout.attach(callback(this, &PpmIn::rise), microseconds{MAX_Timeout_MUS});
+    _Timeout.attach(callback(this, &PpmIn::rise), microseconds{MAX_TIMEOUT_MUS});
 }

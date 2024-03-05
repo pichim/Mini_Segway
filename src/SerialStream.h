@@ -1,7 +1,13 @@
 #ifndef SERIAL_STREAM_H_
 #define SERIAL_STREAM_H_
 
+#define DO_USE_SERIAL_PIPE true
+
+#if DO_USE_SERIAL_PIPE
 #include "SerialPipe/serial_pipe.h"
+#else
+#include "mbed.h"
+#endif
 
 #define NUM_OF_FLOATS_MAX 20
 #define CLAMP(x) (x <= NUM_OF_FLOATS_MAX ? x : NUM_OF_FLOATS_MAX)
@@ -20,7 +26,11 @@ public:
     bool isStartByteReceived();
 
 private:
+#if DO_USE_SERIAL_PIPE
     SerialPipe _SerialPipe;
+#else
+    BufferedSerial _BufferedSerial;
+#endif
     char _buffer[4 * NUM_OF_FLOATS_MAX];
     u_int8_t _buffer_size;
     u_int8_t _bytes_cntr{0};

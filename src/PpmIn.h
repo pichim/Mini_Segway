@@ -22,7 +22,7 @@
 
 #define NUM_OF_CHANNELS 8
 #define TIME_BETWEEN_DATA_MUS 2500
-#define MAX_Timeout_MUS 20000
+#define MAX_TIMEOUT_MUS 20000
 #define CHANNEL_MIN_VALUE_MUS 600
 #define CHANNEL_MAX_VALUE_MUS 1600
 #define CHANNEL_LOW_HIGHEST_VALUE_MUS 850
@@ -38,13 +38,14 @@ public:
 
     uint16_t getChannelMus(uint8_t idx) const;
     uint8_t getNumOfChannels() const { return NUM_OF_CHANNELS; }
-    bool isDataValid() const { return _is_data_valid; }
+    bool isPkgValid() const { return _is_pkg_valid; }
     uint16_t period() const;
     bool isLow(uint8_t idx) const;
     bool isCenter(uint8_t idx) const;
     bool isHigh(uint8_t idx) const;
     float getChannelMinusToPlusOne(uint8_t idx) const;
     float getChannelZeroToPlusOne(uint8_t idx) const;
+    void copyChannels(uint16_t *buffer);
 
 private:
     InterruptIn _InteruptIn;
@@ -52,8 +53,9 @@ private:
     Timeout _Timeout;
 
     microseconds _time_previous_us{0};
+    uint16_t _buffer_mus[NUM_OF_CHANNELS] = {0};
     uint16_t _channel_mus[NUM_OF_CHANNELS] = {0};
-    bool _is_data_valid{false};
+    bool _is_pkg_valid{false};
     uint16_t _period_mus{0};
 
     void rise();

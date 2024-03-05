@@ -2,12 +2,14 @@
 
 #include "MiniSegway.h"
 
+PpmIn ppmIn(PPM_IN);
+MiniSegway miniSegway(ppmIn);
+
 int main()
 {
-    MiniSegway miniSegway;
-
+    DigitalOut led1(LED1);
     while (true) {
-        // do nothing
+        led1 = !led1;
         thread_sleep_for(1000);
     }
 }
