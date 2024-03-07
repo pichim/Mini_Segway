@@ -41,13 +41,14 @@ void MiniSegway::threadTask()
         updateRcPkg(rc_pkg);
 
         // TODO: Use rc_pkg.armed
+        // TODO: Use serialStream.startByteReceibed()
 
         const microseconds time_mus = timer.elapsed_time();
         const float dtime_mus_f = duration_cast<microseconds>(time_mus - time_previous_us).count();
         time_previous_us = time_mus;
 
         if (_do_execute) {
-            if (serialStream.isStartByteReceived()) {
+            if (serialStream.startByteReceived()) {
                 serialStream.write(dtime_mus_f);
                 serialStream.write(rc_pkg.roll);
                 serialStream.write(rc_pkg.pitch);
@@ -60,6 +61,7 @@ void MiniSegway::threadTask()
         } else {
             if (_do_reset) {
                 led = 0;
+                serialStream.reset();
                 _do_reset = false;
             }
         }

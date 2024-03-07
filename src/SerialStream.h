@@ -23,7 +23,8 @@ public:
 
     void write(const float val);
     void send();
-    bool isStartByteReceived();
+    bool startByteReceived();
+    void reset();
 
 private:
 #if DO_USE_SERIAL_PIPE
@@ -34,6 +35,18 @@ private:
     char _buffer[4 * NUM_OF_FLOATS_MAX];
     u_int8_t _buffer_size;
     u_int8_t _bytes_cntr{0};
+
+    typedef struct byte_msg_s {
+        uint8_t byte{0};
+        bool received{false};
+    } byte_msg_t;
+
+    byte_msg_t _start;
+
+    bool _send_num_of_floats_once{false};
+
+    bool checkByteReceived(byte_msg_t& byte_msg, const uint8_t byte_expected);
+    void resetByteMsg(byte_msg_t& byte_msg);
 
     void sendNumOfFloatsOnce();
 };

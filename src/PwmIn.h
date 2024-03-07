@@ -20,8 +20,8 @@ private:
     InterruptIn _InteruptIn;
     Timer _Timer;
 
-    uint32_t _pulsewidth_mus{0};
-    uint32_t _period_mus{0};
+    uint32_t _pulsewidth_us{0};
+    uint32_t _period_us{0};
     microseconds _time_previous_us{0};
 
     void rise();

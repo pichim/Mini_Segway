@@ -52,36 +52,52 @@ void SerialStream::send()
     _bytes_cntr = 0;
 }
 
-bool SerialStream::isStartByteReceived()
+bool SerialStream::startByteReceived()
 {   
+    return checkByteReceived(_start, START_BYTE);
+}
+
+void SerialStream::reset()
+{
+    memset(_buffer, 0, sizeof(_buffer));
+    _bytes_cntr = 0;
+    resetByteMsg(_start);
+    _send_num_of_floats_once = false;
+}
+
+bool SerialStream::checkByteReceived(byte_msg_t& byte_msg, const uint8_t byte_expected)
+{
     // logic so that we can read non-blocking
-    static uint8_t byte = 0;
-    if (byte == START_BYTE)
+    if (byte_msg.byte == byte_expected)
         return true;
 
-    static bool is_byte_received = false;
 #if DO_USE_SERIAL_PIPE
     const int bytes_readable = _SerialPipe.readable();
-    if (!is_byte_received && (bytes_readable > 0)) {
-        is_byte_received = true;
-        _SerialPipe.get(&byte, 1, false);
+    if (!byte_msg.received && (bytes_readable > 0)) {
+        byte_msg.received = true;
+        _SerialPipe.get(&byte_msg.byte, 1, false);
     }
 #else
-    if (!is_byte_received && _BufferedSerial.readable()) {
-        is_byte_received = true;
-        _BufferedSerial.read(&byte, 1);
+    if (!byte_msg.received && _BufferedSerial.readable()) {
+        byte_msg.received = true;
+        _BufferedSerial.read(&byte_msg.byte, 1);
     }
 #endif
     return false;
 }
 
+void SerialStream::resetByteMsg(byte_msg_t& byte_msg)
+{
+    byte_msg.byte = 0;
+    byte_msg.received = false;
+}
+
 void SerialStream::sendNumOfFloatsOnce()
 {
-    static bool is_send_once = false;
-    if (is_send_once)
+    if (_send_num_of_floats_once)
         return;
     else {
-        is_send_once = true;
+        _send_num_of_floats_once = true;
         const u_int8_t num_of_floats = _bytes_cntr / sizeof(float);
 #if DO_USE_SERIAL_PIPE
         _SerialPipe.put(&num_of_floats, 1, true);

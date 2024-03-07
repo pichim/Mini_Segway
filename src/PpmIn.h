@@ -21,12 +21,14 @@
 #include "mbed.h"
 
 #define NUM_OF_CHANNELS 8
-#define TIME_BETWEEN_DATA_MUS 2500
-#define MAX_TIMEOUT_MUS 20000
-#define CHANNEL_MIN_VALUE_MUS 600
-#define CHANNEL_MAX_VALUE_MUS 1600
-#define CHANNEL_LOW_HIGHEST_VALUE_MUS 850
-#define CHANNEL_HIGH_LOWEST_VALUE_MUS 1350
+#define TIME_BETWEEN_DATA_US 2500
+#define MAX_TIMEOUT_US 20000
+#define CHANNEL_MIN_VALUE_US 600
+#define CHANNEL_MAX_VALUE_US 1600
+#define CHANNEL_HEALTHY_MIN_VALUE_US 400
+#define CHANNEL_HEALTHY_MAX_VALUE_US 1800
+#define CHANNEL_LOW_HIGHEST_VALUE_US 850
+#define CHANNEL_HIGH_LOWEST_VALUE_US 1350
 
 using namespace std::chrono;
 
@@ -45,7 +47,6 @@ public:
     bool isHigh(uint8_t idx) const;
     float getChannelMinusToPlusOne(uint8_t idx) const;
     float getChannelZeroToPlusOne(uint8_t idx) const;
-    void copyChannels(uint16_t *buffer);
 
 private:
     InterruptIn _InteruptIn;
@@ -53,10 +54,10 @@ private:
     Timeout _Timeout;
 
     microseconds _time_previous_us{0};
-    uint16_t _buffer_mus[NUM_OF_CHANNELS] = {0};
-    uint16_t _channel_mus[NUM_OF_CHANNELS] = {0};
+    uint16_t _buffer_us[NUM_OF_CHANNELS] = {0};
+    uint16_t _channel_us[NUM_OF_CHANNELS] = {0};
     bool _is_pkg_valid{false};
-    uint16_t _period_mus{0};
+    uint16_t _period_us{0};
 
     void rise();
     void fall();
