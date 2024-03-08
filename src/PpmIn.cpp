@@ -17,6 +17,8 @@ uint16_t PpmIn::getChannelMus(uint8_t idx) const
 {
     if (idx < NUM_OF_CHANNELS)
         return _channel_us[idx];
+    else
+        return 0;
 }
 
 uint16_t PpmIn::period() const

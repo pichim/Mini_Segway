@@ -15,7 +15,7 @@
 
 class SerialStream {
 public:
-    explicit SerialStream(u_int8_t num_of_floats,
+    explicit SerialStream(uint8_t num_of_floats,
                           PinName tx,
                           PinName rx,
                           int baudrate = 2000000);
@@ -33,8 +33,8 @@ private:
     BufferedSerial _BufferedSerial;
 #endif
     char _buffer[4 * NUM_OF_FLOATS_MAX];
-    u_int8_t _buffer_size;
-    u_int8_t _bytes_cntr{0};
+    uint8_t _buffer_size;
+    uint8_t _bytes_cntr{0};
 
     typedef struct byte_msg_s {
         uint8_t byte{0};

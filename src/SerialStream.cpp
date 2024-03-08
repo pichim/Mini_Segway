@@ -1,6 +1,6 @@
 #include "SerialStream.h"
 
-SerialStream::SerialStream(u_int8_t num_of_floats,
+SerialStream::SerialStream(uint8_t num_of_floats,
                            PinName tx,
                            PinName rx,
                            int baudrate) : _buffer_size(sizeof(float) * CLAMP(num_of_floats))
@@ -98,7 +98,7 @@ void SerialStream::sendNumOfFloatsOnce()
         return;
     else {
         _send_num_of_floats_once = true;
-        const u_int8_t num_of_floats = _bytes_cntr / sizeof(float);
+        const uint8_t num_of_floats = _bytes_cntr / sizeof(float);
 #if DO_USE_SERIAL_PIPE
         _SerialPipe.put(&num_of_floats, 1, true);
 #else
