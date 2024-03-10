@@ -8,46 +8,32 @@ PwmIn::PwmIn(PinName pin) : _InteruptIn(pin)
     _Timer.start();
 }
 
-PwmIn::~PwmIn()
+float PwmIn::getDutyCycle() const
 {
-}
-
-uint32_t PwmIn::period()
-{
-    return _period_us;
-}
-
-uint32_t PwmIn::pulseWidth()
-{
-    return _pulsewidth_us;
-}
-
-float PwmIn::dutyCycle()
-{
-    const float period_mus = static_cast<float>(_period_us);
-    if (period_mus != 0.0f)
-        return static_cast<float>(_pulsewidth_us) / period_mus;
+    const float period_us = static_cast<float>(_period);
+    if (period_us != 0.0f)
+        return static_cast<float>(_pulsewidth) / period_us;
     else
         return 0.0f;
 }
 
 void PwmIn::rise()
 {
-    const microseconds time_us = _Timer.elapsed_time();
-    _period_us = duration_cast<microseconds>(time_us - _time_previous_us).count();
-    _time_previous_us = time_us;
+    const microseconds time = _Timer.elapsed_time();
+    _period = duration_cast<microseconds>(time - _time_previous).count();
+    _time_previous = time;
 }
 
 void PwmIn::fall()
 {
-    _pulsewidth_us = duration_cast<microseconds>(_Timer.elapsed_time() - _time_previous_us).count();
+    _pulsewidth = duration_cast<microseconds>(_Timer.elapsed_time() - _time_previous).count();
 }
 
 void PwmIn::invertPolarity()
 {
     _InteruptIn.disable_irq();
-    _pulsewidth_us = 0;
-    _period_us = 0;
+    _pulsewidth = 0;
+    _period = 0;
     _InteruptIn.rise(callback(this, &PwmIn::fall));
     _InteruptIn.fall(callback(this, &PwmIn::rise));
     _InteruptIn.enable_irq();

@@ -1,17 +1,17 @@
 #ifndef SERIAL_STREAM_H_
 #define SERIAL_STREAM_H_
 
-#define DO_USE_SERIAL_PIPE true
+#define S_STREAM_DO_USE_SERIAL_PIPE true
 
-#if DO_USE_SERIAL_PIPE
+#if S_STREAM_DO_USE_SERIAL_PIPE
 #include "SerialPipe/serial_pipe.h"
 #else
 #include "mbed.h"
 #endif
 
-#define NUM_OF_FLOATS_MAX 20
-#define CLAMP(x) (x <= NUM_OF_FLOATS_MAX ? x : NUM_OF_FLOATS_MAX)
-#define START_BYTE 255
+#define S_STREAM_NUM_OF_FLOATS_MAX 20
+#define S_STREAM_CLAMP(x) (x <= S_STREAM_NUM_OF_FLOATS_MAX ? x : S_STREAM_NUM_OF_FLOATS_MAX)
+#define S_STREAM_START_BYTE 255
 
 class SerialStream {
 public:
@@ -27,14 +27,14 @@ public:
     void reset();
 
 private:
-#if DO_USE_SERIAL_PIPE
+#if S_STREAM_DO_USE_SERIAL_PIPE
     SerialPipe _SerialPipe;
 #else
     BufferedSerial _BufferedSerial;
 #endif
-    char _buffer[4 * NUM_OF_FLOATS_MAX];
+    char _buffer[4 * S_STREAM_NUM_OF_FLOATS_MAX];
     uint8_t _buffer_size;
-    uint8_t _bytes_cntr{0};
+    uint8_t _byte_cntr{0};
 
     typedef struct byte_msg_s {
         uint8_t byte{0};
@@ -42,12 +42,10 @@ private:
     } byte_msg_t;
 
     byte_msg_t _start;
-
     bool _send_num_of_floats_once{false};
 
     bool checkByteReceived(byte_msg_t& byte_msg, const uint8_t byte_expected);
     void resetByteMsg(byte_msg_t& byte_msg);
-
     void sendNumOfFloatsOnce();
 };
 

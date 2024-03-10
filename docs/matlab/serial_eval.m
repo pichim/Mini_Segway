@@ -6,7 +6,8 @@ max_num_of_floats = 2000000 / (4 * (8 + 2) * 2000)
 
 
 % openlager
-file_id = fopen('LOG000.TXT');
+% file_id = fopen('LOG000.TXT');
+file_id = fopen('LOG001.TXT');
 
 
 num_of_floats = fread(file_id, 1, 'uint8')
@@ -45,4 +46,23 @@ figure(2)
 plot(data.time, data.values), grid on
 xlabel('Time (sec)')
 xlim([0 data.time(end)])
+
+
+%%
+
+% SBus elrs
+load data_03.mat % save data_03 data
+Ts = 500 * 1e-6;
+
+w0 = 20 * 2*pi;
+D = sqrt(3)/2;
+Gf = c2d(tf(w0^2, [1 2*D*w0 w0^2]), Ts, 'tustin');
+
+data_f = filter(Gf.num{1}, Gf.den{1}, data.values);
+
+figure(1)
+plot(data.time, [data.values, data_f]), grid on
+xlabel('Time (sec)')
+xlim([0 data.time(end)])
+ylim([-2 3])
 

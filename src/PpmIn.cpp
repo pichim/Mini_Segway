@@ -13,96 +13,85 @@ PpmIn::~PpmIn(void)
     _Timeout.detach();
 }
 
-uint16_t PpmIn::getChannelMus(uint8_t idx) const
+uint16_t PpmIn::getChannel(uint8_t idx) const
 {
-    if (idx < NUM_OF_CHANNELS)
-        return _channel_us[idx];
+    if (idx < PPM_IN_NUM_OF_CHANNELS)
+        return (_channels[idx] < PPM_IN_MIN_VALUE) ? PPM_IN_MIN_VALUE :
+               (_channels[idx] > PPM_IN_MAX_VALUE) ? PPM_IN_MAX_VALUE :
+                _channels[idx];
     else
         return 0;
 }
 
-uint16_t PpmIn::period() const
-{
-    return _period_us;
-}
-
 bool PpmIn::isLow(uint8_t idx) const
 {
-    const uint16_t channel_us = getChannelMus(idx);
-    return (channel_us < CHANNEL_LOW_HIGHEST_VALUE_US) ? true : false;
+    return (getChannel(idx) < PPM_IN_LOW_HIGHEST_VALUE) ? true : false;
 }
 
 bool PpmIn::isCenter(uint8_t idx) const
 {
-    const uint16_t channel_us = getChannelMus(idx);
-    return ((CHANNEL_LOW_HIGHEST_VALUE_US < channel_us) &&
-            (channel_us < CHANNEL_HIGH_LOWEST_VALUE_US)) ? true : false;
+    const uint16_t channel = getChannel(idx);
+    return ((PPM_IN_LOW_HIGHEST_VALUE < channel) &&
+            (channel < PPM_IN_HIGH_LOWEST_VALUE)) ? true : false;
 }
 
 bool PpmIn::isHigh(uint8_t idx) const
 {
-    const uint16_t channel_us = getChannelMus(idx);
-    return (CHANNEL_HIGH_LOWEST_VALUE_US < channel_us) ? true : false;
+    return (PPM_IN_HIGH_LOWEST_VALUE < getChannel(idx)) ? true : false;
 }
 
 float PpmIn::getChannelMinusToPlusOne(uint8_t idx) const
 {
-    const static float gain = 2.0f / (CHANNEL_MAX_VALUE_US - CHANNEL_MIN_VALUE_US);
-    const uint16_t channel_us = getChannelMus(idx);
-    return static_cast<float>(channel_us - CHANNEL_MIN_VALUE_US) * gain - 1.0f;
+    const static float gain = 2.0f / (PPM_IN_MAX_VALUE - PPM_IN_MIN_VALUE);
+    return static_cast<float>(getChannel(idx) - PPM_IN_MIN_VALUE) * gain - 1.0f;
 }
 
 float PpmIn::getChannelZeroToPlusOne(uint8_t idx) const
 {
-    const static float gain = 1.0f / (CHANNEL_MAX_VALUE_US - CHANNEL_MIN_VALUE_US);
-    const uint16_t channel_us = getChannelMus(idx);
-    return static_cast<float>(channel_us - CHANNEL_MIN_VALUE_US) * gain;
+    const static float gain = 1.0f / (PPM_IN_MAX_VALUE - PPM_IN_MIN_VALUE);
+    return static_cast<float>(getChannel(idx) - PPM_IN_MIN_VALUE) * gain;
 }
 
 void PpmIn::rise(void)
 {
-    _time_previous_us = _Timer.elapsed_time();
-    _Timeout.attach(callback(this, &PpmIn::fall), microseconds{MAX_TIMEOUT_US});
+    _time_previous = _Timer.elapsed_time();
+    _Timeout.attach(callback(this, &PpmIn::fall), microseconds{PPM_IN_MAX_TIMEOUT});
 }
 
 void PpmIn::fall(void)
 {
-    static uint8_t channel_cntr = 0;
-    static microseconds time_previous_us{0};
+    static uint16_t channels[PPM_IN_NUM_OF_CHANNELS] = {0};
+    static uint8_t idx = 0;
+    static microseconds time_previous{0};
 
-    const uint16_t channel_us = duration_cast<microseconds>(_Timer.elapsed_time() - _time_previous_us).count();
+    // measure delta time
+    const uint16_t channel = duration_cast<microseconds>(_Timer.elapsed_time() - _time_previous).count();
 
-    if (channel_us > MAX_TIMEOUT_US) {
-        _is_pkg_valid = false;
-    } else {
+    if (channel < PPM_IN_MAX_TIMEOUT) {
         // detect the start of a new data frame
-        if ((channel_us > TIME_BETWEEN_DATA_US) || (channel_cntr == NUM_OF_CHANNELS)) {
-            channel_cntr = 0;
-            // meassure signal period
-            const microseconds time_us = _Timer.elapsed_time();
-            _period_us = duration_cast<microseconds>(time_us - time_previous_us).count();
-            time_previous_us = time_us;
-        } else {
+        if ((channel > PPM_IN_TIME_BETWEEN_DATA) || (idx == PPM_IN_NUM_OF_CHANNELS))
+            idx = 0;
+        else {
             // update channel
-            _buffer_us[channel_cntr++] = channel_us;
-
+            channels[idx++] = channel;
             // check if all channels were written at least once
-            if (channel_cntr == NUM_OF_CHANNELS) {
+            if (idx == PPM_IN_NUM_OF_CHANNELS) {
                 // check if all channels are within a healthy range
-                _is_pkg_valid = true;
-                for (uint8_t i = 0; i < NUM_OF_CHANNELS; i++) {
-                    if ((_buffer_us[i] < CHANNEL_HEALTHY_MIN_VALUE_US) || (_buffer_us[i] > CHANNEL_HEALTHY_MAX_VALUE_US)) {
-                        _is_pkg_valid = false;
+                for (uint8_t i = 0; i < PPM_IN_NUM_OF_CHANNELS; i++) {
+                    if ((channels[i] < PPM_IN_HEALTHY_MIN_VALUE) || (channels[i] > PPM_IN_HEALTHY_MAX_VALUE)) {
                         // exit the for loop
                         break;
-                    } else {
-                        _channel_us[i] = (_buffer_us[i] < CHANNEL_MIN_VALUE_US) ? CHANNEL_MIN_VALUE_US :
-                                         (_buffer_us[i] > CHANNEL_MAX_VALUE_US) ? CHANNEL_MAX_VALUE_US :
-                                          _buffer_us[i];
                     }
-                }
+                    // update channels and set pkg as valid
+                    memcpy(&_channels, &channels, sizeof(_channels));
+                    _is_pkg_valid = true;
+                    // meassure signal period
+                    const microseconds time = _Timer.elapsed_time();
+                    _period = duration_cast<microseconds>(time - time_previous).count();
+                    time_previous = time;
+                }                    
             }
         }
     }
-    _Timeout.attach(callback(this, &PpmIn::rise), microseconds{MAX_TIMEOUT_US});
+    _Timeout.attach(callback(this, &PpmIn::rise), microseconds{PPM_IN_MAX_TIMEOUT});
 }

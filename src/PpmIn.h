@@ -20,15 +20,16 @@
 
 #include "mbed.h"
 
-#define NUM_OF_CHANNELS 8
-#define TIME_BETWEEN_DATA_US 2500
-#define MAX_TIMEOUT_US 20000
-#define CHANNEL_MIN_VALUE_US 600
-#define CHANNEL_MAX_VALUE_US 1600
-#define CHANNEL_HEALTHY_MIN_VALUE_US 400
-#define CHANNEL_HEALTHY_MAX_VALUE_US 1800
-#define CHANNEL_LOW_HIGHEST_VALUE_US 850
-#define CHANNEL_HIGH_LOWEST_VALUE_US 1350
+// tbs crossfire nano rx, running at 50 Hz := 20000 mus
+#define PPM_IN_NUM_OF_CHANNELS 8
+#define PPM_IN_TIME_BETWEEN_DATA 2500
+#define PPM_IN_MAX_TIMEOUT 20000
+#define PPM_IN_MIN_VALUE 600
+#define PPM_IN_MAX_VALUE 1600
+#define PPM_IN_HEALTHY_MIN_VALUE 400
+#define PPM_IN_HEALTHY_MAX_VALUE 1800
+#define PPM_IN_LOW_HIGHEST_VALUE 850
+#define PPM_IN_HIGH_LOWEST_VALUE 1350
 
 using namespace std::chrono;
 
@@ -38,26 +39,26 @@ public:
     explicit PpmIn(PinName pin);
     virtual ~PpmIn();
 
-    uint16_t getChannelMus(uint8_t idx) const;
-    uint8_t getNumOfChannels() const { return NUM_OF_CHANNELS; }
-    bool isPkgValid() const { return _is_pkg_valid; }
-    uint16_t period() const;
+    uint16_t getChannel(uint8_t idx) const;
+    uint32_t getPeriod() const { return _period; }
+    uint8_t getNumOfChannels() const { return PPM_IN_NUM_OF_CHANNELS; }
     bool isLow(uint8_t idx) const;
     bool isCenter(uint8_t idx) const;
     bool isHigh(uint8_t idx) const;
     float getChannelMinusToPlusOne(uint8_t idx) const;
     float getChannelZeroToPlusOne(uint8_t idx) const;
+    bool isPkgValid() const { return _is_pkg_valid; }
+    void setPkgValidFalse() { _is_pkg_valid = false; }
 
 private:
     InterruptIn _InteruptIn;
     Timer _Timer;
     Timeout _Timeout;
 
-    microseconds _time_previous_us{0};
-    uint16_t _buffer_us[NUM_OF_CHANNELS] = {0};
-    uint16_t _channel_us[NUM_OF_CHANNELS] = {0};
+    microseconds _time_previous{0};
+    uint16_t _channels[PPM_IN_NUM_OF_CHANNELS] = {0};
+    uint32_t _period{0};
     bool _is_pkg_valid{false};
-    uint16_t _period_us{0};
 
     void rise();
     void fall();

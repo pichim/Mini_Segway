@@ -25,7 +25,7 @@ return
 
 % load data_00.mat % save data_00 data
 
-figure(1)
+figure(11)
 plot(data.time(1:end-1), diff(data.time * 1e6)), grid on
 title( sprintf(['Mean dTime = %0.2f musec, ', ...
                 'Std. dTime = %0.2f musec, ', ...
@@ -37,18 +37,24 @@ xlabel('Time (sec)'), ylabel('dTime (musec)')
 ylim([0 1.2*max(diff(data.time * 1e6))])
 xlim([0 data.time(end-1)])
 
-figure(2)
+figure(22)
 plot(data.time, data.values), grid on
 xlabel('Time (sec)')
 xlim([0 data.time(end)])
+ylim([-2 3])
+
 
 %%
 
-load data_01.mat % save data_01 data
+% % PpmIn crsf
+% load data_01.mat % save data_01 data
+% Ts = 500 * 1e-6;
 
+% SBus elrs
+load data_02.mat % save data_01 data
 Ts = 500 * 1e-6;
 
-w0 = 8 * 2*pi;
+w0 = 20 * 2*pi;
 D = sqrt(3)/2;
 Gf = c2d(tf(w0^2, [1 2*D*w0 w0^2]), Ts, 'tustin');
 
@@ -58,4 +64,5 @@ figure(1)
 plot(data.time, [data.values, data_f]), grid on
 xlabel('Time (sec)')
 xlim([0 data.time(end)])
+ylim([-2 3])
 

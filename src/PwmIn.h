@@ -9,20 +9,20 @@ class PwmIn
 {
 public:
     explicit PwmIn(PinName pin);
-    virtual ~PwmIn();
+    virtual ~PwmIn() {};
 
-    uint32_t period();
-    uint32_t pulseWidth();
-    float dutyCycle();
+    uint32_t getPeriod() const { _period; }
+    uint32_t getPulseWidth() const { _pulsewidth; }
+    float getDutyCycle() const;
     void invertPolarity();
 
 private:
     InterruptIn _InteruptIn;
     Timer _Timer;
 
-    uint32_t _pulsewidth_us{0};
-    uint32_t _period_us{0};
-    microseconds _time_previous_us{0};
+    uint32_t _period{0};
+    uint32_t _pulsewidth{0};
+    microseconds _time_previous{0};
 
     void rise();
     void fall();
