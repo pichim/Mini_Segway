@@ -1,46 +1,27 @@
 #include "mbed.h"
 
-/**
- * TODO:
- * - move serialStream and remoteCntrl to MiniSegway and remove option of SBus as thread
- * 
- * - check for all threads the destructor
- *  _Timeout.detach();
-    _Ticker.detach();
-    _Thread.terminate();
-*
-* - check for all const functions possible move to header
-*
-* - move all unused destructors to header
-*
-* - check all defines to have the header name first
-*
-* - check serial stream and usage of serial pipe and 
-*   buffered serial again according to sbus
-*/
+#include "EncoderCounter.h"
 
-// MiniSegway includes PpmIn and SBus
-#include "MiniSegway.h"
+// https://github.com/altb71/mini_cuboid/blob/master/Lib_Misc/EncoderCounter.h
+#define ENC_TIM1_CH1 PA_8
+#define ENC_TIM1_CH2 PA_9
+// hurc
+#define ENC_TIM2_CH1 PA_0
+#define ENC_TIM2_CH2 PA_1
 
-SerialStream serialStream(MINI_SEGWAY_NUM_OF_FLOATS,
-                          MINI_SEGWAY_TX,
-                          MINI_SEGWAY_RX,
-                          MINI_SEGWAY_BAUDRATE);
-#if DO_USE_PPM_IN
-PpmIn remoteCntrl(MINI_SEGWAY_RC_DI);    
-#else
-SBus remoteCntrl(MINI_SEGWAY_RC_RX);
-#endif
-MiniSegway miniSegway(remoteCntrl,
-                      serialStream);
-
-
-// main thread is just blinking the led on the nucleo
 int main()
 {
+    EncoderCounter encoderCounter_M1(ENC_TIM1_CH1, ENC_TIM1_CH2);
+    EncoderCounter encoderCounter_M2(ENC_TIM2_CH1, ENC_TIM2_CH2);
+
     DigitalOut led1(LED1);
+    printf("starting...\n");
     while (true) {
+
+        printf("M1: %d\n", encoderCounter_M1.read());
+        printf("M2: %d\n", encoderCounter_M2.read());
+
         led1 = !led1;
-        thread_sleep_for(1000);
+        thread_sleep_for(100);
     }
 }
