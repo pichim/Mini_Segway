@@ -11,8 +11,8 @@ public:
     explicit PwmIn(PinName pin);
     virtual ~PwmIn() {};
 
-    uint32_t getPeriod() const { _period; }
-    uint32_t getPulseWidth() const { _pulsewidth; }
+    uint32_t getPeriod() const { return _period; }
+    uint32_t getPulseWidth() const { return _pulsewidth; }
     float getDutyCycle() const;
     void invertPolarity();
 
