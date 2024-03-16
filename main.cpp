@@ -13,6 +13,8 @@ int main()
 {
     EncoderCounter encoderCounter_M1(ENC_TIM1_CH1, ENC_TIM1_CH2);
     EncoderCounter encoderCounter_M2(ENC_TIM2_CH1, ENC_TIM2_CH2);
+    encoderCounter_M1.reset();
+    encoderCounter_M2.reset();
 
     DigitalOut led1(LED1);
     printf("starting...\n");

@@ -24,10 +24,10 @@ EncoderCounter::EncoderCounter(PinName a, PinName b) {
     if ((a == PA_8) && (b == PA_9)) {
         
         // pinmap OK for TIM1 CH1 and CH2
-        
         TIM = TIM1;
         
         // configure general purpose I/O registers
+        RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN;    // manually enable port A
         
         GPIOA->MODER &= ~GPIO_MODER_MODER8;     // reset port A8
         GPIOA->MODER |= GPIO_MODER_MODER8_1;    // set alternate mode of port A8
@@ -57,6 +57,7 @@ EncoderCounter::EncoderCounter(PinName a, PinName b) {
         TIM = TIM2;
         
         // configure general purpose I/O registers
+        RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN;    // manually enable port A
         
         GPIOA->MODER &= ~GPIO_MODER_MODER0;     // reset port A0
         GPIOA->MODER |= GPIO_MODER_MODER0_1;    // set alternate mode of port A0
