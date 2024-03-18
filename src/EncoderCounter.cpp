@@ -52,7 +52,7 @@ EncoderCounter::EncoderCounter(PinName a, PinName b) {
         
     } else if ((a == PA_0) && (b == PA_1)) {
         
-        // pinmap OK for TIM1 CH1 and CH2
+        // pinmap OK for TIM2 CH1 and CH2
         
         TIM = TIM2;
         
