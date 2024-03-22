@@ -1,6 +1,22 @@
 #ifndef SBUS_H_
 #define SBUS_H_
 
+/**
+ * This class is designed to read SBUS signals from a elrs receiver
+ * - on the tested receiver only 8 channels work
+ * - receiver is sending data at 9 hz
+ * 
+ * Channel Mapping when remote is a Tango2 and was set up for Betaflight, measurement from 29.02.2024:
+ * CH1: Roll     - Right Stick          , left to right
+ * CH2: Pitch    - Right Stick          , down to up
+ * CH3: Throttle - Left Stick           , down to up
+ * CH4: Yaw      - Left Stick           , left to right
+ * CH5: untested
+ * CH6: untested
+ * CH7: untested
+ * CH8: Arm      - Top right big Switch , disabled, enabled
+*/
+
 #include "mbed.h"
 
 #include "ThreadFlag.h"

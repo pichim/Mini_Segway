@@ -2,7 +2,7 @@
 
 /**
  * TODO:
- * - move serialStream and remoteCntrl to MiniSegway and remove option of SBus as thread
+ * - move serialStream and rc to MiniSegway and remove option of SBus as thread
  * 
  * - check for all threads the destructor
  *  _Timeout.detach();
@@ -20,20 +20,17 @@
 */
 
 // MiniSegway includes PpmIn and SBus
+#include "IMU.h"
 #include "MiniSegway.h"
 
-SerialStream serialStream(MINI_SEGWAY_NUM_OF_FLOATS,
-                          MINI_SEGWAY_TX,
-                          MINI_SEGWAY_RX,
-                          MINI_SEGWAY_BAUDRATE);
 #if DO_USE_PPM_IN
-PpmIn remoteCntrl(MINI_SEGWAY_RC_DI);    
+PpmIn rc(MINI_SEGWAY_RC_DI);
 #else
-SBus remoteCntrl(MINI_SEGWAY_RC_RX);
+SBus rc(MINI_SEGWAY_RC_RX);
 #endif
-MiniSegway miniSegway(remoteCntrl,
-                      serialStream);
-
+IMU imu(MINI_SEGWAY_IMU_SDA,
+        MINI_SEGWAY_IMU_SCL);
+MiniSegway miniSegway(rc, imu);
 
 // main thread is just blinking the led on the nucleo
 int main()

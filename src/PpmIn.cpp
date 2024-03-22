@@ -77,11 +77,15 @@ void PpmIn::fall(void)
             // check if all channels were written at least once
             if (idx == PPM_IN_NUM_OF_CHANNELS) {
                 // check if all channels are within a healthy range
+                bool all_channels_healthy = true;
                 for (uint8_t i = 0; i < PPM_IN_NUM_OF_CHANNELS; i++) {
                     if ((channels[i] < PPM_IN_HEALTHY_MIN_VALUE) || (channels[i] > PPM_IN_HEALTHY_MAX_VALUE)) {
                         // exit the for loop
+                        all_channels_healthy = false;
                         break;
                     }
+                }
+                if (all_channels_healthy) {
                     // update channels and set pkg as valid
                     memcpy(&_channels, &channels, sizeof(_channels));
                     _is_pkg_valid = true;
@@ -89,7 +93,7 @@ void PpmIn::fall(void)
                     const microseconds time = _Timer.elapsed_time();
                     _period = duration_cast<microseconds>(time - time_previous).count();
                     time_previous = time;
-                }                    
+                }
             }
         }
     }

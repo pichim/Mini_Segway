@@ -21,7 +21,7 @@ Coding stuff:
 ```
 /**
  * TODO:
- * - move serialStream and remoteCntrl to MiniSegway and remove option of SBus as thread
+ * - move serialStream and rc to MiniSegway and remove option of SBus as thread
  * 
  * - check for all threads the destructor
  *  _Timeout.detach();
