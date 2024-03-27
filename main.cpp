@@ -28,33 +28,21 @@ extern "C" {
 #define TIM_MST_RESET_ON   __HAL_RCC_TIM5_FORCE_RESET()
 #define TIM_MST_RESET_OFF  __HAL_RCC_TIM5_RELEASE_RESET()
 
-#define TIM_MST_BIT_WIDTH  32 // 16 or 32
-
 #else
 
-// #define TIM_MST      TIM2
-// #define TIM_MST_IRQ  TIM2_IRQn
-// #define TIM_MST_RCC  __HAL_RCC_TIM2_CLK_ENABLE()
-// #define TIM_MST_DBGMCU_FREEZE  __HAL_DBGMCU_FREEZE_TIM2()
+#define TIM_MST      TIM16
+#define TIM_MST_IRQ  TIM1_UP_TIM16_IRQn
+#define TIM_MST_RCC  __HAL_RCC_TIM16_CLK_ENABLE()
+#define TIM_MST_DBGMCU_FREEZE  __HAL_DBGMCU_FREEZE_TIM16()
 
-// #define TIM_MST_RESET_ON   __HAL_RCC_TIM2_FORCE_RESET()
-// #define TIM_MST_RESET_OFF  __HAL_RCC_TIM2_RELEASE_RESET()
-
-// #define TIM_MST_BIT_WIDTH  32 // 16 or 32
-
-#define TIM_MST      TIM6
-#define TIM_MST_IRQ  TIM6_IRQn
-#define TIM_MST_RCC  __HAL_RCC_TIM6_CLK_ENABLE()
-#define TIM_MST_DBGMCU_FREEZE  __HAL_DBGMCU_FREEZE_TIM6()
-
-#define TIM_MST_RESET_ON   __HAL_RCC_TIM6_FORCE_RESET()
-#define TIM_MST_RESET_OFF  __HAL_RCC_TIM6_RELEASE_RESET()
-
-#define TIM_MST_BIT_WIDTH  16 // 16 or 32
+#define TIM_MST_RESET_ON   __HAL_RCC_TIM16_FORCE_RESET()
+#define TIM_MST_RESET_OFF  __HAL_RCC_TIM16_RELEASE_RESET()
 
 #endif
 
-#define TIM_MST_PCLK  1 // Select the peripheral clock number (1 or 2)
+#define TIM_MST_BIT_WIDTH  16 // 16 or 32
+
+#define TIM_MST_PCLK  2 // Select the peripheral clock number (1 or 2)
 
 
 #ifdef __cplusplus
@@ -66,51 +54,8 @@ extern "C" {
 */
 
 
-/**
- * when using:
-
-    #define TIM_MST      TIM2
-    #define TIM_MST_IRQ  TIM2_IRQn
-    #define TIM_MST_RCC  __HAL_RCC_TIM2_CLK_ENABLE()
-    #define TIM_MST_DBGMCU_FREEZE  __HAL_DBGMCU_FREEZE_TIM2()
-
-    #define TIM_MST_RESET_ON   __HAL_RCC_TIM2_FORCE_RESET()
-    #define TIM_MST_RESET_OFF  __HAL_RCC_TIM2_RELEASE_RESET()
-
-    #define TIM_MST_BIT_WIDTH  32 // 16 or 32
-
-* and defining EncoderCounter encoderCounter_M2(PA_0, PA_1) and using it leads to:
-
-    ++ MbedOS Error Info ++
-    Error Status: 0x80020126 Code: 294 Module: 2
-    Error Message: CMSIS-RTOS error: ISR Queue overflow
-    Location: 0x8002305
-    Error Value: 0x2
-    Current Thread: rtx_idle Id: 0x200008EC Entry: 0x80022D9 StackSize: 0x300 StackMem: 0x20000930 SP: 0x2000FF3C
-    For more info, visit: https://mbed.com/s/error?error=0x80020126&tgt=NUCLEO_L432KC
-    -- MbedOS Error Info --
-*/
-
-
-/**
- * when using:
-
-    #define TIM_MST      TIM6
-    #define TIM_MST_IRQ  TIM6_IRQn
-    #define TIM_MST_RCC  __HAL_RCC_TIM6_CLK_ENABLE()
-    #define TIM_MST_DBGMCU_FREEZE  __HAL_DBGMCU_FREEZE_TIM6()
-
-    #define TIM_MST_RESET_ON   __HAL_RCC_TIM6_FORCE_RESET()
-    #define TIM_MST_RESET_OFF  __HAL_RCC_TIM6_RELEASE_RESET()
-
-    #define TIM_MST_BIT_WIDTH  16 // 16 or 32
-
-* and defining encoder counter, then the mini segway thread is not running...
-*/
-
-
-EncoderCounter encoderCounter_M1(PA_8, PA_9);
-// EncoderCounter encoderCounter_M2(PA_0, PA_1);
+// EncoderCounter encoderCounter_M1(PA_8, PA_9);
+EncoderCounter encoderCounter_M2(PA_5, PA_1);
 MiniSegway miniSegway;
 
 int main()
@@ -122,11 +67,11 @@ int main()
 
     while (true) {
 
-        printf("M1: %d, ", encoderCounter_M1.read());
-        // printf("M2: %d\n", encoderCounter_M2.read());
-        printf(" i: %d\n", i++);
+        // printf("M1: %d,\n", encoderCounter_M1.read());
+        printf("M2: %d\n", encoderCounter_M2.read());
+        // printf(" i: %d\n", i++);
 
         // led1 = !led1;
-        thread_sleep_for(1000);
+        thread_sleep_for(100);
     }
 }
