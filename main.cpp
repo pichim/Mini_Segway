@@ -30,6 +30,14 @@ extern "C" {
 
 #else
 
+// #define TIM_MST      TIM2
+// #define TIM_MST_IRQ  TIM2_IRQn
+// #define TIM_MST_RCC  __HAL_RCC_TIM2_CLK_ENABLE()
+// #define TIM_MST_DBGMCU_FREEZE  __HAL_DBGMCU_FREEZE_TIM2()
+
+// #define TIM_MST_RESET_ON   __HAL_RCC_TIM2_FORCE_RESET()
+// #define TIM_MST_RESET_OFF  __HAL_RCC_TIM2_RELEASE_RESET()
+
 #define TIM_MST      TIM16
 #define TIM_MST_IRQ  TIM1_UP_TIM16_IRQn
 #define TIM_MST_RCC  __HAL_RCC_TIM16_CLK_ENABLE()
@@ -39,6 +47,10 @@ extern "C" {
 #define TIM_MST_RESET_OFF  __HAL_RCC_TIM16_RELEASE_RESET()
 
 #endif
+
+// #define TIM_MST_BIT_WIDTH  32 // 16 or 32
+
+// #define TIM_MST_PCLK  1 // Select the peripheral clock number (1 or 2)
 
 #define TIM_MST_BIT_WIDTH  16 // 16 or 32
 
@@ -54,7 +66,7 @@ extern "C" {
 */
 
 
-// EncoderCounter encoderCounter_M1(PA_8, PA_9);
+EncoderCounter encoderCounter_M1(PA_8, PA_9);
 EncoderCounter encoderCounter_M2(PA_5, PA_1);
 MiniSegway miniSegway;
 
@@ -67,7 +79,7 @@ int main()
 
     while (true) {
 
-        // printf("M1: %d,\n", encoderCounter_M1.read());
+        printf("M1: %d, ", encoderCounter_M1.read());
         printf("M2: %d\n", encoderCounter_M2.read());
         // printf(" i: %d\n", i++);
 
