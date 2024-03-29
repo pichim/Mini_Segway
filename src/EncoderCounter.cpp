@@ -81,6 +81,37 @@ EncoderCounter::EncoderCounter(PinName a, PinName b) {
         RCC->APB1ENR1 |= RCC_APB1ENR1_TIM2EN;     // TIM2 clock enable
 
     
+    } else if ((a == PA_5) && (b == PA_1)) {
+        
+        // pinmap OK for TIM2 CH1 and CH2
+        
+        TIM = TIM2;
+        
+        // configure general purpose I/O registers
+        RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN;    // manually enable port A
+        
+        GPIOA->MODER &= ~GPIO_MODER_MODER5;     // reset port A0
+        GPIOA->MODER |= GPIO_MODER_MODER5_1;    // set alternate mode of port A0
+        GPIOA->PUPDR &= ~GPIO_PUPDR_PUPDR5;     // reset pull-up/pull-down on port A0
+        GPIOA->PUPDR |= GPIO_PUPDR_PUPDR5_1;    // set input as pull-down
+        GPIOA->AFR[0] &= ~(0xF << 4*5);         // reset alternate function of port A0
+        GPIOA->AFR[0] |= 1 << 4*5;              // set alternate funtion 1 of port A0
+        
+        GPIOA->MODER &= ~GPIO_MODER_MODER1;     // reset port A1
+        GPIOA->MODER |= GPIO_MODER_MODER1_1;    // set alternate mode of port A1
+        GPIOA->PUPDR &= ~GPIO_PUPDR_PUPDR1;     // reset pull-up/pull-down on port A1
+        GPIOA->PUPDR |= GPIO_PUPDR_PUPDR1_1;    // set input as pull-down
+        GPIOA->AFR[0] &= ~(0xF << 4*1);         // reset alternate function of port A1
+        GPIOA->AFR[0] |= 1 << 4*1;              // set alternate funtion 1 of port A1
+        
+        // configure reset and clock control registers
+        
+        RCC->APB1RSTR1 |= RCC_APB1RSTR1_TIM2RST;  //reset TIM2 controller
+        RCC->APB1RSTR1 &= ~RCC_APB1RSTR1_TIM2RST;
+        
+        RCC->APB1ENR1 |= RCC_APB1ENR1_TIM2EN;     // TIM2 clock enable
+
+    
     } else {
         
         printf("pinmap not found for peripheral\n");

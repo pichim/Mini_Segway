@@ -2,9 +2,10 @@
 #define CONFIG_H_
 
 // task period
+// #define MINI_SEGWAY_PERIOD_US 2500   //  400 Hz
 // #define MINI_SEGWAY_PERIOD_US 2000   //  500 Hz
-// #define MINI_SEGWAY_PERIOD_US 1000   // 1000 Hz
-#define MINI_SEGWAY_PERIOD_US 500    // 2000Hz
+#define MINI_SEGWAY_PERIOD_US 1000   // 1000 Hz
+// #define MINI_SEGWAY_PERIOD_US 500    // 2000Hz
 
 // streaming device, openlager or laptop / pc
 #define DO_USE_OPENLAGER_FOR_DATA_STREAM false
@@ -23,7 +24,7 @@
 #endif
 // openlager runs at 2000000 baudrate
 #define MINI_SEGWAY_BAUDRATE 2000000
-#define MINI_SEGWAY_NUM_OF_FLOATS 20
+#define MINI_SEGWAY_NUM_OF_FLOATS 30
 
 // receiver to remote controll connection
 #define DO_USE_PPM_IN false
@@ -49,7 +50,7 @@
 // encoders
 #define MINI_SEGWAY_ENCA_M1 PA_8 // working
 #define MINI_SEGWAY_ENCB_M1 PA_9
-// #define MINI_SEGWAY_ENCA_M2 PA_0 // not working
+// #define MINI_SEGWAY_ENCA_M2 PA_5 // not working
 // #define MINI_SEGWAY_ENCB_M2 PA_1
 // https://www.pololu.com/product/3053/specs
 #define MINI_SEGWAY_COUNTS_PER_TURN (150.58f * 12.0f)

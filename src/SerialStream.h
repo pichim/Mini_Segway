@@ -9,7 +9,7 @@
 #include "mbed.h"
 #endif
 
-#define S_STREAM_NUM_OF_FLOATS_MAX 20
+#define S_STREAM_NUM_OF_FLOATS_MAX 30 // tested at 2 kHz 20 floats
 #define S_STREAM_CLAMP(x) (x <= S_STREAM_NUM_OF_FLOATS_MAX ? x : S_STREAM_NUM_OF_FLOATS_MAX)
 #define S_STREAM_START_BYTE 255
 

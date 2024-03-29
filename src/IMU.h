@@ -28,7 +28,7 @@ namespace Parameters
     // w0 = 3;
     // kp = w0;
     // ki = 0;
-    static const float kp = 3.0f;
+    static const float kp = 5.0f * 2.0f * M_PI; // PES Board: kp = 3.0f;
     static const float ki = 0.0f;
 #endif
 
@@ -71,7 +71,7 @@ public:
     ImuData getImuData() const;
 
 private:
-    static constexpr int64_t PERIOD_MUS = 20000;
+    static constexpr int64_t PERIOD_MUS = 1000; // PES Board: PERIOD_MUS = 1000
     static constexpr float TS = 1.0e-6f * static_cast<float>(PERIOD_MUS);
 
     ImuData m_ImuData;

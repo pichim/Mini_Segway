@@ -4,7 +4,7 @@
 /**
  * This class is designed to read SBUS signals from a elrs receiver
  * - on the tested receiver only 8 channels work
- * - receiver is sending data at 9 hz
+ * - receiver is sending data at 111 Hz
  * 
  * Channel Mapping when remote is a Tango2 and was set up for Betaflight, measurement from 29.02.2024:
  * CH1: Roll     - Right Stick          , left to right

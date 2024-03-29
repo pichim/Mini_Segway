@@ -86,9 +86,17 @@ void LSM9DS1::init(interface_mode interface, uint8_t xgAddr, uint8_t mAddr)
     // gyro cutoff frequency: value between 0-3
     // Actual value of cutoff frequency depends
     // on sample rate.
+    // @238 Hz: 0 ->  14 Hz, pmic 22.03.2024
+    //          1 ->  29 Hz
+    //          2 ->  63 Hz
+    //          3 ->  78 Hz
     // @476 Hz: 0 ->  21 Hz only if LPF2 is enabled, to do so you need to set xgWriteByte(CTRL_REG2_G, 0x02) to enable LPF 2, pmic 11.09.2019 
     //          1 ->  28 Hz
     //          2 ->  57 Hz
+    //          3 -> 100 Hz
+    // @952 Hz: 0 ->  33 Hz, pmic 22.03.2024
+    //          1 ->  40 Hz
+    //          2 ->  58 Hz
     //          3 -> 100 Hz
     settings.gyro.bandwidth = 0; 
     settings.gyro.lowPowerEnable = false;
