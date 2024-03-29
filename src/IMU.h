@@ -39,39 +39,40 @@ namespace Parameters
     static const Eigen::Vector3f b_mag = (Eigen::Vector3f() << 0.0000000f, 0.0000000f, 0.0000000f).finished();
     static const Eigen::Vector3f b_acc = (Eigen::Vector3f() << 0.0000000f, 0.0000000f, 0.0000000f).finished();
 }
-
-class ImuData
-{
-public:
-    ImuData() {
-        init();
-    };
-    virtual ~ImuData(){};
-
-    Eigen::Vector3f gyro, acc, mag;
-    Eigen::Quaternionf quat;
-    Eigen::Vector3f rpy;
-    float tilt = 0.0f;
-
-    void init() {
-        gyro.setZero();
-        acc.setZero();
-        mag.setZero();
-        quat.setIdentity();
-        rpy.setZero();
-    };
-};
-
+using namespace std::chrono;
 class IMU
 {
 public:
     explicit IMU(PinName pin_sda, PinName pin_scl);
     virtual ~IMU();
 
+    class ImuData
+    {
+    public:
+        ImuData() {
+            init();
+        };
+        virtual ~ImuData(){};
+
+        Eigen::Vector3f gyro, acc, mag;
+        Eigen::Quaternionf quat;
+        Eigen::Vector3f rpy;
+        float tilt = 0.0f;
+
+        void init() {
+            gyro.setZero();
+            acc.setZero();
+            mag.setZero();
+            quat.setIdentity();
+            rpy.setZero();
+        };
+    };
+
     ImuData getImuData() const;
+    uint32_t getPeriod() const { return m_period; }
 
 private:
-    static constexpr int64_t PERIOD_MUS = 1000; // PES Board: PERIOD_MUS = 1000
+    static constexpr int64_t PERIOD_MUS = 4000; // PES Board: PERIOD_MUS = 20000
     static constexpr float TS = 1.0e-6f * static_cast<float>(PERIOD_MUS);
 
     ImuData m_ImuData;
@@ -82,6 +83,9 @@ private:
     Thread m_Thread;
     Ticker m_Ticker;
     ThreadFlag m_ThreadFlag;
+
+    Timer m_Timer;
+    uint32_t m_period{0};
 
     void threadTask();
     void sendThreadFlag();

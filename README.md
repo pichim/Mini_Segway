@@ -2,6 +2,12 @@
 
 ## Notes
 
+## 29.03.2024
+- 2 Encoders on NUCELO_L432KC still not working, this needs further investigation
+- Slowly migrating to NUCLEO_F446RE for Nacht der Technik
+- IMU LSM6DS3 is working, but has some spikes in the data, ordered MPU6500
+- IMU LSM6DS3 has also a big offset in z-axis, it's actually not the gain thats wrong on this sensor unit
+
 ## 10.03.2024
 - Implemented SBus protocol for ELRS
 - Currently it looks like the NUCLEO_L432KC can only have one uart, which means i can either use SBus or OpenLager... need to double check with someone who knows more about this. Otherwise i need to switch to a NUCLEO_F446RE.
@@ -18,35 +24,24 @@
 
 Coding stuff:
 
-```
+```cpp
 /**
  * TODO:
- * - move serialStream and rc to MiniSegway and remove option of SBus as thread
- * 
+ * - adjust LSM6DS3 internal filter settings
+ * - implement filter for rc smoothing with reseting
+ * - move serialStream and rc to MiniSegway
  * - check for all threads the destructor
- *  _Timeout.detach();
-    _Ticker.detach();
-    _Thread.terminate();
-*
-* - check for all const functions possible move to header
-*
-* - move all unused destructors to header
-*
-* - check all defines to have the header name first
-*
-* - check serial stream and usage of serial pipe and 
-*   buffered serial again according to sbus
+ *      _Timeout.detach();
+ *      _Ticker.detach();
+ *      _Thread.terminate();
+ * - check for all const functions possible move to header
+ * - move all unused destructors to header
+ * - check all defines to have the header name first
 */
 ```
 
 Organise:
-- ...
-
-Implement:
-- implement motor control
-- implement imu
-- adjust imu internal filters
-- implement filter for rc smoothing with reseting
+- Summarice all the stuff i bought
 
 ## Links
 
@@ -55,5 +50,5 @@ Implement:
 - General Infos: https://github.com/bolderflight/sbus
 - Stuff: https://os.mbed.com/users/Digixx/notebook/futaba-s-bus-controlled-by-mbed/
 
-### Softserial
+### Softserial (not used yet)
 - https://os.mbed.com/users/Sissors/code/BufferedSoftSerial/

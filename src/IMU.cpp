@@ -7,6 +7,8 @@ IMU::IMU(PinName pin_sda, PinName pin_scl) : m_ImuLSM9DS1(pin_sda, pin_scl),
 #if (IMU_THREAD_DO_USE_MAG_FOR_MAHONY_UPDATE && IMU_DO_USE_STATIC_MAG_CALIBRATION)
     m_magCalib.setCalibrationParameter(Parameters::A_mag, Parameters::b_mag);
 #endif
+
+    m_Timer.start();
     
     // start thread
     m_Thread.start(callback(this, &IMU::threadTask));
@@ -21,22 +23,21 @@ IMU::~IMU()
     m_Thread.terminate();
 }
 
-ImuData IMU::getImuData() const
+IMU::ImuData IMU::getImuData() const
 {
     return m_ImuData;
 }
 
 void IMU::threadTask()
 {
-    static const uint16_t Navg = static_cast<uint16_t>(1.0f / TS);
+    static const uint16_t Navg = 100;
     static uint16_t avg_cntr = 0;
     static bool imu_is_calibrated = false;
     static Eigen::Vector3f gyro_offset;
     static Eigen::Vector3f acc_offset;
     gyro_offset.setZero();
     acc_offset.setZero();
-    static Timer timer;
-    timer.start();
+    static microseconds time_previous{0};
 
     while (true) {
         ThisThread::flags_wait_any(m_ThreadFlag);
@@ -75,6 +76,12 @@ void IMU::threadTask()
             gyro -= gyro_offset;
             acc -= acc_offset;
 
+            // meassure signal period and update sampling time in mahony filter
+            const microseconds time = m_Timer.elapsed_time();
+            m_period = duration_cast<microseconds>(time - time_previous).count();
+            time_previous = time;
+            m_Mahony.setSamplingTime(static_cast<float>(m_period * 1.0e-6f));
+
 #if IMU_THREAD_DO_USE_MAG_FOR_MAHONY_UPDATE
             mag = m_magCalib.applyCalibration(mag);
             m_Mahony.update(gyro, acc, mag);
@@ -93,7 +100,7 @@ void IMU::threadTask()
 
 #if IMU_DO_PRINTF
         static float time_ms_past = 0.0f;
-        float time_ms = std::chrono::duration_cast<std::chrono::microseconds>(timer.elapsed_time()).count() * 1.0e-3f;
+        float time_ms = std::chrono::duration_cast<std::chrono::microseconds>(m_Timer.elapsed_time()).count() * 1.0e-3f;
         const float dtime_ms = time_ms - time_ms_past;
         time_ms_past = time_ms;
         printf("%.6f, %.6f, %.6f, %.6f, %.6f, %.6f, %.6f, %.6f, %.6f, %.6f, ", m_ImuData.gyro(0), m_ImuData.gyro(1), m_ImuData.gyro(2),

@@ -105,7 +105,7 @@ void MiniSegway::threadTask()
     Motor motor_M2(MINI_SEGWAY_PWM_M2, MINI_SEGWAY_VOLTAGE_MAX);
 
     // imu
-    ImuData imu_data;
+    IMU::ImuData imu_data;
 
     // give the logger 1000 msec time to start
     thread_sleep_for(1000);
@@ -185,6 +185,7 @@ void MiniSegway::threadTask()
             serialStream.write(imu_data.rpy(0));
             serialStream.write(imu_data.rpy(1));
             serialStream.write(imu_data.rpy(2));
+            serialStream.write(static_cast<float>(_imu.getPeriod()));
             serialStream.send();
 
             led = 1;

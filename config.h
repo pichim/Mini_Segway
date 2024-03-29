@@ -55,7 +55,7 @@
 // https://www.pololu.com/product/3053/specs
 #define MINI_SEGWAY_COUNTS_PER_TURN (150.58f * 12.0f)
 // #define MINI_SEGWAY_KN (220.0f / 12.0f) // 150:1 Micro Metal Gearmotor HPCB 12V with Extended Motor Shaft
-#define MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY 20.0f
+#define MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY 15.0f
 #define MINI_SEGWAY_VOLTAGE_MAX 9.0f
 
 // pwm
