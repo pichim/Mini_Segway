@@ -33,7 +33,7 @@ public:
 
     float filter(float u);
 
-    float get_output();
+    float getOutput();
 
     float prewarp(float T, float Ts);
 

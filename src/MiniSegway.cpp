@@ -22,25 +22,50 @@ MiniSegway::~MiniSegway()
     _Thread.terminate();
 }
 
-void MiniSegway::updateRcPkg(rc_pkg_t& rc_pkg)
+void MiniSegway::updateRcPkg(rc_pkg_t& rc_pkg, IIR_Filter* iir_upsampling_filters)
 {
-    static uint16_t invalid_rc_pkg_pkg_cntr = 0;
+    static uint16_t valid_rc_pkg_cntr = 0;
+    static uint16_t invalid_rc_pkg_cntr = 0;
+    static float turn_rate = 0.0f;
+    static float forward_speed = 0.0f;
+    static bool armed = false;
+    static bool reset_filters = true;
+
     if (_rc.isPkgValid()) {
-        invalid_rc_pkg_pkg_cntr = 0;
+        // update counters
+        valid_rc_pkg_cntr++;
+        if (valid_rc_pkg_cntr > MINI_SEGWAY_RC_NUM_OF_NECESSARY_VALID_DATA_PKG)
+            valid_rc_pkg_cntr = MINI_SEGWAY_RC_NUM_OF_NECESSARY_VALID_DATA_PKG;
+        invalid_rc_pkg_cntr = 0;
         // update rc_pkg
-        rc_pkg.turn_rate     = _rc.getChannelMinusToPlusOne(0);        // right stick left to right (roll)
-        rc_pkg.forward_speed = _rc.getChannelMinusToPlusOne(1);        // right stick down to up (pitch)
-        rc_pkg.armed         = _rc.isHigh(MINI_SEGWAY_ARMING_CHANNEL); // arm button
+        turn_rate     = _rc.getChannelMinusToPlusOne(0);    // right stick left to right (roll)
+        forward_speed = _rc.getChannelMinusToPlusOne(1);    // right stick down to up (pitch)
+        armed  = _rc.isHigh(MINI_SEGWAY_RC_ARMING_CHANNEL); // arm button
         _rc.setPkgValidFalse();
     } else {
-        invalid_rc_pkg_pkg_cntr++;
-        if (invalid_rc_pkg_pkg_cntr > MINI_SEGWAY_NUM_OF_ALLOWED_INVALID_RC_DATA_PKG) {
-            invalid_rc_pkg_pkg_cntr = MINI_SEGWAY_NUM_OF_ALLOWED_INVALID_RC_DATA_PKG;
-            // reset rc_pkg
-            rc_pkg.turn_rate     = 0.0f; 
-            rc_pkg.forward_speed = 0.0f;
-            rc_pkg.armed         = false;
+        invalid_rc_pkg_cntr++;
+        if (invalid_rc_pkg_cntr > MINI_SEGWAY_RC_NUM_OF_ALLOWED_INVALID_DATA_PKG) {
+            invalid_rc_pkg_cntr = MINI_SEGWAY_RC_NUM_OF_ALLOWED_INVALID_DATA_PKG;
+            valid_rc_pkg_cntr = 0;
+            reset_filters = true;
         }
+    }
+    
+    // upsampling rc_pkg data
+    if (valid_rc_pkg_cntr < MINI_SEGWAY_RC_NUM_OF_NECESSARY_VALID_DATA_PKG ||
+        invalid_rc_pkg_cntr == MINI_SEGWAY_RC_NUM_OF_ALLOWED_INVALID_DATA_PKG) {
+        rc_pkg.turn_rate     = 0.0f;
+        rc_pkg.forward_speed = 0.0f;
+        rc_pkg.armed = false;
+    } else {
+        if (reset_filters) {
+            reset_filters = false;
+            iir_upsampling_filters[0].reset(turn_rate);
+            iir_upsampling_filters[1].reset(forward_speed);
+        }
+        rc_pkg.turn_rate     = iir_upsampling_filters[0].filter(turn_rate);
+        rc_pkg.forward_speed = iir_upsampling_filters[1].filter(forward_speed);
+        rc_pkg.armed = armed;
     }
 }
 
@@ -75,6 +100,17 @@ void MiniSegway::threadTask()
 
     // rc package received either from ppm in or sbus
     rc_pkg_t rc_pkg;
+    // upsamling filters
+    IIR_Filter iir_upsampling_filters[] = {
+        IIR_Filter(2.0f * M_PI * MINI_SEGWAY_RC_UPSAMPLING_FREQUENCY_HZ,
+                   1.0f,
+                   static_cast<float>(MINI_SEGWAY_PERIOD_US) * 1.0e-6f,
+                   1.0f),
+        IIR_Filter(2.0f * M_PI * MINI_SEGWAY_RC_UPSAMPLING_FREQUENCY_HZ,
+                   1.0f,
+                   static_cast<float>(MINI_SEGWAY_PERIOD_US) * 1.0e-6f,
+                   1.0f)
+    };
 
     // serial stream either to matlab or to the openlager
     DigitalOut enable_motor_driver(MINI_SEGWAY_ENABLE_MOTOR_DRIVER);
@@ -127,7 +163,7 @@ void MiniSegway::threadTask()
         _rc.processReceivedData();
 #endif
         // arm is only true if receiver data is valid and arm button is pressed
-        updateRcPkg(rc_pkg);
+        updateRcPkg(rc_pkg, iir_upsampling_filters);
 
         // read motor signals
         encoder_signals_M1 = encoder_M1.read();
@@ -140,8 +176,8 @@ void MiniSegway::threadTask()
         if (rc_pkg.armed) {
             if (enable_motor_driver == 0)
                 enable_motor_driver = 1;
-                motor_M1.setVoltage(rc_pkg.forward_speed * MINI_SEGWAY_VOLTAGE_MAX);
-                motor_M2.setVoltage(rc_pkg.forward_speed * MINI_SEGWAY_VOLTAGE_MAX);
+            motor_M1.setVoltage(rc_pkg.forward_speed * MINI_SEGWAY_VOLTAGE_MAX);
+            motor_M2.setVoltage(rc_pkg.forward_speed * MINI_SEGWAY_VOLTAGE_MAX);
         } else {
             if (enable_motor_driver == 1) {
                 enable_motor_driver = 0;

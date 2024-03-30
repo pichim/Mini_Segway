@@ -11,7 +11,7 @@
               - nth order, with arbitrary values
     - billinear transformation is used for s -> z
     - reseting the filter only makes sense for static signals, whatch out if you're using the differentiator, static corresponds to output zero
-    - you need to be carefull with with small sampling times, since the filter is running in float prescision
+    - you need to be carefull with small sampling times, since the filter is running in float prescision
 */
 
 // G(s) = s/(T*s + 1)
@@ -312,7 +312,7 @@ void IIR_Filter::setLimits(float yMin, float yMax)
     this->yMax = yMax;
 }
 
-float IIR_Filter::get_output()
+float IIR_Filter::getOutput()
 {
     return yk[0];
 }
@@ -377,13 +377,7 @@ float IIR_Filter::filter(float u)
 
 float IIR_Filter::saturate(float y, float yMin, float yMax)
 {
-    if (y > yMax)
-    {
-        y = yMax;
-    }
-    else if (y < yMin)
-    {
-        y = yMin;
-    }
-    return y;
+    return (y > yMax) ? yMax :
+           (y < yMin) ? yMin :
+            y;
 }

@@ -7,6 +7,7 @@
 // #include "eigen/Dense.h"
 #include "Encoder.h"
 #include "IMU.h"
+#include "IIR_Filter.h"
 #include "Motor.h"
 #include "PpmIn.h"
 #include "SBus.h"
@@ -48,7 +49,7 @@ private:
     bool _do_execute{false};
     bool _do_reset{false};
 
-    void updateRcPkg(rc_pkg_t& rc_pkg);
+    void updateRcPkg(rc_pkg_t& rc_pkg, IIR_Filter* iir_upsampling_filters);
     void toggleDoExecute();
     float evaluateEncoder(EncoderCounter& encoder, long& counts);
     void threadTask();

@@ -3,7 +3,6 @@
 /**
  * TODO:
  * - adjust LSM6DS3 internal filter settings
- * - implement filter for rc smoothing with reseting
  * - move serialStream and rc to MiniSegway
  * - check for all threads the destructor
  *      _Timeout.detach();
@@ -76,9 +75,10 @@ extern "C" {
 -------------------------------------------------------------------------------------------
 */
 
-// MiniSegway includes PpmIn and SBus
 #include "IMU.h"
 #include "MiniSegway.h"
+#include "PpmIn.h"
+#include "SBus.h"
 
 #if DO_USE_PPM_IN
 PpmIn rc(MINI_SEGWAY_RC_DI);

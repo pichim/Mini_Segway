@@ -28,7 +28,6 @@ Coding stuff:
 /**
  * TODO:
  * - adjust LSM6DS3 internal filter settings
- * - implement filter for rc smoothing with reseting
  * - move serialStream and rc to MiniSegway
  * - check for all threads the destructor
  *      _Timeout.detach();
