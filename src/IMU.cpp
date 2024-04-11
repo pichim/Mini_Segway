@@ -1,12 +1,13 @@
 #include "IMU.h"
 
-IMU::IMU(PinName pin_sda, PinName pin_scl) : m_ImuLSM9DS1(pin_sda, pin_scl),
-                                             m_Mahony(Parameters::kp, Parameters::ki, TS),
-                                             m_Thread(osPriorityAboveNormal, 4096) // PES Board: m_Thread(osPriorityHigh, 4096)
+IMU::IMU(PinName pin_mosi, PinName pin_miso, PinName pin_clk, PinName pin_cl) : m_spi(pin_mosi, pin_miso, pin_clk),
+                                                                                m_ImuMPU6500(m_spi, pin_cl),
+                                                                                m_Mahony(Parameters::kp, Parameters::ki, TS),
+                                                                                m_Thread(osPriorityAboveNormal, 4096) // PES Board: m_Thread(osPriorityHigh, 4096)
 {
-#if (IMU_THREAD_DO_USE_MAG_FOR_MAHONY_UPDATE && IMU_DO_USE_STATIC_MAG_CALIBRATION)
-    m_magCalib.setCalibrationParameter(Parameters::A_mag, Parameters::b_mag);
-#endif
+    m_ImuMPU6500.init_inav();
+    m_ImuMPU6500.configuration();
+    m_ImuMPU6500.testConnection();
 
     m_Timer.start();
     
@@ -42,17 +43,10 @@ void IMU::threadTask()
     while (true) {
         ThisThread::flags_wait_any(m_ThreadFlag);
 
-        m_ImuLSM9DS1.updateGyro();
-        m_ImuLSM9DS1.updateAcc();
-        Eigen::Vector3f gyro(m_ImuLSM9DS1.readGyroX(), m_ImuLSM9DS1.readGyroY(), m_ImuLSM9DS1.readGyroZ());
-        Eigen::Vector3f acc(m_ImuLSM9DS1.readAccX(), m_ImuLSM9DS1.readAccY(), m_ImuLSM9DS1.readAccZ());
-
-#if IMU_THREAD_DO_USE_MAG_FOR_MAHONY_UPDATE
-        m_ImuLSM9DS1.updateMag();
-        Eigen::Vector3f mag(m_ImuLSM9DS1.readMagX(), m_ImuLSM9DS1.readMagY(), m_ImuLSM9DS1.readMagZ());
-#else
-        static Eigen::Vector3f mag = Eigen::Vector3f::Zero();
-#endif
+        //m_ImuLSM9DS1.updateGyro();
+        //m_ImuLSM9DS1.updateAcc();
+        Eigen::Vector3f gyro(m_ImuMPU6500.readGyro(0), m_ImuMPU6500.readGyro(1), m_ImuMPU6500.readGyro(2));
+        Eigen::Vector3f acc(m_ImuMPU6500.readAcc(0), m_ImuMPU6500.readAcc(1), m_ImuMPU6500.readAcc(2));
 
         if (!imu_is_calibrated) {
             gyro_offset += gyro;
@@ -81,31 +75,24 @@ void IMU::threadTask()
             m_period = duration_cast<microseconds>(time - time_previous).count();
             time_previous = time;
             m_Mahony.setSamplingTime(static_cast<float>(m_period * 1.0e-6f));
-
-#if IMU_THREAD_DO_USE_MAG_FOR_MAHONY_UPDATE
-            mag = m_magCalib.applyCalibration(mag);
-            m_Mahony.update(gyro, acc, mag);
-#else
             m_Mahony.update(gyro, acc);
-#endif
 
             // update data object
             m_ImuData.gyro = gyro;
             m_ImuData.acc = acc;
-            m_ImuData.mag = mag;
             m_ImuData.quat = m_Mahony.getOrientationAsQuaternion();
             m_ImuData.rpy = m_Mahony.getOrientationAsRPYAngles();
             m_ImuData.tilt = m_Mahony.getTiltAngle();
         }
+
 
 #if IMU_DO_PRINTF
         static float time_ms_past = 0.0f;
         float time_ms = std::chrono::duration_cast<std::chrono::microseconds>(m_Timer.elapsed_time()).count() * 1.0e-3f;
         const float dtime_ms = time_ms - time_ms_past;
         time_ms_past = time_ms;
-        printf("%.6f, %.6f, %.6f, %.6f, %.6f, %.6f, %.6f, %.6f, %.6f, %.6f, ", m_ImuData.gyro(0), m_ImuData.gyro(1), m_ImuData.gyro(2),
-               m_ImuData.acc(0), m_ImuData.acc(1), m_ImuData.acc(2),
-               m_ImuData.mag(0), m_ImuData.mag(1), m_ImuData.mag(2), time_ms);
+        printf("%.6f, %.6f, %.6f, %.6f, %.6f, %.6f, %.6f, ", m_ImuData.gyro(0), m_ImuData.gyro(1), m_ImuData.gyro(2),
+                                                             m_ImuData.acc(0), m_ImuData.acc(1), m_ImuData.acc(2), time_ms);
         printf("%.6f, %.6f, %.6f, %.6f, ", m_ImuData.quat.w(), m_ImuData.quat.x(), m_ImuData.quat.y(), m_ImuData.quat.z());
         printf("%.6f, %.6f, %.6f, ", m_ImuData.rpy(0), m_ImuData.rpy(1), m_ImuData.rpy(2));
         printf("%.6f\n", m_ImuData.tilt);

@@ -6,12 +6,12 @@ max_num_of_floats = 2000000 / (4 * (8 + 2) * 2000)
 
 
 % openlager
-% file_id = fopen('LOG000.TXT');
+file_id = fopen('LOG004.TXT');
 % file_id = fopen('LOG001.TXT');
 % file_id = fopen('LOG002.TXT'); % PpmIn
 % file_id = fopen('LOG003.TXT'); % SBus
 % file_id = fopen('LOG095.TXT'); % SBus
-file_id = fopen('LOG096.TXT'); % PpmIn
+% file_id = fopen('LOG096.TXT'); % PpmIn
 
 num_of_floats = fread(file_id, 1, 'uint8')
 
@@ -54,10 +54,16 @@ ylim([-2 3])
 figure(3)
 ax(1) = subplot(311);
 plot(data.time, data.values(:,5)), grid on
+hold on
+plot(data.time, data.values(:,8))
 ax(2) = subplot(312);
 plot(data.time, data.values(:,6)), grid on
+hold on
+plot(data.time, data.values(:,9))
 ax(3) = subplot(313);
 plot(data.time, data.values(:,7)), grid on
+hold on
+plot(data.time, data.values(:,10))
 xlabel('Time (sec)')
 linkaxes(ax, 'x'), clear ax
 xlim([0 data.time(end)])

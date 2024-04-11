@@ -4,7 +4,7 @@
 #include "config.h"
 
 #include "DebounceIn.h"
-// #include "eigen/Dense.h"
+#include "eigen/Dense.h"
 #include "Encoder.h"
 #include "IMU.h"
 #include "IIR_Filter.h"
@@ -38,6 +38,7 @@ private:
 #endif
 
     IMU &_imu;
+    // IMU &_imu;
 
     typedef struct rc_pkg_s {
         float turn_rate{0.0f};
@@ -54,5 +55,7 @@ private:
     float evaluateEncoder(EncoderCounter& encoder, long& counts);
     void threadTask();
     void sendThreadFlag();
+
+    float vel_cntrl_v2_fcn(const float& wheel_speed_max, const float& b, const float& robot_omega, const Eigen::Matrix2f& Cwheel2robot);
 };
 #endif /* MINI_SEGWAY_H_ */

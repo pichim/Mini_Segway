@@ -1,7 +1,7 @@
 clc, clear all
 %%
 
-port = 'COM10'; % 'COM5';
+port = 'COM5'; % 'COM5';
 baudrate = 2e6;
 
 if (~exist('serialStream', 'var'))
@@ -45,30 +45,36 @@ ylim([-2 3])
 
 figure(3)
 ax(1) = subplot(311);
-plot(data.time, data.values(:,5)), grid on
+plot(data.time, data.values(:, 5)), grid on
+hold on
+plot(data.time, data.values(:,8))
 ax(2) = subplot(312);
 plot(data.time, data.values(:,6)), grid on
+hold on
+plot(data.time, data.values(:,9))
 ax(3) = subplot(313);
 plot(data.time, data.values(:,7)), grid on
+hold on 
+plot(data.time, data.values(:,10)),
 xlabel('Time (sec)')
 linkaxes(ax, 'x'), clear ax
 xlim([0 data.time(end)])
 
 figure(4)
 ax(1) = subplot(221);
-plot(data.time, data.values(:,8:10)), grid on
-ax(2) = subplot(222);
 plot(data.time, data.values(:,11:13)), grid on
-ax(3) = subplot(223);
+ax(2) = subplot(222);
 plot(data.time, data.values(:,14:16)), grid on
+ax(3) = subplot(223);
+plot(data.time, data.values(:,17:19)), grid on
 ax(4) = subplot(224);
-plot(data.time(1:end-1), diff(data.values(:,14:16))), grid on
+plot(data.time(1:end-1), diff(data.values(:,17:19))), grid on
 xlabel('Time (sec)')
 linkaxes(ax, 'x'), clear ax
 xlim([0 data.time(end)])
 
 figure(5)
-plot(data.time, data.values(:,17)), grid on
+plot(data.time, data.values(:,20)), grid on
 title( sprintf(['Mean dTime = %0.0f musec, ', ...
                 'Std. dTime = %0.0f musec, ', ...
                 'Median dTime = %0.0f musec, ', ...

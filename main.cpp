@@ -85,7 +85,8 @@ PpmIn rc(MINI_SEGWAY_RC_DI);
 #else
 SBus rc(MINI_SEGWAY_RC_RX);
 #endif
-IMU imu(MINI_SEGWAY_IMU_SDA, MINI_SEGWAY_IMU_SCL);
+IMU imu(MINI_SEGWAY_IMU_MOSI, MINI_SEGWAY_IMU_MISO, MINI_SEGWAY_IMU_CLK, MINI_SEGWAY_IMU_CS);
+
 MiniSegway miniSegway(rc, imu);
 
 // main thread is just blinking the led on the nucleo

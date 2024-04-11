@@ -125,20 +125,44 @@ void MiniSegway::threadTask()
                        MINI_SEGWAY_COUNTS_PER_TURN,
                        MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY,
                        static_cast<float>(MINI_SEGWAY_PERIOD_US) * 1.0e-6f);
-    // Encoder encoder_M2(MINI_SEGWAY_ENCA_M2,
-    //                    MINI_SEGWAY_ENCB_M2,
-    //                    MINI_SEGWAY_COUNTS_PER_TURN,
-    //                    MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY,
-    //                    static_cast<float>(MINI_SEGWAY_PERIOD_US) * 1.0e-6f);
+    Encoder encoder_M2(MINI_SEGWAY_ENCA_M2,
+                       MINI_SEGWAY_ENCB_M2,
+                       MINI_SEGWAY_COUNTS_PER_TURN,
+                       MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY,
+                       static_cast<float>(MINI_SEGWAY_PERIOD_US) * 1.0e-6f);
     Encoder::encoder_signals_t encoder_signals_M1 = encoder_M1.read();
-    // Encoder::encoder_signals_t encoder_signals_M2 = encoder_M2.read();
+    Encoder::encoder_signals_t encoder_signals_M2 = encoder_M2.read();
     // TODO: remove rotations_previous_M1 and rotations_previous_M2
     float rotations_previous_M1{encoder_signals_M1.rotations};
-    // float rotations_previous_M2{encoder_signals_M2.rotations};
+    float rotations_previous_M2{encoder_signals_M2.rotations};
 
     // motors
     Motor motor_M1(MINI_SEGWAY_PWM_M1, MINI_SEGWAY_VOLTAGE_MAX);
     Motor motor_M2(MINI_SEGWAY_PWM_M2, MINI_SEGWAY_VOLTAGE_MAX);
+
+    // Define variables and create DC motor objects
+    const float gear_ratio = 31.25f; 
+    const float kn = 450.0f / 12.0f; //motor constant rpm / V
+    const float velocity_max_rps = kn * MINI_SEGWAY_VOLTAGE_MAX / 60.0f; // Max velocity that can be reached
+    const float velocity_max_rads = 2.0f * M_PI * velocity_max_rps;
+
+
+    // ROBOT KINEMATICS AND GEOMETRY
+    const float d_wheel = 0.078f;        // wheel diameter
+    const float r_wheel = d_wheel / 2.0f; // wheel radius
+    const float L_wheel = 0.133f;         // distance from wheel to wheel
+    Eigen::Matrix2f Cwheel2robot; // transform wheel to robot
+    //Eigen::Matrix2f Crobot2wheel; // transform robot to wheel
+    Cwheel2robot <<  r_wheel / 2.0f   ,  r_wheel / 2.0f   ,
+                     r_wheel / L_wheel, -r_wheel / L_wheel;
+    //Crobot2wheel << 1.0f / r_wheel,  L_wheel / (2.0f * r_wheel),
+    //                1.0f / r_wheel, -L_wheel / (2.0f * r_wheel);
+    Eigen::Vector2f robot_coord;  // contains v and w (robot translational and rotational velocities)
+    Eigen::Vector2f wheel_speed;  // w1 w2 (wheel speed)
+    robot_coord.setZero();
+    wheel_speed.setZero();
+
+    const static float b = L_wheel / (2.0f * r_wheel);
 
     // imu
     IMU::ImuData imu_data;
@@ -167,7 +191,7 @@ void MiniSegway::threadTask()
 
         // read motor signals
         encoder_signals_M1 = encoder_M1.read();
-        // encoder_signals_M2 = encoder_M2.read();
+        encoder_signals_M2 = encoder_M2.read();
 
         // read imu data
         imu_data = _imu.getImuData();
@@ -176,8 +200,13 @@ void MiniSegway::threadTask()
         if (rc_pkg.armed) {
             if (enable_motor_driver == 0)
                 enable_motor_driver = 1;
-            motor_M1.setVoltage(rc_pkg.forward_speed * MINI_SEGWAY_VOLTAGE_MAX);
-            motor_M2.setVoltage(rc_pkg.forward_speed * MINI_SEGWAY_VOLTAGE_MAX);
+
+            robot_coord(1) = -5.0f * rc_pkg.turn_rate;
+            robot_coord(0) = vel_cntrl_v2_fcn(rc_pkg.forward_speed * velocity_max_rads, b, robot_coord(1), Cwheel2robot);
+            wheel_speed = (Cwheel2robot.inverse() * robot_coord) / velocity_max_rads;
+            
+            motor_M1.setVoltage(wheel_speed(0) * MINI_SEGWAY_VOLTAGE_MAX);
+            motor_M2.setVoltage(wheel_speed(1) * MINI_SEGWAY_VOLTAGE_MAX);
         } else {
             if (enable_motor_driver == 1) {
                 enable_motor_driver = 0;
@@ -195,33 +224,33 @@ void MiniSegway::threadTask()
         // TODO: Use serialStream.startByteReceibed()
         // here lifes the main logic of the mini segway
         if (_do_execute) {
-            serialStream.write(dtime_us_f);
-            serialStream.write(rc_pkg.forward_speed);
-            serialStream.write(rc_pkg.turn_rate);
-            serialStream.write((rc_pkg.armed ? 1.0f : 0.0f));
+            serialStream.write(dtime_us_f);                                            // 0 
+            serialStream.write(rc_pkg.forward_speed);                                  // 1 
+            serialStream.write(rc_pkg.turn_rate);                                      // 2
+            serialStream.write((rc_pkg.armed ? 1.0f : 0.0f));                          // 3
 #if DO_USE_PPM_IN
-            serialStream.write(static_cast<float>(_rc.getPeriod()) * 1.0e-4f);
+            serialStream.write(static_cast<float>(_rc.getPeriod()) * 1.0e-4f);         // 4 
 #else
-            serialStream.write(static_cast<float>(_rc.getPeriod()) * 2.2222e-04f);
+            serialStream.write(static_cast<float>(_rc.getPeriod()) * 2.2222e-04f);     // 4
 #endif
-            serialStream.write(encoder_signals_M1.rotations - rotations_previous_M1);
+            serialStream.write(encoder_signals_M1.rotations - rotations_previous_M1);  // 5
             rotations_previous_M1 = encoder_signals_M1.rotations;
-            serialStream.write(encoder_signals_M1.velocity);
-            serialStream.write(encoder_signals_M1.rotations);
-            // serialStream.write(encoder_signals_M2.rotations - rotations_previous_M2);
-            // rotations_previous_M2 = encoder_signals_M2.rotations;
-            // serialStream.write(encoder_signals_M2.velocity);
-            // serialStream.write(encoder_signals_M2.rotations);
-            serialStream.write(imu_data.gyro(0));
-            serialStream.write(imu_data.gyro(1));
-            serialStream.write(imu_data.gyro(2));
-            serialStream.write(imu_data.acc(0));
-            serialStream.write(imu_data.acc(1));
-            serialStream.write(imu_data.acc(2));
-            serialStream.write(imu_data.rpy(0));
-            serialStream.write(imu_data.rpy(1));
-            serialStream.write(imu_data.rpy(2));
-            serialStream.write(static_cast<float>(_imu.getPeriod()));
+            serialStream.write(encoder_signals_M1.velocity);                           // 6
+            serialStream.write(encoder_signals_M1.rotations);                          // 7
+            serialStream.write(encoder_signals_M2.rotations - rotations_previous_M2);  // 8 
+            rotations_previous_M2 = encoder_signals_M2.rotations;
+            serialStream.write(encoder_signals_M2.velocity);                           // 9
+            serialStream.write(encoder_signals_M2.rotations);                          // 10
+            serialStream.write(imu_data.gyro(0));                                      // 11
+            serialStream.write(imu_data.gyro(1));                                      // 12
+            serialStream.write(imu_data.gyro(2));                                      // 13
+            serialStream.write(imu_data.acc(0));                                       // 14
+            serialStream.write(imu_data.acc(1));                                       // 15
+            serialStream.write(imu_data.acc(2));                                       // 16
+            serialStream.write(imu_data.rpy(0));                                       // 17
+            serialStream.write(imu_data.rpy(1));                                       // 18
+            serialStream.write(imu_data.rpy(2));                                       // 19
+            serialStream.write(static_cast<float>(_imu.getPeriod()));                  // 20
             serialStream.send();
 
             led = 1;
@@ -231,8 +260,8 @@ void MiniSegway::threadTask()
                 serialStream.reset();
                 encoder_M1.reset();
                 rotations_previous_M1 = 0;
-                // encoder_M2.reset();
-                // rotations_previous_M2 = 0;
+                encoder_M2.reset();
+                rotations_previous_M2 = 0;
                 motor_M1.reset();
                 motor_M2.reset();
                 _do_reset = false;
@@ -244,4 +273,33 @@ void MiniSegway::threadTask()
 void MiniSegway::sendThreadFlag()
 {
     _Thread.flags_set(_ThreadFlag);
+}
+
+float MiniSegway::vel_cntrl_v2_fcn(const float& wheel_speed_max, const float& b, const float& robot_omega, const Eigen::Matrix2f& Cwheel2robot)
+{
+    static Eigen::Matrix<float, 2, 1> _wheel_speed;
+    static Eigen::Matrix<float, 2, 1> _robot_coord;
+    //wheel_speed(0) -> RIGHT
+    //wheel_speed(1) -> LEFT
+    if (wheel_speed_max >= 0) {
+        if (robot_omega > 0) {
+            _wheel_speed(0) = wheel_speed_max;
+            _wheel_speed(1) = wheel_speed_max - 2*b*robot_omega;
+        } else {
+            _wheel_speed(0) = wheel_speed_max + 2*b*robot_omega;
+            _wheel_speed(1) = wheel_speed_max;
+        }
+    }
+    else {
+        if (robot_omega > 0) {
+            _wheel_speed(0) = wheel_speed_max - 2*b*robot_omega;
+            _wheel_speed(1) = wheel_speed_max;
+        } else {
+            _wheel_speed(0) = wheel_speed_max;
+            _wheel_speed(1) = wheel_speed_max + 2*b*robot_omega; 
+        }
+    }
+    _robot_coord = Cwheel2robot * _wheel_speed;
+
+    return _robot_coord(0);
 }
