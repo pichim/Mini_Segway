@@ -90,8 +90,8 @@
     // task period
     // #define MINI_SEGWAY_PERIOD_US 2500   //  400 Hz
     // #define MINI_SEGWAY_PERIOD_US 2000   //  500 Hz
-    #define MINI_SEGWAY_PERIOD_US 1000   // 1000 Hz
-    // #define MINI_SEGWAY_PERIOD_US 500    // 2000Hz
+    // #define MINI_SEGWAY_PERIOD_US 1000   // 1000 Hz
+    #define MINI_SEGWAY_PERIOD_US 500    // 2000Hz
 
     // streaming device, openlager or laptop / pc
     #define DO_USE_OPENLAGER_FOR_DATA_STREAM false
@@ -151,6 +151,22 @@
     #define MINI_SEGWAY_IMU_CLK PB_10
     #define MINI_SEGWAY_IMU_CS PB_4
 
+    // imu acc bias and mahony gains
+    #define MINI_SEGWAY_B_ACC {0.0f, 0.0f, 0.0f}
+    // % bessel (D = sqrt(3)/2)
+    // w0 = 3;
+    // kp = w0 / ( sqrt(3)/3 )
+    // ki = kp^2 / 3
+    // % real pole, no integrator, use this if you dont use the mag
+    // w0 = 3;
+    // kp = w0;
+    // ki = 0;
+    #define MINI_SEGWAY_KP_XY (0.1592f * 2.0f * M_PI)
+    // #define MINI_SEGWAY_KP_XY (3.0f * 2.0f * M_PI / (sqrtf(3.0f) / 3.0f))
+    #define MINI_SEGWAY_KP_Z  (0.1592f * 2.0f * M_PI)
+    #define MINI_SEGWAY_KI_XY 0.0f
+    // #define MINI_SEGWAY_KI_XY (MINI_SEGWAY_KP_XY * MINI_SEGWAY_KP_XY / 3.0f)
+    #define MINI_SEGWAY_KI_Z  0.0f
     
 #endif
 

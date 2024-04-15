@@ -23,7 +23,16 @@ return
 
 %%
 
-% load data_00.mat % save data_00 data
+% load data_04.mat % save data_04 data
+
+% index
+ind.rc = 1:4;
+ind.vel_M = 5:6;
+ind.ang_M = 7:8;
+ind.gyro = 9:11;
+ind.acc = 12:14;
+ind.rpy = 15:17;
+
 
 figure(1)
 plot(data.time(1:end-1), diff(data.time * 1e6)), grid on
@@ -34,36 +43,46 @@ title( sprintf(['Mean %0.0f mus, ', ...
                 std(diff(data.time * 1e6)), ...
                 median(diff(data.time * 1e6))) )
 xlabel('Time (sec)'), ylabel('dTime (mus)')
-ylim([0 1.2*max(diff(data.time * 1e6))])
 xlim([0 data.time(end-1)])
+ylim([0 1.2*max(diff(data.time * 1e6))])
 
 figure(2)
-plot(data.time, data.values(:,1:4)), grid on
-xlabel('Time (sec)')
+plot(data.time, data.values(:,ind.rc)), grid on
+ylabel('RC Data'), xlabel('Time (sec)')
+legend('Forward Speed', ...
+    'Turn Rate', ...
+    'Arming State', ...
+    'Scaled Period', ...
+    'Location', 'best')
 xlim([0 data.time(end)])
 ylim([-2 3])
 
 figure(3)
-ax(1) = subplot(311);
-plot(data.time, data.values(:,[5 8])), grid on
-ax(2) = subplot(312);
-plot(data.time, data.values(:,[6 9])), grid on
-ax(3) = subplot(313);
-plot(data.time, data.values(:,[7 10])), grid on
-xlabel('Time (sec)')
+ax(1) = subplot(211);
+plot(data.time, data.values(:,ind.vel_M)), grid on
+ylabel('Velocity (RPS)')
+ax(2) = subplot(212);
+plot(data.time, data.values(:,ind.ang_M)), grid on
+ylabel('Rotation (ROT)'), xlabel('Time (sec)')
+legend('Motor 1', ...
+    'Motor 2', ...
+    'Location', 'best')
 linkaxes(ax, 'x'), clear ax
 xlim([0 data.time(end)])
 
 figure(4)
 ax(1) = subplot(221);
-plot(data.time, data.values(:,11:13)), grid on
+plot(data.time, data.values(:,ind.gyro) * 180/pi), grid on
+ylabel('Gyro (deg/sec)')
 ax(2) = subplot(222);
-plot(data.time, data.values(:,14:16)), grid on
+plot(data.time, data.values(:,ind.acc)), grid on
+ylabel('Acc (m^2/sec)')
 ax(3) = subplot(223);
-plot(data.time, data.values(:,17:19) * 180/pi), grid on
+plot(data.time, data.values(:,ind.rpy) * 180/pi), grid on
+ylabel('RPY (deg)')
 ax(4) = subplot(224);
-plot(data.time(1:end-1), diff(data.values(:,17:19))), grid on
-xlabel('Time (sec)')
+plot(data.time(1:end-1), diff(data.values(:,ind.gyro)) * 180/pi), grid on
+ylabel('dRPY (deg)'), xlabel('Time (sec)')
 linkaxes(ax, 'x'), clear ax
 xlim([0 data.time(end)])
 

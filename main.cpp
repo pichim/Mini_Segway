@@ -17,6 +17,8 @@
  * -                  do we really need to wire FSYNC to GND?
  * - imu gyro and acc scaling needs to be checked (experiments)
  * - imu internal filters need to be checked
+ * - after checking the internal filter, mahony needs to be tuned
+ * - double check mahony parametrization, bessel impl. might have a bug (pmic)
  * - remap imu signals, so that x is forward, y ist left and z is up when segway is standing
  * - think about acc calibration when we use the above signal order (might need to be static)
  *   function in minisegway directly
@@ -27,6 +29,7 @@
  * - think about a solution for the EncoderCounter drivers
  * - move all parameters to cofig.h
  * - reset via button needs to work properly (for all variables, obj, etc.)
+ * - change all internal signals to SI units, e.g. rad/s, rad, meter, etc...
  * - add axis descriptions for all signals in serial_stream_eval.m
  * - add OpenLager, test it and mount it properly to the segway
 */
@@ -54,7 +57,11 @@ PpmIn rc(MINI_SEGWAY_RC_DI);
 #else
 SBus rc(MINI_SEGWAY_RC_RX);
 #endif
-IMU imu(MINI_SEGWAY_IMU_MOSI, MINI_SEGWAY_IMU_MISO, MINI_SEGWAY_IMU_CLK, MINI_SEGWAY_IMU_CS);
+
+IMU imu(MINI_SEGWAY_IMU_MOSI,
+        MINI_SEGWAY_IMU_MISO,
+        MINI_SEGWAY_IMU_CLK,
+        MINI_SEGWAY_IMU_CS);
 
 MiniSegway miniSegway(rc, imu);
 

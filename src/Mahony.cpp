@@ -13,10 +13,10 @@ Mahony::Mahony()
     initialise();
 }
 
-Mahony::Mahony(float kp, float ki, float Ts)
+Mahony::Mahony(float kp_x, float kp_y, float kp_z, float ki_x, float ki_y, float ki_z, float Ts)
 {
     initialise();
-    setup(kp, ki, Ts);
+    setup(kp_x, kp_y, kp_z, ki_x, ki_y, ki_z, Ts);
 }
 
 Mahony::~Mahony()
@@ -67,16 +67,16 @@ float Mahony::getTiltAngle() const
     return m_tilt;
 }
 
-void Mahony::setup(float kp, float ki, float Ts)
+void Mahony::setup(float kp_x, float kp_y, float kp_z, float ki_x, float ki_y, float ki_z, float Ts)
 {
-    setGains(kp, ki);
+    setGains(kp_x, kp_y, kp_z, ki_x, ki_y, ki_z);
     setSamplingTime(Ts);
 }
 
-void Mahony::setGains(float kp, float ki)
+void Mahony::setGains(float kp_x, float kp_y, float kp_z, float ki_x, float ki_y, float ki_z)
 {
-    m_kp = kp;
-    m_ki = ki;
+    m_kp = {kp_x, kp_y, kp_z};
+    m_ki = {ki_x, ki_y, ki_z};
 }
 
 void Mahony::setSamplingTime(float Ts)
@@ -124,7 +124,7 @@ Eigen::Vector3f Mahony::calcRotationError(Eigen::Vector3f v1, Eigen::Vector3f v2
 
 void Mahony::updateOrientation(Eigen::Vector3f gyro, Eigen::Vector3f e)
 {
-    m_bias += m_ki * e * m_Ts;
+    m_bias += m_ki.cwiseProduct(e) * m_Ts;
     Eigen::Matrix<float, 4, 3> Q;
     Q << -m_quat.x(), -m_quat.y(), -m_quat.z(),
           m_quat.w(), -m_quat.z(),  m_quat.y(),
@@ -133,7 +133,7 @@ void Mahony::updateOrientation(Eigen::Vector3f gyro, Eigen::Vector3f e)
 
     // carefull here, Eigen Quaternions have the internal storage order [x y z w] but you inilialise them with quat(w, x, y, z)
     // so I rather type the following explicitly
-    Eigen::Vector4f dquat = m_Ts * 0.5f * Q * ( gyro + m_bias + m_kp * e );
+    Eigen::Vector4f dquat = m_Ts * 0.5f * Q * ( gyro + m_bias + m_kp.cwiseProduct(e) );
     m_quat.w() += dquat(0);
     m_quat.x() += dquat(1);
     m_quat.y() += dquat(2);

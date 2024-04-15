@@ -7,11 +7,11 @@ class Mahony
 {
 public:
     explicit Mahony();
-    explicit Mahony(float kp, float ki, float Ts);
+    explicit Mahony(float kp_x, float kp_y, float kp_z, float ki_x, float ki_y, float ki_z, float Ts);
     virtual ~Mahony();
 
-    void setup(float kp, float ki, float Ts);
-    void setGains(float kp, float ki);
+    void setup(float kp_x, float kp_y, float kp_z, float ki_x, float ki_y, float ki_z, float Ts);
+    void setGains(float kp_x, float kp_y, float kp_z, float ki_x, float ki_y, float ki_z);
     void setSamplingTime(float Ts);
     void update(Eigen::Vector3f gyro, Eigen::Vector3f acc);
     void update(Eigen::Vector3f gyro, Eigen::Vector3f acc, Eigen::Vector3f mag);
@@ -20,8 +20,8 @@ public:
     float getTiltAngle() const;
 
 private:
-    float m_kp = 0.0f;
-    float m_ki = 0.0f;
+    Eigen::Vector3f m_kp;
+    Eigen::Vector3f m_ki;
     float m_Ts = 1.0f;
     Eigen::Quaternionf m_quat;
     Eigen::Vector3f m_bias;
