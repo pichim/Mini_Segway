@@ -3,20 +3,19 @@
 
 #include "mbed.h"
 #include "mpu6500_registermap.h"
- 
+
 class mpu6500_spi
 {
-    SPI& spi;
+    SPI &spi;
     DigitalOut cs;
-    
-  public:
 
+public:
     /*-----------------------------------------------------------------------------------------------
                                     Instantiation
     _spi is the buss to be selected
     _cs is the chip select pin
     -----------------------------------------------------------------------------------------------*/
-    mpu6500_spi(SPI& _spi, PinName _cs);
+    mpu6500_spi(SPI &_spi, PinName _cs);
 
     /*-----------------------------------------------------------------------------------------------
                                     INITIALIZATION
@@ -27,23 +26,21 @@ class mpu6500_spi
     BITS_DLPF_CFG_98HZ
     BITS_DLPF_CFG_42HZ
     BITS_DLPF_CFG_20HZ
-    BITS_DLPF_CFG_10HZ 
-    BITS_DLPF_CFG_5HZ 
+    BITS_DLPF_CFG_10HZ
+    BITS_DLPF_CFG_5HZ
     BITS_DLPF_CFG_2100HZ_NOLPF
     returns 1 if an error occurred
     -----------------------------------------------------------------------------------------------*/
-    bool init(int sample_rate_div,int low_pass_filter);
-		bool init_inav(void);
-
+    bool init(int sample_rate_div, int low_pass_filter);
+    bool init_inav(void);
 
     /*-----------------------------------------------------------------------------------------------
                         CONFIGURATION ACCORDING TO YOUR APPLICATION
     -----------------------------------------------------------------------------------------------*/
     bool configuration();
 
-
     /*-----------------------------------------------------------------------------------------------
-                                    TEST SPI CONNECTION 
+                                    TEST SPI CONNECTION
     -----------------------------------------------------------------------------------------------*/
     bool testConnection();
 
@@ -60,11 +57,11 @@ class mpu6500_spi
     2 -> Z axis
     returns the value in Gs
     -----------------------------------------------------------------------------------------------*/
-    //float readAcc(int axis);
-	float readAcc(int axis);
+    // float readAcc(int axis);
+    float readAcc(int axis);
     int16_t readAcc_raw(int axis);
     void readAcc(void);
-    
+
     /*-----------------------------------------------------------------------------------------------
                                     READ GYROSCOPE
     usage: call this function to read gyroscope data. Axis represents selected axis:
@@ -76,7 +73,7 @@ class mpu6500_spi
     float readGyro(int axis);
     void readGyro(void);
     float readGyro_raw(int axis);
-	void readAccTempGyro(void);
+    void readAccTempGyro(void);
 
     /*-----------------------------------------------------------------------------------------------
                                     GYROSCOPE SCALE
@@ -114,11 +111,11 @@ class mpu6500_spi
 
     /*-----------------------------------------------------------------------------------------------
                                     READ TEMPERATURE
-    usage: call this function to read temperature data. 
+    usage: call this function to read temperature data.
     returns the value in °C
     -----------------------------------------------------------------------------------------------*/
-    //float read_temp();
-		int16_t read_temp();
+    // float read_temp();
+    int16_t read_temp();
 
     /*-----------------------------------------------------------------------------------------------
                                     SPI SELECT
@@ -131,7 +128,7 @@ class mpu6500_spi
     usage: disable mpu6000 communication bus
     -----------------------------------------------------------------------------------------------*/
     void deselect();
-    
+
     /*-----------------------------------------------------------------------------------------------
                                     WHO AM I?
     usage: call this function to know if SPI is working correctly. It checks the I2C address of the
@@ -139,19 +136,21 @@ class mpu6500_spi
     returns the I2C address (104)
     -----------------------------------------------------------------------------------------------*/
     unsigned int whoami();
-    
+
     float acc_divider;
     float gyro_divider;
     float gyroX, gyroY, gyroZ; // x, y, and z axis readings of the gyroscope (float value)
     float accX, accY, accZ;    // x, y, and z axis readings of the accelerometer (float value)
-    uint16_t accX_raw,accY_raw,accZ_raw;
-    
-  private:
+    uint16_t accX_raw, accY_raw, accZ_raw;
+
+private:
     PinName _CS_pin;
     PinName _SO_pin;
     PinName _SCK_pin;
+
     float _error;
-		void write2spi(uint8_t,uint8_t);
+
+    void write2spi(uint8_t, uint8_t);
 };
- 
-#endif //#ifndef MPU6000_SPI_H_
+
+#endif /* MPU6000_SPI_H_ */

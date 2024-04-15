@@ -1,7 +1,38 @@
 #include "mbed.h"
 
 /**
- * TODO:
+ * individual readout of the mpu6500 via spi did result in weird acc y values
+*/
+
+/**
+ * TODO new (F446RE):
+ * - use two battery packs so that charging and stuff is working again???
+ * - update hardwarelist_F446RE.txt
+ * - kinematics is behaving weird, why does e.g. turn left not move both wheels? this might be due to
+ *   some hacks for the LineFollower or even be a bug.
+ * - we need to find out which gear ratio we're going to use and order new motors
+ * - the current wheels can not be used
+ * - do a similar drawing like Mini Segway Hardware - Connection
+ * - talk to Camille: add an additional cap (ceramic?) for the IMU?
+ * -                  do we really need to wire FSYNC to GND?
+ * - imu gyro and acc scaling needs to be checked (experiments)
+ * - imu internal filters need to be checked
+ * - remap imu signals, so that x is forward, y ist left and z is up when segway is standing
+ * - think about acc calibration when we use the above signal order (might need to be static)
+ *   function in minisegway directly
+ * - led on nucleo is not blinking
+ * - we might need an external mechanical button
+ * - we might need an external power switch
+ * - double check config... this needs still to work for L432KC
+ * - think about a solution for the EncoderCounter drivers
+ * - move all parameters to cofig.h
+ * - reset via button needs to work properly (for all variables, obj, etc.)
+ * - add axis descriptions for all signals in serial_stream_eval.m
+ * - add OpenLager, test it and mount it properly to the segway
+*/
+
+/**
+ * TODO old (L432KC):
  * - adjust LSM6DS3 internal filter settings
  * - move serialStream and rc to MiniSegway
  * - check for all threads the destructor
@@ -12,6 +43,31 @@
  * - move all unused destructors to header
  * - check all defines to have the header name first
 */
+
+#include "IMU.h"
+#include "MiniSegway.h"
+#include "PpmIn.h"
+#include "SBus.h"
+
+#if DO_USE_PPM_IN
+PpmIn rc(MINI_SEGWAY_RC_DI);
+#else
+SBus rc(MINI_SEGWAY_RC_RX);
+#endif
+IMU imu(MINI_SEGWAY_IMU_MOSI, MINI_SEGWAY_IMU_MISO, MINI_SEGWAY_IMU_CLK, MINI_SEGWAY_IMU_CS);
+
+MiniSegway miniSegway(rc, imu);
+
+// main thread is just blinking the led on the nucleo
+int main()
+{
+    // TODO: find out why the led is not blinking, LED1 -> PA_5 which should be correct
+    DigitalOut led1(LED1);
+    while (true) {
+        led1 = !led1;
+        thread_sleep_for(1000);
+    }
+}
 
 /** 
     In order to use two encoders you need to change the following file in mbed-os and comment out TIM2 and uncomment TIM16:
@@ -74,27 +130,3 @@ extern "C" {
 #endif // __US_TICKER_DATA_H
 -------------------------------------------------------------------------------------------
 */
-
-#include "IMU.h"
-#include "MiniSegway.h"
-#include "PpmIn.h"
-#include "SBus.h"
-
-#if DO_USE_PPM_IN
-PpmIn rc(MINI_SEGWAY_RC_DI);
-#else
-SBus rc(MINI_SEGWAY_RC_RX);
-#endif
-IMU imu(MINI_SEGWAY_IMU_MOSI, MINI_SEGWAY_IMU_MISO, MINI_SEGWAY_IMU_CLK, MINI_SEGWAY_IMU_CS);
-
-MiniSegway miniSegway(rc, imu);
-
-// main thread is just blinking the led on the nucleo
-int main()
-{
-    DigitalOut led1(LED1);
-    while (true) {
-        led1 = !led1;
-        thread_sleep_for(1000);
-    }
-}

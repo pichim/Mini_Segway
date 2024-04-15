@@ -1,7 +1,7 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-#define USE_NUCLEO_L432KC false
+#define USE_NUCLEO_L432KC false // false -> NUCLEO_F446RE
 
 #if USE_NUCLEO_L432KC
     // task period
@@ -20,9 +20,9 @@
         #define MINI_SEGWAY_RX NC
     #else
         // serial via usb to matlab UART2
-        #define MINI_SEGWAY_TX USBTX // PA_2
         // - receiving only works if you did not desolder the 0 Ohm resistor SB2 and SB3
         //   (default NUCLEO_L432KC configuration)
+        #define MINI_SEGWAY_TX USBTX // PA_2
         #define MINI_SEGWAY_RX USBRX // PA_15
     #endif
     // openlager runs at 2000000 baudrate
@@ -87,7 +87,7 @@
     // #endif
 
 #else
-       // task period
+    // task period
     // #define MINI_SEGWAY_PERIOD_US 2500   //  400 Hz
     // #define MINI_SEGWAY_PERIOD_US 2000   //  500 Hz
     #define MINI_SEGWAY_PERIOD_US 1000   // 1000 Hz
@@ -98,14 +98,14 @@
     // serial data stream, tested up to 20 floats at 2 kHz
     #if DO_USE_OPENLAGER_FOR_DATA_STREAM
         // openlager UART2
-        #define MINI_SEGWAY_TX PA_0
-        #define MINI_SEGWAY_RX NC
+        #define MINI_SEGWAY_TX PC_10
+        #define MINI_SEGWAY_RX PC_11
     #else
         // serial via usb to matlab UART2
-        #define MINI_SEGWAY_TX USBTX // PA_2
-        // - receiving only works if you did not desolder the 0 Ohm resistor SB2 and SB3
-        //   (default NUCLEO_F446RE configuration)
-        #define MINI_SEGWAY_RX USBRX // PA_3
+        // #define MINI_SEGWAY_TX USBTX // PA_2
+        // #define MINI_SEGWAY_RX USBRX // PA_3
+        #define MINI_SEGWAY_TX PA_0 // USB 2.0-cable TTL serial 6 pin
+        #define MINI_SEGWAY_RX PA_1
     #endif
     // openlager runs at 2000000 baudrate
     #define MINI_SEGWAY_BAUDRATE 2000000
@@ -121,8 +121,8 @@
     #define MINI_SEGWAY_RC_NUM_OF_NECESSARY_VALID_DATA_PKG MINI_SEGWAY_RC_NUM_OF_ALLOWED_INVALID_DATA_PKG
     #define MINI_SEGWAY_RC_UPSAMPLING_FREQUENCY_HZ 30.0f
 
-    // additonal button
-    #define MINI_SEGWAY_BUTTON PC_5
+    #define MINI_SEGWAY_BUTTON BUTTON1 // blue button
+    // #define MINI_SEGWAY_BUTTON PC_5 // additonal button
 
     // additional led
     #define MINI_SEGWAY_LED PB_9

@@ -1,3 +1,6 @@
+#ifndef MPU6000_SPI_REGS_H_
+#define MPU6000_SPI_REGS_H_
+
 // MPU6500 registers
 #define MPUREG_XG_OFFS_TC           0x00
 #define MPUREG_YG_OFFS_TC           0x01
@@ -57,7 +60,6 @@
 #define MPUREG_FIFO_R_W             0x74
 #define MPUREG_WHOAMI               0x75
 
- 
 // Configuration bits MPU6000
 #define BIT_SLEEP                   0x40
 #define BIT_H_RESET                 0x80
@@ -88,3 +90,5 @@
 #define BIT_I2C_IF_DIS              0x10
  
 #define READ_FLAG                   0x80
+
+#endif /* MPU6000_SPI_REGS_H_ */

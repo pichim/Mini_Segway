@@ -1,7 +1,7 @@
 clc, clear all
 %%
 
-port = 'COM5'; % 'COM5';
+port = 'COM7';
 baudrate = 2e6;
 
 if (~exist('serialStream', 'var'))
@@ -27,13 +27,13 @@ return
 
 figure(1)
 plot(data.time(1:end-1), diff(data.time * 1e6)), grid on
-title( sprintf(['Mean dTime = %0.2f musec, ', ...
-                'Std. dTime = %0.2f musec, ', ...
-                'Median dTime = %0.2f musec'], ...
+title( sprintf(['Mean %0.0f mus, ', ...
+                'Std. %0.0f mus, ', ...
+                'Med. dT = %0.0f mus'], ...
                 mean(diff(data.time * 1e6)), ...
                 std(diff(data.time * 1e6)), ...
                 median(diff(data.time * 1e6))) )
-xlabel('Time (sec)'), ylabel('dTime (musec)')
+xlabel('Time (sec)'), ylabel('dTime (mus)')
 ylim([0 1.2*max(diff(data.time * 1e6))])
 xlim([0 data.time(end-1)])
 
@@ -45,17 +45,11 @@ ylim([-2 3])
 
 figure(3)
 ax(1) = subplot(311);
-plot(data.time, data.values(:, 5)), grid on
-hold on
-plot(data.time, data.values(:,8))
+plot(data.time, data.values(:,[5 8])), grid on
 ax(2) = subplot(312);
-plot(data.time, data.values(:,6)), grid on
-hold on
-plot(data.time, data.values(:,9))
+plot(data.time, data.values(:,[6 9])), grid on
 ax(3) = subplot(313);
-plot(data.time, data.values(:,7)), grid on
-hold on 
-plot(data.time, data.values(:,10)),
+plot(data.time, data.values(:,[7 10])), grid on
 xlabel('Time (sec)')
 linkaxes(ax, 'x'), clear ax
 xlim([0 data.time(end)])
@@ -66,25 +60,11 @@ plot(data.time, data.values(:,11:13)), grid on
 ax(2) = subplot(222);
 plot(data.time, data.values(:,14:16)), grid on
 ax(3) = subplot(223);
-plot(data.time, data.values(:,17:19)), grid on
+plot(data.time, data.values(:,17:19) * 180/pi), grid on
 ax(4) = subplot(224);
 plot(data.time(1:end-1), diff(data.values(:,17:19))), grid on
 xlabel('Time (sec)')
 linkaxes(ax, 'x'), clear ax
-xlim([0 data.time(end)])
-
-figure(5)
-plot(data.time, data.values(:,20)), grid on
-title( sprintf(['Mean dTime = %0.0f musec, ', ...
-                'Std. dTime = %0.0f musec, ', ...
-                'Median dTime = %0.0f musec, ', ...
-                'Median Frequency = %0.0f Hz'], ...
-                mean(data.values(:,17)), ...
-                std(data.values(:,17)), ...
-                median(data.values(:,17)), ...
-                1.0 / (median(data.values(:,17)) * 1e-6)))
-xlabel('Time (sec)'), ylabel('dTime (musec)')
-ylim([0 1.2*max(data.values(:,17))])
 xlim([0 data.time(end)])
 
 

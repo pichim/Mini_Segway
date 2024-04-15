@@ -3,14 +3,18 @@
 
 #include "config.h"
 
-#include "DebounceIn.h"
 #include "eigen/Dense.h"
+
+#include "DebounceIn.h"
 #include "Encoder.h"
 #include "IMU.h"
 #include "IIR_Filter.h"
 #include "Motor.h"
-#include "PpmIn.h"
-#include "SBus.h"
+#if DO_USE_PPM_IN
+    #include "PpmIn.h"
+#else
+    #include "SBus.h"
+#endif
 #include "SerialStream.h"
 #include "ThreadFlag.h"
 
@@ -38,7 +42,6 @@ private:
 #endif
 
     IMU &_imu;
-    // IMU &_imu;
 
     typedef struct rc_pkg_s {
         float turn_rate{0.0f};
@@ -52,7 +55,7 @@ private:
 
     void updateRcPkg(rc_pkg_t& rc_pkg, IIR_Filter* iir_upsampling_filters);
     void toggleDoExecute();
-    float evaluateEncoder(EncoderCounter& encoder, long& counts);
+    // float evaluateEncoder(EncoderCounter& encoder, long& counts);
     void threadTask();
     void sendThreadFlag();
 

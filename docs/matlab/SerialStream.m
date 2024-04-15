@@ -52,7 +52,7 @@ classdef SerialStream < handle
                     bytes_readable = bytes_readable - 1;
 
                     fprintf("SerialStream started, logging %d signals\n", obj.num_of_floats);
-                    obj.timeout = 0.1;
+                    obj.timeout = 0.3;
                 end
 
                 if (bytes_readable >= 4)
