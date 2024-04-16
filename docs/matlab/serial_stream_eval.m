@@ -23,7 +23,7 @@ return
 
 %%
 
-% load data_04.mat % save data_04 data
+load data_04.mat % save data_04 data
 
 % index
 ind.rc = 1:4;
@@ -78,7 +78,8 @@ ax(2) = subplot(222);
 plot(data.time, data.values(:,ind.acc)), grid on
 ylabel('Acc (m^2/sec)')
 ax(3) = subplot(223);
-plot(data.time, data.values(:,ind.rpy) * 180/pi), grid on
+plot(data.time, [data.values(:,ind.rpy), ...
+                 cumtrapz(data.time, data.values(:,ind.gyro))] * 180/pi), grid on
 ylabel('RPY (deg)')
 ax(4) = subplot(224);
 plot(data.time(1:end-1), diff(data.values(:,ind.gyro)) * 180/pi), grid on
