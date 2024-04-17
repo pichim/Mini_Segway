@@ -58,7 +58,6 @@ private:
     // float evaluateEncoder(EncoderCounter& encoder, long& counts);
     void threadTask();
     void sendThreadFlag();
-
     float vel_cntrl_v2_fcn(const float& wheel_speed_max, const float& b, const float& robot_omega, const Eigen::Matrix2f& Cwheel2robot);
 };
 #endif /* MINI_SEGWAY_H_ */

@@ -6,7 +6,7 @@ max_num_of_floats = 2000000 / (4 * (8 + 2) * 2000)
 
 
 % openlager
-file_id = fopen('LOG004.TXT');
+file_id = fopen('LOG005.TXT');
 % file_id = fopen('LOG001.TXT');
 % file_id = fopen('LOG002.TXT'); % PpmIn
 % file_id = fopen('LOG003.TXT'); % SBus

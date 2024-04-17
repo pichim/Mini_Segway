@@ -1,7 +1,7 @@
 clc, clear all
 %%
 
-port = 'COM7';
+port = 'COM19';
 baudrate = 2e6;
 
 if (~exist('serialStream', 'var'))
@@ -23,7 +23,7 @@ return
 
 %%
 
-load data_04.mat % save data_04 data
+%load data_04.mat % save data_04 data
 
 % index
 ind.rc = 1:4;

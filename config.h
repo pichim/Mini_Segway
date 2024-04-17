@@ -62,6 +62,7 @@
     // #define MINI_SEGWAY_KN (220.0f / 12.0f) // 150:1 Micro Metal Gearmotor HPCB 12V with Extended Motor Shaft
     #define MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY 15.0f
     #define MINI_SEGWAY_VOLTAGE_MAX 9.0f
+    #define MINI_SEGWAY_VEL_MAX_RADS (MINI_SEGWAY_KN * MINI_SEGWAY_VOLTAGE_MAX * 2.0f * M_PI / 60.0f)
 
     // pwm
     #define MINI_SEGWAY_ENABLE_MOTOR_DRIVER PB_5
@@ -85,6 +86,12 @@
     //     #define MINI_SEGWAY_IMU_SDA PB_9
     //     #define MINI_SEGWAY_IMU_SCL PA_7
     // #endif
+
+    // robot kinematics
+    #define R_WHEEL 0.039f
+    #define L_WHEEL 0.133f
+    #define B_TURN (L_WHEEL / (2.0f * R_WHEEL))
+    #define TURN_RATIO -5.0f
 
 #else
     // task period
@@ -137,6 +144,7 @@
     #define MINI_SEGWAY_KN (450.0f / 12.0f) // 31:1 Metal Gearmotor 20Dx41L mm 12V CB with Extended Motor Shaft
     #define MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY 20.0f
     #define MINI_SEGWAY_VOLTAGE_MAX 6.0f
+    #define MINI_SEGWAY_VEL_MAX_RADS (MINI_SEGWAY_KN * MINI_SEGWAY_VOLTAGE_MAX * 2.0f * M_PI / 60.0f)
 
     // pwm
     #define MINI_SEGWAY_ENABLE_MOTOR_DRIVER PB_15
@@ -168,6 +176,13 @@
     // #define MINI_SEGWAY_KI_XY (MINI_SEGWAY_KP_XY * MINI_SEGWAY_KP_XY / 3.0f)
     #define MINI_SEGWAY_KI_Z  0.0f
     
+    // robot kinematics
+    #define R_WHEEL 0.039f
+    #define L_WHEEL 0.133f
+    #define B_TURN (L_WHEEL / (2.0f * R_WHEEL))
+    #define TURN_RATIO -5.0f
+
+
 #endif
 
 #endif /* CONFIG_H_ */

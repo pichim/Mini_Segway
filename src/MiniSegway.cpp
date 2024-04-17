@@ -1,4 +1,5 @@
 #include "MiniSegway.h"
+#include <chrono>
 
 #if DO_USE_PPM_IN
 MiniSegway::MiniSegway(PpmIn& rc, IMU& imu)
@@ -137,22 +138,14 @@ void MiniSegway::threadTask()
     Motor motor_M1(MINI_SEGWAY_PWM_M1, MINI_SEGWAY_VOLTAGE_MAX);
     Motor motor_M2(MINI_SEGWAY_PWM_M2, MINI_SEGWAY_VOLTAGE_MAX);
 
-    // define variables and create DC motor objects
-    const float velocity_max_rads = MINI_SEGWAY_KN * MINI_SEGWAY_VOLTAGE_MAX * 2.0f * M_PI / 60.0f;
-
     // robot geometry for kinematics
-    const float d_wheel = 0.078f;        // wheel diameter
-    const float r_wheel = d_wheel / 2.0f; // wheel radius
-    const float L_wheel = 0.133f;         // distance from wheel to wheel
     Eigen::Matrix2f Cwheel2robot; // transform wheel to robot
     //Eigen::Matrix2f Crobot2wheel; // transform robot to wheel
-    Cwheel2robot <<  r_wheel / 2.0f   ,  r_wheel / 2.0f   ,
-                     r_wheel / L_wheel, -r_wheel / L_wheel;
-    // Crobot2wheel << 1.0f / r_wheel,  L_wheel / (2.0f * r_wheel),
-    //                 1.0f / r_wheel, -L_wheel / (2.0f * r_wheel);
+    Cwheel2robot <<  R_WHEEL / 2.0f   ,  R_WHEEL / 2.0f   ,
+                     R_WHEEL / L_WHEEL, -R_WHEEL / L_WHEEL;
+
     Eigen::Vector2f robot_coord = {0.0f, 0.0f};  // contains v and w (robot translational and rotational velocities)
     Eigen::Vector2f wheel_speed = {0.0f, 0.0f};  // w1 w2 (wheel speed)
-    const static float b = L_wheel / (2.0f * r_wheel);
 
     // imu
     IMU::ImuData imu_data;
@@ -191,9 +184,9 @@ void MiniSegway::threadTask()
             if (enable_motor_driver == 0)
                 enable_motor_driver = 1;
 
-            robot_coord(1) = -5.0f * rc_pkg.turn_rate;
-            robot_coord(0) = vel_cntrl_v2_fcn(rc_pkg.forward_speed * velocity_max_rads, b, robot_coord(1), Cwheel2robot);
-            wheel_speed = (Cwheel2robot.inverse() * robot_coord) / velocity_max_rads;
+            robot_coord(1) = TURN_RATIO * rc_pkg.turn_rate;
+            robot_coord(0) = vel_cntrl_v2_fcn(rc_pkg.forward_speed * MINI_SEGWAY_VEL_MAX_RADS, B_TURN, robot_coord(1), Cwheel2robot);
+            wheel_speed = (Cwheel2robot.inverse() * robot_coord) / MINI_SEGWAY_VEL_MAX_RADS;
             
             motor_M1.setVoltage(wheel_speed(0) * MINI_SEGWAY_VOLTAGE_MAX);
             motor_M2.setVoltage(wheel_speed(1) * MINI_SEGWAY_VOLTAGE_MAX);
@@ -205,6 +198,7 @@ void MiniSegway::threadTask()
             }
         }
 
+        // TODO do they also need to be set to 0?
         // measure delta time
         const microseconds time_us = timer.elapsed_time();
         const float dtime_us_f = duration_cast<microseconds>(time_us - time_previous_us).count();
@@ -247,42 +241,30 @@ void MiniSegway::threadTask()
                 encoder_M2.reset();
                 motor_M1.reset();
                 motor_M2.reset();
+                timer.reset();
+                robot_coord = {0.0f, 0.0f};
+                wheel_speed = {0.0f, 0.0f};
                 _do_reset = false;
             }
         }
     }
 }
 
+float MiniSegway::vel_cntrl_v2_fcn(const float& set_wheel_speed, const float& b, const float& robot_omega, const Eigen::Matrix2f& Cwheel2robot)
+{
+    Eigen::Vector2f wheel_speed = {0.0f, 0.0f};
+    // Function to determine velocity of the wheels
+    // set_wheel_speed is the velocity in rad/s set by radio
+    wheel_speed(0) = set_wheel_speed + 2.0f * b * robot_omega; // -> RIGHT WHEEL
+    wheel_speed(1) = set_wheel_speed - 2.0f * b * robot_omega; // -> LEFT WHEEL
+
+    //Eigen::Vector2f robot_coord = Cwheel2robot.block<1, 2>(0, 0) * wheel_speed;
+    float robot_coord_0 = Cwheel2robot.block<1, 2>(0, 0) * wheel_speed;
+
+    return robot_coord_0;
+}
+
 void MiniSegway::sendThreadFlag()
 {
     _Thread.flags_set(_ThreadFlag);
-}
-
-float MiniSegway::vel_cntrl_v2_fcn(const float& wheel_speed_max, const float& b, const float& robot_omega, const Eigen::Matrix2f& Cwheel2robot)
-{
-    // TODO: add proper description
-    // wheel_speed(0) -> RIGHT
-    // wheel_speed(1) -> LEFT
-    Eigen::Vector2f wheel_speed = {0.0f, 0.0f};
-    if (wheel_speed_max >= 0) {
-        if (robot_omega > 0) {
-            wheel_speed(0) = wheel_speed_max;
-            wheel_speed(1) = wheel_speed_max - 2*b*robot_omega;
-        } else {
-            wheel_speed(0) = wheel_speed_max + 2*b*robot_omega;
-            wheel_speed(1) = wheel_speed_max;
-        }
-    } else {
-        if (robot_omega > 0) {
-            wheel_speed(0) = wheel_speed_max - 2*b*robot_omega;
-            wheel_speed(1) = wheel_speed_max;
-        } else {
-            wheel_speed(0) = wheel_speed_max;
-            wheel_speed(1) = wheel_speed_max + 2*b*robot_omega; 
-        }
-    }
-    // TODO: use eigen functionality to calculate one float value directly
-    Eigen::Vector2f robot_coord = Cwheel2robot * wheel_speed;
-
-    return robot_coord(0);
 }
