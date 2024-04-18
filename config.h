@@ -71,21 +71,11 @@
     #define MINI_SEGWAY_PWM_MIN_VALUE 0.01f
     #define MINI_SEGWAY_PWM_MAX_VALUE 0.99f
 
-    // TODO assign proper pins
-
-    // // IMU
-    // #define DO_USE_EXTERNAL_IMU true
-
-    // #if DO_USE_EXTERNAL_IMU
-    //     // imu
-    //     #define MINI_SEGWAY_IMU_MOSI
-    //     #define MINI_SEGWAY_IMU_MISO
-    //     #define MINI_SEGWAY_IMU_CLK
-    // #else
-    //     // imu
-    //     #define MINI_SEGWAY_IMU_SDA PB_9
-    //     #define MINI_SEGWAY_IMU_SCL PA_7
-    // #endif
+    // imu
+    #define MINI_SEGWAY_IMU_MOSI
+    #define MINI_SEGWAY_IMU_MISO
+    #define MINI_SEGWAY_IMU_CLK
+    #define MINI_SEGWAY_IMU_CS
 
     // robot kinematics
     #define R_WHEEL 0.039f

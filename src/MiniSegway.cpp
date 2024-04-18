@@ -140,7 +140,6 @@ void MiniSegway::threadTask()
 
     // robot geometry for kinematics
     Eigen::Matrix2f Cwheel2robot; // transform wheel to robot
-    //Eigen::Matrix2f Crobot2wheel; // transform robot to wheel
     Cwheel2robot <<  R_WHEEL / 2.0f   ,  R_WHEEL / 2.0f   ,
                      R_WHEEL / L_WHEEL, -R_WHEEL / L_WHEEL;
 

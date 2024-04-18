@@ -25,8 +25,8 @@ IMU::ImuData IMU::update()
     // update imu
     m_ImuMPU6500.readGyro();
     m_ImuMPU6500.readAcc();
-    Eigen::Vector3f gyro(m_ImuMPU6500.gyroX, m_ImuMPU6500.gyroY, m_ImuMPU6500.gyroZ);
-    Eigen::Vector3f acc(m_ImuMPU6500.accX, m_ImuMPU6500.accY, m_ImuMPU6500.accZ);
+    Eigen::Vector3f gyro(m_ImuMPU6500.gyroZ, m_ImuMPU6500.gyroX, m_ImuMPU6500.gyroY);
+    Eigen::Vector3f acc(m_ImuMPU6500.accZ, m_ImuMPU6500.accX, m_ImuMPU6500.accY);
 
     if (!imu_is_calibrated) {
         avg_cntr++;

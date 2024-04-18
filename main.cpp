@@ -68,8 +68,8 @@ MiniSegway miniSegway(rc, imu);
 // main thread is just blinking the led on the nucleo
 int main()
 {
-    // TODO: find out why the led is not blinking, LED1 -> PA_5 which should be correct
     DigitalOut led1(LED1);
+
     while (true) {
         led1 = !led1;
         thread_sleep_for(1000);
