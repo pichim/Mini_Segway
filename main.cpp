@@ -1,10 +1,6 @@
 #include "mbed.h"
 
 /**
- * individual readout of the mpu6500 via spi did result in weird acc y values
-*/
-
-/**
  * TODO new (F446RE):
  * - use two battery packs so that charging and stuff is working again???
  * - update hardwarelist_F446RE.txt
@@ -32,6 +28,12 @@
  * - change all internal signals to SI units, e.g. rad/s, rad, meter, etc...
  * - add axis descriptions for all signals in serial_stream_eval.m
  * - add OpenLager, test it and mount it properly to the segway
+ * ---------------------------------------------------------------------------------------------------
+ * - config.h, TURN_RATIO comment the sign of this value
+ * - document additinal cable for connection to the pc / laptop in Hardware - Connection
+ * - add cap on imu powerline?
+ * - repeat chirp experiments with current sensor and full battery
+ * - physical model of drive system
 */
 
 /**
@@ -57,19 +59,16 @@ PpmIn rc(MINI_SEGWAY_RC_DI);
 #else
 SBus rc(MINI_SEGWAY_RC_RX);
 #endif
-
 IMU imu(MINI_SEGWAY_IMU_MOSI,
         MINI_SEGWAY_IMU_MISO,
         MINI_SEGWAY_IMU_CLK,
         MINI_SEGWAY_IMU_CS);
-
 MiniSegway miniSegway(rc, imu);
 
 // main thread is just blinking the led on the nucleo
 int main()
 {
     DigitalOut led1(LED1);
-
     while (true) {
         led1 = !led1;
         thread_sleep_for(1000);

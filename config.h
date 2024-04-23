@@ -4,11 +4,18 @@
 #define USE_NUCLEO_L432KC false // false -> NUCLEO_F446RE
 
 #if USE_NUCLEO_L432KC
+
     // task period
-    // #define MINI_SEGWAY_PERIOD_US 2500   //  400 Hz
-    // #define MINI_SEGWAY_PERIOD_US 2000   //  500 Hz
-    #define MINI_SEGWAY_PERIOD_US 1000   // 1000 Hz
-    // #define MINI_SEGWAY_PERIOD_US 500    // 2000Hz
+    // #define MINI_SEGWAY_PERIOD_US 2500   //   400 Hz
+    // #define MINI_SEGWAY_PERIOD_US 2000   //   500 Hz
+    #define MINI_SEGWAY_PERIOD_US 1000   //  1000 Hz
+    // #define MINI_SEGWAY_PERIOD_US 500    //  2000 Hz
+    // #define MINI_SEGWAY_PERIOD_US 333    //  3000 Hz
+    // #define MINI_SEGWAY_PERIOD_US 200    //  5000 Hz
+    // #define MINI_SEGWAY_PERIOD_US 150    //  6666 Hz
+    // #define MINI_SEGWAY_PERIOD_US 133    //  7500 Hz
+    // #define MINI_SEGWAY_PERIOD_US 100    // 10000 Hz
+    // #define MINI_SEGWAY_PERIOD_US  50    // 20000 Hz
 
     // streaming device, openlager or laptop / pc
     #define DO_USE_OPENLAGER_FOR_DATA_STREAM false
@@ -38,7 +45,7 @@
         #define MINI_SEGWAY_RC_ARMING_CHANNEL 4
     #else
         // radiomaster elrs rx, running at 111 Hz := ~9000 mus
-        #define MINI_SEGWAY_RC_TX NC // not even connected
+        #define MINI_SEGWAY_RC_TX NC // not connected
         #define MINI_SEGWAY_RC_RX PA_10
         #define MINI_SEGWAY_RC_NUM_OF_ALLOWED_INVALID_DATA_PKG (10 * (9000 / MINI_SEGWAY_PERIOD_US + 1))
         #define MINI_SEGWAY_RC_ARMING_CHANNEL 7
@@ -81,14 +88,21 @@
     #define R_WHEEL 0.039f
     #define L_WHEEL 0.133f
     #define B_TURN (L_WHEEL / (2.0f * R_WHEEL))
-    #define TURN_RATIO -5.0f
+    #define TURN_RATIO -5.0f // TODO: comment the sign of this value
 
 #else
+
     // task period
-    // #define MINI_SEGWAY_PERIOD_US 2500   //  400 Hz
-    // #define MINI_SEGWAY_PERIOD_US 2000   //  500 Hz
-    // #define MINI_SEGWAY_PERIOD_US 1000   // 1000 Hz
-    #define MINI_SEGWAY_PERIOD_US 500    // 2000Hz
+    // #define MINI_SEGWAY_PERIOD_US 2500   //   400 Hz
+    // #define MINI_SEGWAY_PERIOD_US 2000   //   500 Hz
+    #define MINI_SEGWAY_PERIOD_US 1000   //  1000 Hz
+    // #define MINI_SEGWAY_PERIOD_US 500    //  2000 Hz
+    // #define MINI_SEGWAY_PERIOD_US 333    //  3000 Hz
+    // #define MINI_SEGWAY_PERIOD_US 200    //  5000 Hz
+    // #define MINI_SEGWAY_PERIOD_US 150    //  6666 Hz
+    // #define MINI_SEGWAY_PERIOD_US 133    //  7500 Hz
+    // #define MINI_SEGWAY_PERIOD_US 100    // 10000 Hz
+    // #define MINI_SEGWAY_PERIOD_US  50    // 20000 Hz
 
     // streaming device, openlager or laptop / pc
     #define DO_USE_OPENLAGER_FOR_DATA_STREAM false
@@ -99,9 +113,9 @@
         #define MINI_SEGWAY_RX PC_11
     #else
         // serial via usb to matlab UART2
-        // #define MINI_SEGWAY_TX USBTX // PA_2
-        // #define MINI_SEGWAY_RX USBRX // PA_3
-        #define MINI_SEGWAY_TX PA_0 // USB 2.0-cable TTL serial 6 pin
+        // #define MINI_SEGWAY_TX USBTX // usb to computer
+        // #define MINI_SEGWAY_RX USBRX
+        #define MINI_SEGWAY_TX PA_0 // usb 2.0-cable TTL serial 6 pin to computer or openlager
         #define MINI_SEGWAY_RX PA_1
     #endif
     // openlager runs at 2000000 baudrate
@@ -110,7 +124,7 @@
 
     // receiver to remote controll connection
     // radiomaster elrs rx, running at 111 Hz := ~9000 mus
-    #define MINI_SEGWAY_RC_TX NC // not even connected
+    #define MINI_SEGWAY_RC_TX NC // not connected
     #define MINI_SEGWAY_RC_RX PA_10
     #define MINI_SEGWAY_RC_NUM_OF_ALLOWED_INVALID_DATA_PKG (10 * (9000 / MINI_SEGWAY_PERIOD_US + 1))
     #define MINI_SEGWAY_RC_ARMING_CHANNEL 7
@@ -125,11 +139,12 @@
     #define MINI_SEGWAY_LED PB_9
 
     // encoders
-    #define MINI_SEGWAY_ENCA_M1 PA_6 // working
+    #define MINI_SEGWAY_ENCA_M1 PA_6
     #define MINI_SEGWAY_ENCB_M1 PC_7
-    #define MINI_SEGWAY_ENCA_M2 PB_6 // working
+    #define MINI_SEGWAY_ENCA_M2 PB_6
     #define MINI_SEGWAY_ENCB_M2 PB_7
-    // https://www.pololu.com/product/3487/specs
+
+    // motors: https://www.pololu.com/product/3487/specs
     #define MINI_SEGWAY_COUNTS_PER_TURN (31.25f * 20.0f)
     #define MINI_SEGWAY_KN (450.0f / 12.0f) // 31:1 Metal Gearmotor 20Dx41L mm 12V CB with Extended Motor Shaft
     #define MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY 20.0f
@@ -140,8 +155,8 @@
     #define MINI_SEGWAY_ENABLE_MOTOR_DRIVER PB_15
     #define MINI_SEGWAY_PWM_M1 PB_13
     #define MINI_SEGWAY_PWM_M2 PA_9
-    #define MINI_SEGWAY_PWM_MIN_VALUE 0.01f
-    #define MINI_SEGWAY_PWM_MAX_VALUE 0.99f
+    #define MINI_SEGWAY_PWM_MIN_VALUE 0.001f
+    #define MINI_SEGWAY_PWM_MAX_VALUE 0.999f
 
     // imu
     #define MINI_SEGWAY_IMU_MOSI PC_3
@@ -170,8 +185,7 @@
     #define R_WHEEL 0.039f
     #define L_WHEEL 0.133f
     #define B_TURN (L_WHEEL / (2.0f * R_WHEEL))
-    #define TURN_RATIO -5.0f
-
+    #define TURN_RATIO -5.0f // TODO: comment the sign of this value
 
 #endif
 

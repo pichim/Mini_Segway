@@ -5,6 +5,7 @@
 
 #include "eigen/Dense.h"
 
+#include "Chirp.h"
 #include "DebounceIn.h"
 #include "Encoder.h"
 #include "IMU.h"
@@ -53,11 +54,14 @@ private:
     bool _do_execute{false};
     bool _do_reset{false};
 
-    void updateRcPkg(rc_pkg_t& rc_pkg, IIR_Filter* iir_upsampling_filters);
+    void updateRcPkg(rc_pkg_t& rc_pkg,
+                     IIR_Filter* iir_upsampling_filters);
     void toggleDoExecute();
-    // float evaluateEncoder(EncoderCounter& encoder, long& counts);
     void threadTask();
     void sendThreadFlag();
-    float vel_cntrl_v2_fcn(const float& wheel_speed_max, const float& b, const float& robot_omega, const Eigen::Matrix2f& Cwheel2robot);
+    float vel_cntrl_v2_fcn(const float& set_wheel_speed,
+                           const float& b,
+                           const float& robot_omega,
+                           const Eigen::Matrix2f& Cwheel2robot);
 };
 #endif /* MINI_SEGWAY_H_ */

@@ -1,7 +1,7 @@
 clc, clear all
 %%
 
-port = 'COM19';
+port = 'COM10';
 baudrate = 2e6;
 
 if (~exist('serialStream', 'var'))
@@ -15,15 +15,13 @@ while (serialStream.isBusy())
     pause(0.1);
 end
 
-% Access the data
+% access the data
 data = serialStream.getData();
 
 return
 
 
 %%
-%load data_05.mat  
-%save data_05 data
 
 % index
 ind.rc = 1:4;
@@ -32,6 +30,11 @@ ind.ang_M = 7:8;
 ind.gyro = 9:11;
 ind.acc = 12:14;
 ind.rpy = 15:17;
+ind.voltage_M = 18:19;
+ind.sinarg = 20; % might be temporary
+
+
+Ts = mean(diff(data.time));
 
 figure(1)
 plot(data.time(1:end-1), diff(data.time * 1e6)), grid on
@@ -45,6 +48,7 @@ xlabel('Time (sec)'), ylabel('dTime (mus)')
 xlim([0 data.time(end-1)])
 ylim([0 1.2*max(diff(data.time * 1e6))])
 
+
 figure(2)
 plot(data.time, data.values(:,ind.rc)), grid on
 ylabel('RC Data'), xlabel('Time (sec)')
@@ -56,11 +60,15 @@ legend('Forward Speed', ...
 xlim([0 data.time(end)])
 ylim([-2 3])
 
+
 figure(3)
-ax(1) = subplot(211);
+ax(1) = subplot(311);
+plot(data.time, data.values(:,ind.voltage_M)), grid on
+ylabel('Voltage (V)')
+ax(2) = subplot(312);
 plot(data.time, data.values(:,ind.vel_M)), grid on
 ylabel('Velocity (RPS)')
-ax(2) = subplot(212);
+ax(3) = subplot(313);
 plot(data.time, data.values(:,ind.ang_M)), grid on
 ylabel('Rotation (ROT)'), xlabel('Time (sec)')
 legend('Motor 1', ...
@@ -68,6 +76,7 @@ legend('Motor 1', ...
     'Location', 'best')
 linkaxes(ax, 'x'), clear ax
 xlim([0 data.time(end)])
+
 
 figure(4)
 ax(1) = subplot(221);
@@ -86,7 +95,6 @@ ax(3) = subplot(223);
 plot(data.time, [data.values(:,ind.rpy), ...
                  cumtrapz(data.time, data.values(:,ind.gyro))] * 180/pi), grid on
 ylabel('RPY (deg)')
-
 ax(4) = subplot(224);
 plot(data.time(1:end-1), diff(data.values(:,ind.gyro)) * 180/pi), grid on
 ylabel('dRPY (deg)'), xlabel('Time (sec)')
