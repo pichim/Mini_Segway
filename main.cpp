@@ -3,35 +3,23 @@
 /**
  * TODO new (F446RE):
  * - use two battery packs so that charging and stuff is working again???
- * - update hardwarelist_F446RE.txt
- * - kinematics is behaving weird, why does e.g. turn left not move both wheels? this might be due to
- *   some hacks for the LineFollower or even be a bug.
  * - we need to find out which gear ratio we're going to use and order new motors
- * - the current wheels can not be used
- * - do a similar drawing like Mini Segway Hardware - Connection
  * - talk to Camille: add an additional cap (ceramic?) for the IMU?
  * -                  do we really need to wire FSYNC to GND?
- * - imu gyro and acc scaling needs to be checked (experiments)
  * - imu internal filters need to be checked
  * - after checking the internal filter, mahony needs to be tuned
  * - double check mahony parametrization, bessel impl. might have a bug (pmic)
- * - remap imu signals, so that x is forward, y ist left and z is up when segway is standing
  * - think about acc calibration when we use the above signal order (might need to be static)
  *   function in minisegway directly
- * - led on nucleo is not blinking
  * - we might need an external mechanical button
  * - we might need an external power switch
  * - double check config... this needs still to work for L432KC
  * - think about a solution for the EncoderCounter drivers
- * - move all parameters to cofig.h
  * - reset via button needs to work properly (for all variables, obj, etc.)
  * - change all internal signals to SI units, e.g. rad/s, rad, meter, etc...
- * - add axis descriptions for all signals in serial_stream_eval.m
- * - add OpenLager, test it and mount it properly to the segway
  * ---------------------------------------------------------------------------------------------------
  * - config.h, TURN_RATIO comment the sign of this value
  * - document additinal cable for connection to the pc / laptop in Hardware - Connection
- * - add cap on imu powerline?
  * - repeat chirp experiments with current sensor and full battery
  * - physical model of drive system
 */
