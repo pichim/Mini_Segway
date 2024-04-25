@@ -185,7 +185,10 @@
     #define R_WHEEL 0.039f
     #define L_WHEEL 0.133f
     #define B_TURN (L_WHEEL / (2.0f * R_WHEEL))
-    #define TURN_RATIO -5.0f // TODO: comment the sign of this value
+    // math is design in the way that left turn is with the possitive sign
+    // rc controller is sending negative sign when turning left with stick
+    // thats why for the maths we need to multipline rc controller output by -1
+    #define TURN_RATIO -5.0f
 
 #endif
 

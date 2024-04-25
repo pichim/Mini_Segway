@@ -18,7 +18,7 @@
  * - reset via button needs to work properly (for all variables, obj, etc.)
  * - change all internal signals to SI units, e.g. rad/s, rad, meter, etc...
  * ---------------------------------------------------------------------------------------------------
- * - config.h, TURN_RATIO comment the sign of this value
+ * - config.h, TURN_RATIO comment the sign of this value DONE
  * - document additinal cable for connection to the pc / laptop in Hardware - Connection
  * - repeat chirp experiments with current sensor and full battery
  * - physical model of drive system
