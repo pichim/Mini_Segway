@@ -145,14 +145,25 @@ void MiniSegway::threadTask()
     IMU::ImuData imu_data;
 
         // chirp generator
-    const float f0 = 0.1f;
-    const float f1 = 1.0f / 2.0f / Ts;
     const float t1 = 60.0f;
+    const float f0 = 1.0f / t1;
+    const float f1 = 1.0f / 2.0f / Ts;
     const float amplitude = 2.0f;
     const float offset = 3.5f;
     Chirp chirp(f0, f1, t1, Ts);
     float voltage = offset;
     float sinarg = 0.0f;
+
+    // current sensor
+    AnalogIn current_sens_1(PC_5);
+    AnalogIn current_sens_2(PC_3);
+    float sensor_voltage_output_1;
+    float current_value_1;
+    float sensor_voltage_output_2;
+    float current_value_2;
+    const float lin_fun_A = 0.8f;
+    const float lin_fun_B = 2.5f;  
+
 
     // give the openLager 1000 msec time to start
     thread_sleep_for(1000);
@@ -183,6 +194,12 @@ void MiniSegway::threadTask()
         // read imu data
         imu_data = _imu.update();
 
+        // read current sensor
+        sensor_voltage_output_1 = current_sens_1.read() * 3.3f;
+        current_value_1 = (lin_fun_A * sensor_voltage_output_1) - lin_fun_B;
+        sensor_voltage_output_2 = current_sens_2.read() * 3.3f;
+        current_value_2 = (lin_fun_A * sensor_voltage_output_2) - lin_fun_B;
+
         // measure delta time
         const microseconds time_us = timer.elapsed_time();
         const float dtime_us = duration_cast<microseconds>(time_us - time_previous_us).count();
@@ -190,7 +207,7 @@ void MiniSegway::threadTask()
 
         // TODO: Use rc_pkg.armed
         // here lifes the main logic of the mini segway
-        if (_do_execute && rc_pkg.armed) {
+        if (_do_execute ) { //&& rc_pkg.armed) {
 
             // enable motor drivers
             if (enable_motor_driver == 0)
@@ -252,6 +269,8 @@ void MiniSegway::threadTask()
             serialStream.write( voltage_M1 );                                        // 18
             serialStream.write( voltage_M2 );                                        // 19
             serialStream.write( sinarg );                                            // 20
+            serialStream.write( current_value_1);                                    // 21
+            serialStream.write( current_value_2);                                    // 22
             serialStream.send();
 
             led = 1;

@@ -2,7 +2,9 @@ clc, clear variables
 %%
 
 % load data_00.mat
-load data_01.mat
+% load data_01.mat
+% load data_02.mat
+% load data_31_2bat.mat
 
 % index
 ind.rc = 1:4;
@@ -13,6 +15,7 @@ ind.acc = 12:14;
 ind.rpy = 15:17;
 ind.voltage_M = 18:19;
 ind.sinarg = 20; % might be temporary
+ind.current = 21:22;
 
 
 Ts = mean(diff(data.time));
@@ -45,6 +48,11 @@ legend('Motor 1', ...
 linkaxes(ax, 'x'), clear ax
 xlim([0 data.time(end)])
 
+figure(3)
+plot(data.time, data.values(:,ind.current)), grid on
+ylabel('Current'), xlabel('Time (sec)')
+xlim([0 data.time(end)])
+
 
 % rotating filter
 Dlp = sqrt(3) / 2;
@@ -60,21 +68,43 @@ window   = hann(Nest);
 
 inp = apply_rotfiltfilt(Glp, data.values(:,ind.sinarg), data.values(:,ind.voltage_M(1)));
 out = apply_rotfiltfilt(Glp, data.values(:,ind.sinarg), data.values(:,ind.vel_M(1)));
-[G1, C1] = estimate_frequency_response(inp, out, window, Noverlap, Nest, Ts);
+[Gv1, Cv1] = estimate_frequency_response(inp, out, window, Noverlap, Nest, Ts);
 
 inp = apply_rotfiltfilt(Glp, data.values(:,ind.sinarg), data.values(:,ind.voltage_M(2)));
 out = apply_rotfiltfilt(Glp, data.values(:,ind.sinarg), data.values(:,ind.vel_M(2)));
-[G2, C2] = estimate_frequency_response(inp, out, window, Noverlap, Nest, Ts);
+[Gv2, Cv2] = estimate_frequency_response(inp, out, window, Noverlap, Nest, Ts);
 
 
-figure(3)
-bode(G1, G2, 2*pi*G1.Frequency(G1.Frequency < 1/2/Ts)), grid on
+figure(4)
+bode(Gv1, Gv2, 2*pi*Gv1.Frequency(Gv1.Frequency < 1/2/Ts)), grid on
 
 opt = bodeoptions('cstprefs');
 opt.MagUnits = 'abs';
 opt.MagScale = 'linear';
 
-figure(4)
-bodemag(C1, C2, 2*pi*G1.Frequency(G1.Frequency < 1/2/Ts), opt), grid on
+figure(5)
+bodemag(Cv1, Cv2, 2*pi*Gv1.Frequency(Gv1.Frequency < 1/2/Ts), opt), grid on
+set(gca, 'YScale', 'linear')
+
+inp = apply_rotfiltfilt(Glp, data.values(:,ind.sinarg), data.values(:,ind.voltage_M(1)));
+out = apply_rotfiltfilt(Glp, data.values(:,ind.sinarg), data.values(:,ind.current(1)));
+[Gi1, Ci1] = estimate_frequency_response(inp, out, window, Noverlap, Nest, Ts);
+
+inp = apply_rotfiltfilt(Glp, data.values(:,ind.sinarg), data.values(:,ind.voltage_M(2)));
+out = apply_rotfiltfilt(Glp, data.values(:,ind.sinarg), data.values(:,ind.current(2)));
+[Gi2, Ci2] = estimate_frequency_response(inp, out, window, Noverlap, Nest, Ts);
+
+opt.MagUnits = 'db';
+opt.MagScale = 'log';
+
+figure(6)
+bode(Gi1, Gi2, 2*pi*Gi1.Frequency(Gi1.Frequency < 1/2/Ts)), grid on
+
+opt = bodeoptions('cstprefs');
+opt.MagUnits = 'abs';
+opt.MagScale = 'linear';
+
+figure(7)
+bodemag(Ci1, Ci2, 2*pi*Gi1.Frequency(Gi1.Frequency < 1/2/Ts), opt), grid on
 set(gca, 'YScale', 'linear')
 

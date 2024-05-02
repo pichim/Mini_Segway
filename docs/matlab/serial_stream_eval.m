@@ -1,7 +1,7 @@
 clc, clear all
 %%
 
-port = 'COM10';
+port = 'COM19';
 baudrate = 2e6;
 
 if (~exist('serialStream', 'var'))
@@ -32,6 +32,7 @@ ind.acc = 12:14;
 ind.rpy = 15:17;
 ind.voltage_M = 18:19;
 ind.sinarg = 20; % might be temporary
+ind.current = 21:22;
 
 
 Ts = mean(diff(data.time));
@@ -104,6 +105,10 @@ legend('dRoll', ...
        'dPitch', ...
        'dYaw')
 
+% figure(5)
+% plot(data.time, data.values(:,ind.current)), grid on
+% ylabel('Current'), xlabel('Time (sec)')
+% xlim([0 data.time(end)])
 
 %%
 
