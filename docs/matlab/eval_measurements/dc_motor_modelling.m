@@ -6,6 +6,15 @@ clc, clear variables
 % load data_02.mat
 % load data_31_2bat.mat
 
+% I pushed the changes in Mini Segway on the new "dev" branch as we said 
+% previously. I put the motor testing files in the  eval_measurments 
+% folder. Files are named in such way:
+%  - data_gearRatio_numberOfBatteries_optionally"Wheel"
+% in Matlab folder there are measurements of the IMU in two situations:
+%  - when it is put steady not on the robot: data_IMU_vice
+%  - when it is put steady not on the robot with the cap: data_IMU_vice_cap
+% - always 2 motors exept data_488_1bat_M2.mat
+
 % index
 ind.rc = 1:4;
 ind.vel_M = 5:6;

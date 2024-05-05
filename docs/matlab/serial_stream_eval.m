@@ -23,6 +23,11 @@ return
 
 %%
 
+% load data_IMU_robot.mat
+% load data_IMU_robot_cap.mat
+load data_IMU_vice.mat
+% load data_IMU_vice_cap.mat
+
 % index
 ind.rc = 1:4;
 ind.vel_M = 5:6;
@@ -87,7 +92,7 @@ legend('Gyro X', ...
        'Gyro Y', ...
        'Gyro Z')
 ax(2) = subplot(222);
-plot(data.time, data.values(:,ind.acc)), grid on
+plot(data.time, data.values(:,ind.acc) - mean(data.values(:,ind.acc))), grid on
 ylabel('Acc (m^2/sec)')
 legend('Acc X', ...
        'Acc Y', ...
