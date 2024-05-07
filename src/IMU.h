@@ -6,6 +6,7 @@
 
 #include "config.h"
 
+#include "IIR_Filter.h"
 #include "Mahony.h"
 #include "MPU6500/mpu6500_spi.h"
 
@@ -38,6 +39,8 @@ public:
     };
 
     ImuData update();
+    IIR_Filter m_gyro_filter[3];
+    IIR_Filter m_acc_filter[3];
 
 private:
     ImuData m_ImuData;

@@ -1,11 +1,8 @@
-
-#include "mbed.h"
 #include "mpu6500_spi.h"
-#include "mpu6500_registermap.h"
 
 mpu6500_spi::mpu6500_spi(SPI &_spi, PinName _cs) : spi(_spi), cs(_cs) {}
 
-bool mpu6500_spi::init_inav()
+bool mpu6500_spi::init()
 {
     unsigned int response;
     spi.format(8, 0);
@@ -56,17 +53,19 @@ bool mpu6500_spi::init_inav()
 
 bool mpu6500_spi::configuration()
 {
+    // set gyro and acc lpf to highest common setting
+    // gyro: BW 184 Hz (delay 2.9 ms) at Fs 1 kHz
+    // acc : BW 184 Hz (delay 5.8 ms) at Fs 1 kHz
+    write2spi(MPUREG_CONFIG, BITS_DLPF_CFG_188HZ);
+    ThisThread::sleep_for(chrono::milliseconds(20));
+    write2spi(MPUREG_ACCEL_CONFIG_2, BITS_DLPF_CFG_188HZ);
+    ThisThread::sleep_for(chrono::milliseconds(20));
 
+    // set gyro scale and acc range
+    set_gyro_scale(BITS_FS_1000DPS);
     ThisThread::sleep_for(chrono::milliseconds(20));
-    write2spi(MPUREG_CONFIG, BITS_DLPF_CFG_42HZ); // Set Low Pass Filter Bandwidth to 41Hz (5.9 ms) for the Gyroscope
+    set_acc_scale(BITS_FS_2G);
     ThisThread::sleep_for(chrono::milliseconds(20));
-    write2spi(MPUREG_ACCEL_CONFIG_2, 0x03); // Set Low Pass Filter Bandwidth to 41Hz (11.8 ms) for the Accelerometer
-    ThisThread::sleep_for(chrono::milliseconds(20));
-
-    // TODO: ???
-    printf("Gyro scale: %d DPS\r\n", set_gyro_scale(BITS_FS_1000DPS)); // Change the scale of the Gyroscope to +/- 1000 degrees/sec
-    ThisThread::sleep_for(chrono::milliseconds(20));
-    set_acc_scale(BITS_FS_2G); // Change the scale of the Accelerometer to +/- 2g - Sensitivity: 4096 LSB/mg
 
     return true;
 }
@@ -77,9 +76,9 @@ bool mpu6500_spi::configuration()
  */
 bool mpu6500_spi::testConnection()
 {
-    printf("MPU6500::testConnection start\n");
+    printf("MPU6500 connected...\n");
     uint8_t deviceId = whoami();
-    printf("DeviceId = %d\n", deviceId);
+    printf("Device ID: %d\n", deviceId);
 
     return deviceId == 0x70;
 }
@@ -407,12 +406,7 @@ int16_t mpu6500_spi::read_temp()
     responseH = spi.write(0x00);
     responseL = spi.write(0x00);
     bit_data = ((int16_t)responseH << 8) | responseL;
-    // TODO: deselect?
-
-    /*data=(float)bit_data;
-    data=(data/340)+36.53;
     deselect();
-    return data;*/
 
     return bit_data;
 }

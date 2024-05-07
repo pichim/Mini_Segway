@@ -1,16 +1,11 @@
 #include "MiniSegway.h"
 
-#if DO_USE_PPM_IN
-MiniSegway::MiniSegway(PpmIn& rc, IMU& imu)
-#else
-MiniSegway::MiniSegway(SBus& rc, IMU& imu)
-#endif
-                                 : _rc(rc)
-                                 , _imu(imu)
-                                 , _Button(MINI_SEGWAY_BUTTON, PullUp)
-                                 , _Thread(osPriorityHigh, 4096)
+MiniSegway::MiniSegway(RC& rc, IMU& imu) : _rc(rc)
+                                         , _imu(imu)
+                                         , _button(MINI_SEGWAY_BUTTON, PullUp)
+                                         , _Thread(osPriorityHigh, 4096)
 {
-    _Button.fall(callback(this, &MiniSegway::toggleDoExecute));
+    _button.fall(callback(this, &MiniSegway::toggleDoExecute));
 
     _Thread.start(callback(this, &MiniSegway::threadTask));
     _Ticker.attach(callback(this, &MiniSegway::sendThreadFlag), microseconds{MINI_SEGWAY_PERIOD_US});
@@ -20,54 +15,6 @@ MiniSegway::~MiniSegway()
 {
     _Ticker.detach();
     _Thread.terminate();
-}
-
-void MiniSegway::updateRcPkg(rc_pkg_t& rc_pkg,
-                             IIR_Filter* iir_upsampling_filters)
-{
-    static uint16_t valid_rc_pkg_cntr = 0;
-    static uint16_t invalid_rc_pkg_cntr = 0;
-    static float turn_rate = 0.0f;
-    static float forward_speed = 0.0f;
-    static bool armed = false;
-    static bool reset_filters = true;
-
-    if (_rc.isPkgValid()) {
-        // update counters
-        valid_rc_pkg_cntr++;
-        if (valid_rc_pkg_cntr > MINI_SEGWAY_RC_NUM_OF_NECESSARY_VALID_DATA_PKG)
-            valid_rc_pkg_cntr = MINI_SEGWAY_RC_NUM_OF_NECESSARY_VALID_DATA_PKG;
-        invalid_rc_pkg_cntr = 0;
-        // update rc_pkg
-        turn_rate     = _rc.getChannelMinusToPlusOne(0);    // right stick left to right (roll)
-        forward_speed = _rc.getChannelMinusToPlusOne(1);    // right stick down to up (pitch)
-        armed  = _rc.isHigh(MINI_SEGWAY_RC_ARMING_CHANNEL); // arm button
-        _rc.setPkgValidFalse();
-    } else {
-        invalid_rc_pkg_cntr++;
-        if (invalid_rc_pkg_cntr > MINI_SEGWAY_RC_NUM_OF_ALLOWED_INVALID_DATA_PKG) {
-            invalid_rc_pkg_cntr = MINI_SEGWAY_RC_NUM_OF_ALLOWED_INVALID_DATA_PKG;
-            valid_rc_pkg_cntr = 0;
-            reset_filters = true;
-        }
-    }
-    
-    // upsampling rc_pkg data
-    if (valid_rc_pkg_cntr < MINI_SEGWAY_RC_NUM_OF_NECESSARY_VALID_DATA_PKG ||
-        invalid_rc_pkg_cntr == MINI_SEGWAY_RC_NUM_OF_ALLOWED_INVALID_DATA_PKG) {
-        rc_pkg.turn_rate     = 0.0f;
-        rc_pkg.forward_speed = 0.0f;
-        rc_pkg.armed = false;
-    } else {
-        if (reset_filters) {
-            reset_filters = false;
-            iir_upsampling_filters[0].reset(turn_rate);
-            iir_upsampling_filters[1].reset(forward_speed);
-        }
-        rc_pkg.turn_rate     = iir_upsampling_filters[0].filter(turn_rate);
-        rc_pkg.forward_speed = iir_upsampling_filters[1].filter(forward_speed);
-        rc_pkg.armed = armed;
-    }
 }
 
 void MiniSegway::toggleDoExecute()
@@ -88,26 +35,10 @@ void MiniSegway::threadTask()
     timer.start();
     microseconds time_previous_us{0};
 
-    // sampling time
-    const float Ts = static_cast<float>(MINI_SEGWAY_PERIOD_US) * 1.0e-6f;
-
-    // rc package received either from ppm in or sbus
-    rc_pkg_t rc_pkg;
-
-    // upsamling filters
-    IIR_Filter iir_upsampling_filters[] = {
-        IIR_Filter(2.0f * M_PI * MINI_SEGWAY_RC_UPSAMPLING_FREQUENCY_HZ,
-                   1.0f,
-                   Ts,
-                   1.0f),
-        IIR_Filter(2.0f * M_PI * MINI_SEGWAY_RC_UPSAMPLING_FREQUENCY_HZ,
-                   1.0f,
-                   Ts,
-                   1.0f)
-    };
+    // processed rc package
+    RC::rc_pkg_t rc_pkg;
 
     // serial stream either to matlab or to the openlager
-    DigitalOut enable_motor_driver(MINI_SEGWAY_ENABLE_MOTOR_DRIVER);
     SerialStream serialStream(MINI_SEGWAY_NUM_OF_FLOATS,
                               MINI_SEGWAY_TX,
                               MINI_SEGWAY_RX,
@@ -118,16 +49,17 @@ void MiniSegway::threadTask()
                        MINI_SEGWAY_ENCB_M1,
                        MINI_SEGWAY_COUNTS_PER_TURN,
                        MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY,
-                       Ts);
+                       MINI_SEGWAY_TS);
     Encoder encoder_M2(MINI_SEGWAY_ENCA_M2,
                        MINI_SEGWAY_ENCB_M2,
                        MINI_SEGWAY_COUNTS_PER_TURN,
                        MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY,
-                       Ts);
+                       MINI_SEGWAY_TS);
     Encoder::encoder_signals_t encoder_signals_M1 = encoder_M1.read();
     Encoder::encoder_signals_t encoder_signals_M2 = encoder_M2.read();
 
     // motors
+    DigitalOut enable_motor_driver(MINI_SEGWAY_ENABLE_MOTOR_DRIVER);
     Motor motor_M1(MINI_SEGWAY_PWM_M1, MINI_SEGWAY_VOLTAGE_MAX);
     Motor motor_M2(MINI_SEGWAY_PWM_M2, MINI_SEGWAY_VOLTAGE_MAX);
     float voltage_M1{0.0f};
@@ -144,15 +76,20 @@ void MiniSegway::threadTask()
     // imu
     IMU::ImuData imu_data;
 
-        // chirp generator
-    const float f0 = 0.1f;
-    const float f1 = 1.0f / 2.0f / Ts;
-    const float t1 = 60.0f;
-    const float amplitude = 2.0f;
-    const float offset = 3.5f;
-    Chirp chirp(f0, f1, t1, Ts);
-    float voltage = offset;
+    // chirp generator
+    Chirp chirp(MINI_SEGWAY_CHIRP_F0,
+                MINI_SEGWAY_CHIRP_F1,
+                MINI_SEGWAY_CHIRP_T1,
+                MINI_SEGWAY_TS);
+    float voltage = MINI_SEGWAY_CHIRP_OFFSET;
     float sinarg = 0.0f;
+
+    // // current sensor
+    // AnalogIn analog_in_M1(MINI_SEGWAY_AIN1);
+    // AnalogIn analog_in_M2(MINI_SEGWAY_AIN2);
+    // float current_M1;
+    // float current_M2;
+
 
     // give the openLager 1000 msec time to start
     thread_sleep_for(1000);
@@ -174,7 +111,7 @@ void MiniSegway::threadTask()
         _rc.processReceivedData();
 #endif
         // arm is only true if receiver data is valid and arm button is pressed
-        updateRcPkg(rc_pkg, iir_upsampling_filters);
+        rc_pkg = _rc.update();
 
         // read motor signals
         encoder_signals_M1 = encoder_M1.read();
@@ -183,6 +120,10 @@ void MiniSegway::threadTask()
         // read imu data
         imu_data = _imu.update();
 
+        // // read current sensor
+        // current_M1 = 0.8f * (analog_in_M1.read() * 3.3f) - 2.5f;
+        // current_M2 = 0.8f * (analog_in_M2.read() * 3.3f) - 2.5f;
+
         // measure delta time
         const microseconds time_us = timer.elapsed_time();
         const float dtime_us = duration_cast<microseconds>(time_us - time_previous_us).count();
@@ -190,7 +131,7 @@ void MiniSegway::threadTask()
 
         // TODO: Use rc_pkg.armed
         // here lifes the main logic of the mini segway
-        if (_do_execute && rc_pkg.armed) {
+        if (_do_execute ) { //&& rc_pkg.armed) {
 
             // enable motor drivers
             if (enable_motor_driver == 0)
@@ -213,7 +154,7 @@ void MiniSegway::threadTask()
                 const float exc = chirp.getExc();
                 // const float fchirp = chirp.getFreq();
                 sinarg = chirp.getSinarg();
-                voltage = amplitude * exc + offset;
+                voltage = MINI_SEGWAY_CHIRP_AMPLITUDE * exc + MINI_SEGWAY_CHIRP_OFFSET;
             } else {
                 // toggleDoExecute();
                 _do_execute = false;
@@ -227,31 +168,33 @@ void MiniSegway::threadTask()
             motor_M2.setVoltage(voltage_M2);
 
             // send data to serial stream (openlager or laptop / pc)
-            serialStream.write( dtime_us );                                          //  0 
-            serialStream.write( rc_pkg.forward_speed );                              //  1 
-            serialStream.write( rc_pkg.turn_rate );                                  //  2
-            serialStream.write( (rc_pkg.armed ? 1.0f : 0.0f) );                      //  3
+            serialStream.write( dtime_us );                      //  0 
+            serialStream.write( rc_pkg.forward_speed );          //  1 
+            serialStream.write( rc_pkg.turn_rate );              //  2
+            serialStream.write( (rc_pkg.armed ? 1.0f : 0.0f) );  //  3
 #if DO_USE_PPM_IN
-            serialStream.write( static_cast<float>(_rc.getPeriod()) * 1.0e-4f );     //  4 
+            serialStream.write( _rc.getPeriod() * 1.0e-4f );     //  4 
 #else
-            serialStream.write( static_cast<float>(_rc.getPeriod()) * 2.2222e-04f ); //  4
+            serialStream.write( _rc.getPeriod() * 2.2222e-04f ); //  4
 #endif
-            serialStream.write( encoder_signals_M1.velocity );                       //  5
-            serialStream.write( encoder_signals_M2.velocity );                       //  6
-            serialStream.write( encoder_signals_M1.rotations );                      //  7
-            serialStream.write( encoder_signals_M2.rotations );                      //  8
-            serialStream.write( imu_data.gyro(0) );                                  //  9
-            serialStream.write( imu_data.gyro(1) );                                  // 10
-            serialStream.write( imu_data.gyro(2) );                                  // 11
-            serialStream.write( imu_data.acc(0) );                                   // 12
-            serialStream.write( imu_data.acc(1) );                                   // 13
-            serialStream.write( imu_data.acc(2) );                                   // 14
-            serialStream.write( imu_data.rpy(0) );                                   // 15
-            serialStream.write( imu_data.rpy(1) );                                   // 16
-            serialStream.write( imu_data.rpy(2) );                                   // 17
-            serialStream.write( voltage_M1 );                                        // 18
-            serialStream.write( voltage_M2 );                                        // 19
-            serialStream.write( sinarg );                                            // 20
+            serialStream.write( encoder_signals_M1.velocity );   //  5
+            serialStream.write( encoder_signals_M2.velocity );   //  6
+            serialStream.write( encoder_signals_M1.rotations );  //  7
+            serialStream.write( encoder_signals_M2.rotations );  //  8
+            serialStream.write( imu_data.gyro(0) );              //  9
+            serialStream.write( imu_data.gyro(1) );              // 10
+            serialStream.write( imu_data.gyro(2) );              // 11
+            serialStream.write( imu_data.acc(0) );               // 12
+            serialStream.write( imu_data.acc(1) );               // 13
+            serialStream.write( imu_data.acc(2) );               // 14
+            serialStream.write( imu_data.rpy(0) );               // 15
+            serialStream.write( imu_data.rpy(1) );               // 16
+            serialStream.write( imu_data.rpy(2) );               // 17
+            serialStream.write( voltage_M1 );                    // 18
+            serialStream.write( voltage_M2 );                    // 19
+            serialStream.write( sinarg );                        // 20
+            // serialStream.write( current_M1);                     // 21
+            // serialStream.write( current_M2);                     // 22
             serialStream.send();
 
             led = 1;
@@ -275,7 +218,7 @@ void MiniSegway::threadTask()
 
             // TODO: remove this after chirp experimetns are finished
             enable_motor_driver = 1;
-            voltage_M1 = voltage_M2 = 3.5f;
+            voltage_M1 = voltage_M2 = MINI_SEGWAY_CHIRP_OFFSET;
             motor_M1.setVoltage(voltage_M1);
             motor_M2.setVoltage(voltage_M2);
         }

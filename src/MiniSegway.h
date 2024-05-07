@@ -9,13 +9,8 @@
 #include "DebounceIn.h"
 #include "Encoder.h"
 #include "IMU.h"
-#include "IIR_Filter.h"
 #include "Motor.h"
-#if DO_USE_PPM_IN
-    #include "PpmIn.h"
-#else
-    #include "SBus.h"
-#endif
+#include "RC.h"
 #include "SerialStream.h"
 #include "ThreadFlag.h"
 
@@ -24,11 +19,7 @@ using namespace std::chrono;
 class MiniSegway
 {
 public:
-#if DO_USE_PPM_IN
-    explicit MiniSegway(PpmIn& rc, IMU& imu);
-#else
-    explicit MiniSegway(SBus& rc, IMU& imu);
-#endif
+    explicit MiniSegway(RC& rc, IMU& imu);
     virtual ~MiniSegway();
 
 private:
@@ -36,26 +27,13 @@ private:
     Ticker _Ticker;
     ThreadFlag _ThreadFlag;
 
-#if DO_USE_PPM_IN
-    PpmIn &_rc;
-#else
-    SBus &_rc;
-#endif
-
+    RC &_rc;
     IMU &_imu;
 
-    typedef struct rc_pkg_s {
-        float turn_rate{0.0f};
-        float forward_speed{0.0f};
-        bool armed{false};
-    } rc_pkg_t;
-
-    DebounceIn _Button;    
+    DebounceIn _button;    
     bool _do_execute{false};
     bool _do_reset{false};
 
-    void updateRcPkg(rc_pkg_t& rc_pkg,
-                     IIR_Filter* iir_upsampling_filters);
     void toggleDoExecute();
     void threadTask();
     void sendThreadFlag();

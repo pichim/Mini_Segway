@@ -1,4 +1,5 @@
 clc, clear all
+addpath fcns\
 %%
 
 port = 'COM10';
@@ -23,6 +24,8 @@ return
 
 %%
 
+multp_fig_nr = 1;
+
 % index
 ind.rc = 1:4;
 ind.vel_M = 5:6;
@@ -32,11 +35,12 @@ ind.acc = 12:14;
 ind.rpy = 15:17;
 ind.voltage_M = 18:19;
 ind.sinarg = 20; % might be temporary
+ind.current = 21:22;
 
 
 Ts = mean(diff(data.time));
 
-figure(1)
+figure(expand_multiple_figure_nr(1, multp_fig_nr))
 plot(data.time(1:end-1), diff(data.time * 1e6)), grid on
 title( sprintf(['Mean %0.0f mus, ', ...
                 'Std. %0.0f mus, ', ...
@@ -49,7 +53,7 @@ xlim([0 data.time(end-1)])
 ylim([0 1.2*max(diff(data.time * 1e6))])
 
 
-figure(2)
+figure(expand_multiple_figure_nr(2, multp_fig_nr))
 plot(data.time, data.values(:,ind.rc)), grid on
 ylabel('RC Data'), xlabel('Time (sec)')
 legend('Forward Speed', ...
@@ -61,7 +65,7 @@ xlim([0 data.time(end)])
 ylim([-2 3])
 
 
-figure(3)
+figure(expand_multiple_figure_nr(3, multp_fig_nr))
 ax(1) = subplot(311);
 plot(data.time, data.values(:,ind.voltage_M)), grid on
 ylabel('Voltage (V)')
@@ -78,7 +82,7 @@ linkaxes(ax, 'x'), clear ax
 xlim([0 data.time(end)])
 
 
-figure(4)
+figure(expand_multiple_figure_nr(4, multp_fig_nr))
 ax(1) = subplot(221);
 plot(data.time, data.values(:,ind.gyro) * 180/pi), grid on
 ylabel('Gyro (deg/sec)')
@@ -86,7 +90,7 @@ legend('Gyro X', ...
        'Gyro Y', ...
        'Gyro Z')
 ax(2) = subplot(222);
-plot(data.time, data.values(:,ind.acc)), grid on
+plot(data.time, data.values(:,ind.acc) - 0*mean(data.values(:,ind.acc))), grid on
 ylabel('Acc (m^2/sec)')
 legend('Acc X', ...
        'Acc Y', ...
@@ -104,6 +108,10 @@ legend('dRoll', ...
        'dPitch', ...
        'dYaw')
 
+% figure(5)
+% plot(data.time, data.values(:,ind.current)), grid on
+% ylabel('Current'), xlabel('Time (sec)')
+% xlim([0 data.time(end)])
 
 %%
 

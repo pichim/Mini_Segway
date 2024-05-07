@@ -92,7 +92,10 @@
 
 #else
 
+    // MPU6500 runs at 1kHz
+
     // task period
+    // #define MINI_SEGWAY_PERIOD_US 10000  //   100 Hz
     // #define MINI_SEGWAY_PERIOD_US 2500   //   400 Hz
     // #define MINI_SEGWAY_PERIOD_US 2000   //   500 Hz
     #define MINI_SEGWAY_PERIOD_US 1000   //  1000 Hz
@@ -103,6 +106,8 @@
     // #define MINI_SEGWAY_PERIOD_US 133    //  7500 Hz
     // #define MINI_SEGWAY_PERIOD_US 100    // 10000 Hz
     // #define MINI_SEGWAY_PERIOD_US  50    // 20000 Hz
+
+    #define MINI_SEGWAY_TS (static_cast<float>(MINI_SEGWAY_PERIOD_US) * 1.0e-6f)
 
     // streaming device, openlager or laptop / pc
     #define DO_USE_OPENLAGER_FOR_DATA_STREAM false
@@ -130,7 +135,8 @@
     #define MINI_SEGWAY_RC_ARMING_CHANNEL 7
 
     #define MINI_SEGWAY_RC_NUM_OF_NECESSARY_VALID_DATA_PKG MINI_SEGWAY_RC_NUM_OF_ALLOWED_INVALID_DATA_PKG
-    #define MINI_SEGWAY_RC_UPSAMPLING_FREQUENCY_HZ 30.0f
+    #define MINI_SEGWAY_RC_UPSAMPLING_DAMPING (sqrtf(3.0f)/2.0f)
+    #define MINI_SEGWAY_RC_UPSAMPLING_FREQUENCY_HZ 40.0f
 
     #define MINI_SEGWAY_BUTTON BUTTON1 // blue button
     // #define MINI_SEGWAY_BUTTON PC_5 // additonal button
@@ -164,8 +170,13 @@
     #define MINI_SEGWAY_IMU_CLK PB_10
     #define MINI_SEGWAY_IMU_CS PB_4
 
+    // imu additional lp filters
+    #define MINI_SEGWAY_IMU_RUN_ADDITIONAL_FILTERS true
+    #define MINI_SEGWAY_IMU_GYRO_FREQUENCY_HZ 80.0f
+    #define MINI_SEGWAY_IMU_ACC_FREQUENCY_HZ 20.0f
+
     // imu acc bias and mahony gains
-    #define MINI_SEGWAY_B_ACC {0.0f, 0.0f, 0.0f}
+    #define MINI_SEGWAY_IMU_B_ACC {0.0f, 0.0f, 0.0f}
     // % bessel (D = sqrt(3)/2)
     // w0 = 3;
     // kp = w0 / ( sqrt(3)/3 )
@@ -174,12 +185,12 @@
     // w0 = 3;
     // kp = w0;
     // ki = 0;
-    #define MINI_SEGWAY_KP_XY (0.1592f * 2.0f * M_PI)
+    #define MINI_SEGWAY_IMU_KP_XY (0.1592f * 2.0f * M_PI)
     // #define MINI_SEGWAY_KP_XY (3.0f * 2.0f * M_PI / (sqrtf(3.0f) / 3.0f))
-    #define MINI_SEGWAY_KP_Z  (0.1592f * 2.0f * M_PI)
-    #define MINI_SEGWAY_KI_XY 0.0f
+    #define MINI_SEGWAY_IMU_KP_Z  (0.1592f * 2.0f * M_PI)
+    #define MINI_SEGWAY_IMU_KI_XY 0.0f
     // #define MINI_SEGWAY_KI_XY (MINI_SEGWAY_KP_XY * MINI_SEGWAY_KP_XY / 3.0f)
-    #define MINI_SEGWAY_KI_Z  0.0f
+    #define MINI_SEGWAY_IMU_KI_Z  0.0f
     
     // robot kinematics
     #define R_WHEEL 0.039f
@@ -189,6 +200,17 @@
     // rc controller is sending negative sign when turning left with stick
     // thats why for the maths we need to multipline rc controller output by -1
     #define TURN_RATIO -5.0f
+
+    // analog current sensor
+    #define MINI_SEGWAY_AIN1 PB_0
+    #define MINI_SEGWAY_AIN2 PC_1
+    
+    // chirp signal
+    #define MINI_SEGWAY_CHIRP_T1 60.0f
+    #define MINI_SEGWAY_CHIRP_F0 (1.0f / MINI_SEGWAY_CHIRP_T1)
+    #define MINI_SEGWAY_CHIRP_F1 (1.0f / (2.0f * MINI_SEGWAY_TS))
+    #define MINI_SEGWAY_CHIRP_AMPLITUDE 2.0f
+    #define MINI_SEGWAY_CHIRP_OFFSET 3.5f
 
 #endif
 

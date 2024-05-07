@@ -3,20 +3,26 @@
 IMU::IMU(PinName pin_mosi,
          PinName pin_miso,
          PinName pin_clk,
-         PinName pin_cl) : m_spi(pin_mosi, pin_miso, pin_clk),
-                           m_ImuMPU6500(m_spi, pin_cl),
-                           m_Mahony(MINI_SEGWAY_KP_XY, MINI_SEGWAY_KP_XY, MINI_SEGWAY_KP_Z,
-                                    MINI_SEGWAY_KI_XY, MINI_SEGWAY_KI_XY, MINI_SEGWAY_KI_Z,
-                                    static_cast<float>(MINI_SEGWAY_PERIOD_US) * 1.0e-6f)
+         PinName pin_cl) : m_spi(pin_mosi, pin_miso, pin_clk)
+                         , m_ImuMPU6500(m_spi, pin_cl)
+                         , m_Mahony(MINI_SEGWAY_IMU_KP_XY, MINI_SEGWAY_IMU_KP_XY, MINI_SEGWAY_IMU_KP_Z,
+                                    MINI_SEGWAY_IMU_KI_XY, MINI_SEGWAY_IMU_KI_XY, MINI_SEGWAY_IMU_KI_Z,
+                                    MINI_SEGWAY_TS)
+                         , m_gyro_filter{IIR_Filter(1.0f / (2.0f * M_PI * MINI_SEGWAY_IMU_GYRO_FREQUENCY_HZ), MINI_SEGWAY_TS, 1.0f),
+                                         IIR_Filter(1.0f / (2.0f * M_PI * MINI_SEGWAY_IMU_GYRO_FREQUENCY_HZ), MINI_SEGWAY_TS, 1.0f),
+                                         IIR_Filter(1.0f / (2.0f * M_PI * MINI_SEGWAY_IMU_GYRO_FREQUENCY_HZ), MINI_SEGWAY_TS, 1.0f)}
+                         , m_acc_filter{IIR_Filter(1.0f / (2.0f * M_PI * MINI_SEGWAY_IMU_ACC_FREQUENCY_HZ), MINI_SEGWAY_TS, 1.0f),
+                                        IIR_Filter(1.0f / (2.0f * M_PI * MINI_SEGWAY_IMU_ACC_FREQUENCY_HZ), MINI_SEGWAY_TS, 1.0f),
+                                        IIR_Filter(1.0f / (2.0f * M_PI * MINI_SEGWAY_IMU_ACC_FREQUENCY_HZ), MINI_SEGWAY_TS, 1.0f)}
 {
-    m_ImuMPU6500.init_inav();
+    m_ImuMPU6500.init();
     m_ImuMPU6500.configuration();
     m_ImuMPU6500.testConnection();
 }
 
 IMU::ImuData IMU::update()
 {
-    static const uint16_t Navg = 500;
+    static const uint16_t Navg = 200;
     static uint16_t avg_cntr = 0;
     static bool imu_is_calibrated = false;
     static Eigen::Vector3f gyro_offset = (Eigen::Vector3f() << 0.0f, 0.0f, 0.0f).finished();
@@ -42,7 +48,7 @@ IMU::ImuData IMU::update()
             acc_offset(2) = 0.0f;
 #if IMU_DO_USE_STATIC_ACC_CALIBRATION
             // TODO: Test if this gives the correct results
-            acc_offset = MINI_SEGWAY_B_ACC;
+            acc_offset = MINI_SEGWAY_IMU_B_ACC;
 #else
             printf("Averaged acc offset: %.7ff, %.7ff, %.7f\n", acc_offset(0), acc_offset(1), acc_offset(2));
 #endif
@@ -51,6 +57,22 @@ IMU::ImuData IMU::update()
         // remove static bias
         gyro -= gyro_offset;
         acc -= acc_offset;
+
+#if MINI_SEGWAY_RUN_ADDITIONAL_FILTERS
+        static bool is_first_run = true;
+        if (is_first_run) {
+            is_first_run = false;
+            for (uint8_t i = 0; i < 3; i++) {
+                m_gyro_filter[i].reset(gyro(i));
+                m_acc_filter[i].reset(acc(i));
+            }
+        }
+        // filter gyro and acc data
+        for (uint8_t i = 0; i < 3; i++) {
+            gyro(i) = m_gyro_filter[i].filter(gyro(i));
+            acc(i) = m_acc_filter[i].filter(acc(i));
+        }
+#endif
 
         // update mahony
         m_Mahony.update(gyro, acc);

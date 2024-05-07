@@ -2,10 +2,7 @@
 
 /**
  * TODO new (F446RE):
- * - use two battery packs so that charging and stuff is working again???
  * - we need to find out which gear ratio we're going to use and order new motors
- * - talk to Camille: add an additional cap (ceramic?) for the IMU?
- * -                  do we really need to wire FSYNC to GND?
  * - imu internal filters need to be checked
  * - after checking the internal filter, mahony needs to be tuned
  * - double check mahony parametrization, bessel impl. might have a bug (pmic)
@@ -13,15 +10,10 @@
  *   function in minisegway directly
  * - we might need an external mechanical button
  * - we might need an external power switch
- * - double check config... this needs still to work for L432KC
  * - think about a solution for the EncoderCounter drivers
  * - reset via button needs to work properly (for all variables, obj, etc.)
  * - change all internal signals to SI units, e.g. rad/s, rad, meter, etc...
- * ---------------------------------------------------------------------------------------------------
- * - config.h, TURN_RATIO comment the sign of this value DONE
- * - document additinal cable for connection to the pc / laptop in Hardware - Connection
- * - repeat chirp experiments with current sensor and full battery
- * - physical model of drive system
+ * - look into kinematics and how this will be needed for segway
 */
 
 /**
@@ -39,13 +31,12 @@
 
 #include "IMU.h"
 #include "MiniSegway.h"
-#include "PpmIn.h"
-#include "SBus.h"
+#include "RC.h"
 
 #if DO_USE_PPM_IN
-PpmIn rc(MINI_SEGWAY_RC_DI);
+RC rc(MINI_SEGWAY_RC_DI);
 #else
-SBus rc(MINI_SEGWAY_RC_RX);
+RC rc(MINI_SEGWAY_RC_RX);
 #endif
 IMU imu(MINI_SEGWAY_IMU_MOSI,
         MINI_SEGWAY_IMU_MISO,
@@ -56,6 +47,7 @@ MiniSegway miniSegway(rc, imu);
 // main thread is just blinking the led on the nucleo
 int main()
 {
+    printf("MiniSegway running...\n");
     DigitalOut led1(LED1);
     while (true) {
         led1 = !led1;
