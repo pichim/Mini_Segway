@@ -92,7 +92,7 @@
 
 #else
 
-    // MPU6500 runs at 1kHz
+    // MPU6500 runs at 1kHz, so we want to run the control loop at 1kHz
 
     // task period
     // #define MINI_SEGWAY_PERIOD_US 10000  //   100 Hz
@@ -107,6 +107,7 @@
     // #define MINI_SEGWAY_PERIOD_US 100    // 10000 Hz
     // #define MINI_SEGWAY_PERIOD_US  50    // 20000 Hz
 
+    // sampling time
     #define MINI_SEGWAY_TS (static_cast<float>(MINI_SEGWAY_PERIOD_US) * 1.0e-6f)
 
     // streaming device, openlager or laptop / pc
@@ -125,19 +126,20 @@
     #endif
     // openlager runs at 2000000 baudrate
     #define MINI_SEGWAY_BAUDRATE 2000000
-    #define MINI_SEGWAY_NUM_OF_FLOATS 30
+    #define MINI_SEGWAY_NUM_OF_FLOATS 30 // tested up to 20 floats at 2 kHz, so 30 floats at 1 kHz should work
 
-    // receiver to remote controll connection
+    // remote control receiver
     // radiomaster elrs rx, running at 111 Hz := ~9000 mus
     #define MINI_SEGWAY_RC_TX NC // not connected
     #define MINI_SEGWAY_RC_RX PA_10
     #define MINI_SEGWAY_RC_NUM_OF_ALLOWED_INVALID_DATA_PKG (10 * (9000 / MINI_SEGWAY_PERIOD_US + 1))
-    #define MINI_SEGWAY_RC_ARMING_CHANNEL 7
-
     #define MINI_SEGWAY_RC_NUM_OF_NECESSARY_VALID_DATA_PKG MINI_SEGWAY_RC_NUM_OF_ALLOWED_INVALID_DATA_PKG
-    #define MINI_SEGWAY_RC_UPSAMPLING_DAMPING (sqrtf(3.0f)/2.0f)
+    #define MINI_SEGWAY_RC_ARMING_CHANNEL 7
+    #define MINI_SEGWAY_RC_USE_UPSAMPLING_FILTERS true
+    #define MINI_SEGWAY_RC_UPSAMPLING_DAMPING (sqrtf(3.0f) / 2.0f)
     #define MINI_SEGWAY_RC_UPSAMPLING_FREQUENCY_HZ 40.0f
 
+    // button
     #define MINI_SEGWAY_BUTTON BUTTON1 // blue button
     // #define MINI_SEGWAY_BUTTON PC_5 // additonal button
 
@@ -150,15 +152,17 @@
     #define MINI_SEGWAY_ENCA_M2 PB_6
     #define MINI_SEGWAY_ENCB_M2 PB_7
 
-    // motors: https://www.pololu.com/product/3487/specs
+    // motors
     #define MINI_SEGWAY_COUNTS_PER_TURN (31.25f * 20.0f)
     #define MINI_SEGWAY_KN (450.0f / 12.0f) // 31:1 Metal Gearmotor 20Dx41L mm 12V CB with Extended Motor Shaft
     #define MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY 20.0f
     #define MINI_SEGWAY_VOLTAGE_MAX 6.0f
-    #define MINI_SEGWAY_VEL_MAX_RADS (MINI_SEGWAY_KN * MINI_SEGWAY_VOLTAGE_MAX * 2.0f * M_PI / 60.0f)
+    #define MINI_SEGWAY_VEL_MAX_RADS (MINI_SEGWAY_KN * MINI_SEGWAY_VOLTAGE_MAX * 2.0f * M_PI / 60.0f) // TODO: use this
+
+    // motor driver (h-bridge)
+    #define MINI_SEGWAY_ENABLE_MOTOR_DRIVER PB_15
 
     // pwm
-    #define MINI_SEGWAY_ENABLE_MOTOR_DRIVER PB_15
     #define MINI_SEGWAY_PWM_M1 PB_13
     #define MINI_SEGWAY_PWM_M2 PA_9
     #define MINI_SEGWAY_PWM_MIN_VALUE 0.001f
@@ -169,9 +173,7 @@
     #define MINI_SEGWAY_IMU_MISO PC_2
     #define MINI_SEGWAY_IMU_CLK PB_10
     #define MINI_SEGWAY_IMU_CS PB_4
-
-    // imu additional lp filters
-    #define MINI_SEGWAY_IMU_RUN_ADDITIONAL_FILTERS true
+    #define MINI_SEGWAY_IMU_USE_ADDITIONAL_FILTERS true
     #define MINI_SEGWAY_IMU_GYRO_FREQUENCY_HZ 80.0f
     #define MINI_SEGWAY_IMU_ACC_FREQUENCY_HZ 20.0f
 
@@ -193,7 +195,7 @@
     #define MINI_SEGWAY_IMU_KI_Z  0.0f
     
     // robot kinematics
-    #define R_WHEEL 0.039f
+    #define R_WHEEL 0.039f // TODO: use this
     #define L_WHEEL 0.133f
     #define B_TURN (L_WHEEL / (2.0f * R_WHEEL))
     // math is design in the way that left turn is with the possitive sign
@@ -201,12 +203,12 @@
     // thats why for the maths we need to multipline rc controller output by -1
     #define TURN_RATIO -5.0f
 
-    // analog current sensor
-    #define MINI_SEGWAY_AIN1 PB_0
-    #define MINI_SEGWAY_AIN2 PC_1
+    // // analog current sensor
+    // #define MINI_SEGWAY_AIN1 PB_0
+    // #define MINI_SEGWAY_AIN2 PC_1
     
     // chirp signal
-    #define MINI_SEGWAY_CHIRP_T1 60.0f
+    #define MINI_SEGWAY_CHIRP_T1 20.0f
     #define MINI_SEGWAY_CHIRP_F0 (1.0f / MINI_SEGWAY_CHIRP_T1)
     #define MINI_SEGWAY_CHIRP_F1 (1.0f / (2.0f * MINI_SEGWAY_TS))
     #define MINI_SEGWAY_CHIRP_AMPLITUDE 2.0f

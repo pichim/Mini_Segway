@@ -58,7 +58,7 @@ IMU::ImuData IMU::update()
         gyro -= gyro_offset;
         acc -= acc_offset;
 
-#if MINI_SEGWAY_RUN_ADDITIONAL_FILTERS
+#if MINI_SEGWAY_IMU_USE_ADDITIONAL_FILTERS
         static bool is_first_run = true;
         if (is_first_run) {
             is_first_run = false;

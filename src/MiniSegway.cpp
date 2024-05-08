@@ -169,8 +169,8 @@ void MiniSegway::threadTask()
 
             // send data to serial stream (openlager or laptop / pc)
             serialStream.write( dtime_us );                      //  0 
-            serialStream.write( rc_pkg.forward_speed );          //  1 
-            serialStream.write( rc_pkg.turn_rate );              //  2
+            serialStream.write( rc_pkg.turn_rate );              //  1 
+            serialStream.write( rc_pkg.forward_speed );          //  2
             serialStream.write( (rc_pkg.armed ? 1.0f : 0.0f) );  //  3
 #if DO_USE_PPM_IN
             serialStream.write( _rc.getPeriod() * 1.0e-4f );     //  4 

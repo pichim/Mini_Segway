@@ -35,7 +35,6 @@ ind.acc = 12:14;
 ind.rpy = 15:17;
 ind.voltage_M = 18:19;
 ind.sinarg = 20; % might be temporary
-ind.current = 21:22;
 
 
 Ts = mean(diff(data.time));
@@ -56,8 +55,8 @@ ylim([0 1.2*max(diff(data.time * 1e6))])
 figure(expand_multiple_figure_nr(2, multp_fig_nr))
 plot(data.time, data.values(:,ind.rc)), grid on
 ylabel('RC Data'), xlabel('Time (sec)')
-legend('Forward Speed', ...
-    'Turn Rate', ...
+legend('Turn Rate', ...
+    'Forward Speed', ...
     'Arming State', ...
     'Scaled Period', ...
     'Location', 'best')
@@ -157,11 +156,11 @@ legend('dRoll', ...
 % x(1) / (220/12/60)
 %%
 
-T_avg = 3.2;
-gyro_avg = mean(data.values(data.time <= T_avg, ind.gyro));
-ind_eval = data.time > T_avg;
-ang = zeros(size(data.values(:,ind.gyro)));
-ang(ind_eval,:) = cumtrapz(data.time(ind_eval), data.values(ind_eval,ind.gyro) - gyro_avg);
-figure(99)
-plot(data.time, ang * 180/pi), grid on
+% T_avg = 3.2;
+% gyro_avg = mean(data.values(data.time <= T_avg, ind.gyro));
+% ind_eval = data.time > T_avg;
+% ang = zeros(size(data.values(:,ind.gyro)));
+% ang(ind_eval,:) = cumtrapz(data.time(ind_eval), data.values(ind_eval,ind.gyro) - gyro_avg);
+% figure(99)
+% plot(data.time, ang * 180/pi), grid on
 

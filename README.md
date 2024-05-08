@@ -1,5 +1,9 @@
 # MiniSegway
 
+
+WIP
+*** The readme is out of date... still belongs to the work with the NUCLEO_L432KC ***
+
 ## Notes
 
 ## 29.03.2024
@@ -40,7 +44,7 @@ Coding stuff:
 ```
 
 Organise:
-- Summarice all the stuff i bought
+- Summarise all the stuff i bought
 
 ## Links
 
