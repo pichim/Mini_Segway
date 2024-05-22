@@ -10,8 +10,8 @@
     #include "SBus.h"
 #endif
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
+#ifndef M_PIf
+    #define M_PIf 3.14159265358979323846f /* pi */
 #endif
 
 class RC
@@ -39,6 +39,8 @@ private:
     IIR_Filter _upsampling_filters[2];
 
     rc_pkg_t _rc_pkg;
+
+    float applyExpoMinusToPlusOne(float val);
 };
 
 #endif /* RC_ */

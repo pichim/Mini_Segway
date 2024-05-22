@@ -5,9 +5,9 @@ RC::RC(PinName pin) : _rc(pin)
 #else
 RC::RC(PinName pin) : _rc(pin)
 #endif
-                    , _upsampling_filters{IIR_Filter(2.0f * M_PI * MINI_SEGWAY_RC_UPSAMPLING_FREQUENCY_HZ,
+                    , _upsampling_filters{IIR_Filter(2.0f * M_PIf * MINI_SEGWAY_RC_UPSAMPLING_FREQUENCY_HZ,
                                                      MINI_SEGWAY_RC_UPSAMPLING_DAMPING, MINI_SEGWAY_TS, 1.0f),
-                                          IIR_Filter(2.0f * M_PI * MINI_SEGWAY_RC_UPSAMPLING_FREQUENCY_HZ,
+                                          IIR_Filter(2.0f * M_PIf * MINI_SEGWAY_RC_UPSAMPLING_FREQUENCY_HZ,
                                                      MINI_SEGWAY_RC_UPSAMPLING_DAMPING, MINI_SEGWAY_TS, 1.0f)}
 {}
 
@@ -39,8 +39,13 @@ RC::rc_pkg_t RC::update()
             valid_rc_pkg_cntr = MINI_SEGWAY_RC_NUM_OF_NECESSARY_VALID_DATA_PKG;
         invalid_rc_pkg_cntr = 0;
         // update _rc_pkg
-        turn_rate     = _rc.getChannelMinusToPlusOne(0);    // right stick left to right
-        forward_speed = _rc.getChannelMinusToPlusOne(2);    // left  stick down to up
+#if MINI_SEGWAY_RC_APPLY_EXPO
+        turn_rate     = applyExpoMinusToPlusOne(_rc.getChannelMinusToPlusOne(0)); // right stick left to right
+        forward_speed = applyExpoMinusToPlusOne(_rc.getChannelMinusToPlusOne(2)); // left  stick down to up
+#else
+        turn_rate     = _rc.getChannelMinusToPlusOne(0); // right stick left to right
+        forward_speed = _rc.getChannelMinusToPlusOne(2); // left  stick down to up
+#endif
         armed  = _rc.isHigh(MINI_SEGWAY_RC_ARMING_CHANNEL); // arm button
         _rc.setPkgValidFalse();
     } else {
@@ -75,4 +80,10 @@ RC::rc_pkg_t RC::update()
     }
 
     return _rc_pkg;
+}
+
+float RC::applyExpoMinusToPlusOne(float x)
+{
+    static const float scale = 1.0f / ( powf( expf(1.0f), MINI_SEGWAY_RC_EXPO_ALPHA ) - 1.0f );
+    return copysignf(scale, x) * ( powf( expf(fabsf(x)), MINI_SEGWAY_RC_EXPO_ALPHA ) - 1.0f );
 }

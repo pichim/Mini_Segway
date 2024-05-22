@@ -5,14 +5,19 @@
 
 #include "eigen/Dense.h"
 
-#include "Chirp.h"
+#if MINI_SEGWAY_CHIRP_USE_CHIRP
+    #include "Chirp.h"
+#endif
+#include "DCMotor.h"
 #include "DebounceIn.h"
-#include "Encoder.h"
 #include "IMU.h"
-#include "Motor.h"
 #include "RC.h"
 #include "SerialStream.h"
 #include "ThreadFlag.h"
+
+#ifndef M_PIf
+    #define M_PIf 3.14159265358979323846f /* pi */
+#endif
 
 using namespace std::chrono;
 
@@ -34,12 +39,8 @@ private:
     bool _do_execute{false};
     bool _do_reset{false};
 
-    void toggleDoExecute();
     void threadTask();
     void sendThreadFlag();
-    float vel_cntrl_v2_fcn(const float& set_wheel_speed,
-                           const float& b,
-                           const float& robot_omega,
-                           const Eigen::Matrix2f& Cwheel2robot);
+    void toggleDoExecute();
 };
 #endif /* MINI_SEGWAY_H_ */

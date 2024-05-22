@@ -34,7 +34,7 @@ ind.gyro = 9:11;
 ind.acc = 12:14;
 ind.rpy = 15:17;
 ind.voltage_M = 18:19;
-ind.sinarg = 20; % might be temporary
+ind.vel_sp_M = 20:21;
 
 
 Ts = mean(diff(data.time));
@@ -69,7 +69,7 @@ ax(1) = subplot(311);
 plot(data.time, data.values(:,ind.voltage_M)), grid on
 ylabel('Voltage (V)')
 ax(2) = subplot(312);
-plot(data.time, data.values(:,ind.vel_M)), grid on
+plot(data.time, data.values(:,[ind.vel_sp_M, ind.vel_M])), grid on
 ylabel('Velocity (RPS)')
 ax(3) = subplot(313);
 plot(data.time, data.values(:,ind.ang_M)), grid on
@@ -106,61 +106,4 @@ xlim([0 data.time(end)])
 legend('dRoll', ...
        'dPitch', ...
        'dYaw')
-
-% figure(5)
-% plot(data.time, data.values(:,ind.current)), grid on
-% ylabel('Current'), xlabel('Time (sec)')
-% xlim([0 data.time(end)])
-
-%%
-
-% % % PpmIn crsf
-% % load data_01.mat % save data_01 data
-% % Ts = 500 * 1e-6;
-% 
-% % % SBus elrs
-% % load data_02.mat % save data_01 data
-% % Ts = 500 * 1e-6;
-% 
-% Ts = 1000 * 1e-6;
-% 
-% w0 = 40 * 2*pi;
-% D = sqrt(3)/2;
-% Gf = c2d(tf(w0^2, [1 2*D*w0 w0^2]), Ts, 'tustin');
-% % [bf, af] = besself(3, w0);
-% % Gf = c2d(tf(bf, af), Ts, 'tustin');
-% 
-% 
-% data_f = filter(Gf.num{1}, Gf.den{1}, data.values(:,1:4));
-% 
-% figure(1)
-% plot(data.time, [data.values(:,1:4), data_f]), grid on
-% xlabel('Time (sec)')
-% xlim([0 data.time(end)])
-% ylim([-2 3])
-%%
-
-% % 150:1 Micro Metal Gearmotor HPCB 12V with Extended Motor Shaft
-% % - seems like the is an offset due to friction, gain is 
-% 
-% voltage = [0.2, 0.4, 0.6, 0.8, 1.0].' * 9;
-% rps = [0.35, 0.87, 1.39, 1.91, 2.50].';
-% M = [voltage, ones(size(voltage))];
-% x = M \ rps;
-% 
-% figure(99)
-% plot(voltage, [rps, M*x], 'x-'), grid on
-% 
-% 220/12/60 % expected
-% x(1)      % measured
-% x(1) / (220/12/60)
-%%
-
-% T_avg = 3.2;
-% gyro_avg = mean(data.values(data.time <= T_avg, ind.gyro));
-% ind_eval = data.time > T_avg;
-% ang = zeros(size(data.values(:,ind.gyro)));
-% ang(ind_eval,:) = cumtrapz(data.time(ind_eval), data.values(ind_eval,ind.gyro) - gyro_avg);
-% figure(99)
-% plot(data.time, ang * 180/pi), grid on
 

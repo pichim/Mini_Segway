@@ -10,8 +10,9 @@
 #include "Mahony.h"
 #include "MPU6500/mpu6500_spi.h"
 
-// if this is false then acc gets averaged at the beginning and printed to the console
-#define IMU_DO_USE_STATIC_ACC_CALIBRATION true
+#ifndef M_PIf
+    #define M_PIf 3.14159265358979323846f /* pi */
+#endif
 
 class IMU
 {
@@ -43,10 +44,10 @@ public:
     IIR_Filter m_acc_filter[3];
 
 private:
-    ImuData m_ImuData;
-    mpu6500_spi m_ImuMPU6500;
     SPI m_spi;
+    mpu6500_spi m_ImuMPU6500;
     Mahony m_Mahony;
+    ImuData m_ImuData;
 };
 
 #endif /* IMU_H_ */

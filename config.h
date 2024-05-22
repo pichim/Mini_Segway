@@ -1,6 +1,10 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
+#ifndef M_PIf
+    #define M_PIf 3.14159265358979323846f /* pi */
+#endif
+
 #define USE_NUCLEO_L432KC false // false -> NUCLEO_F446RE
 
 #if USE_NUCLEO_L432KC
@@ -69,7 +73,7 @@
     // #define MINI_SEGWAY_KN (220.0f / 12.0f) // 150:1 Micro Metal Gearmotor HPCB 12V with Extended Motor Shaft
     #define MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY 15.0f
     #define MINI_SEGWAY_VOLTAGE_MAX 9.0f
-    #define MINI_SEGWAY_VEL_MAX_RADS (MINI_SEGWAY_KN * MINI_SEGWAY_VOLTAGE_MAX * 2.0f * M_PI / 60.0f)
+    #define MINI_SEGWAY_VEL_MAX_RADS (MINI_SEGWAY_KN * MINI_SEGWAY_VOLTAGE_MAX * 2.0f * M_PIf / 60.0f)
 
     // pwm
     #define MINI_SEGWAY_ENABLE_MOTOR_DRIVER PB_5
@@ -111,17 +115,18 @@
     #define MINI_SEGWAY_TS (static_cast<float>(MINI_SEGWAY_PERIOD_US) * 1.0e-6f)
 
     // streaming device, openlager or laptop / pc
-    #define DO_USE_OPENLAGER_FOR_DATA_STREAM false
+    #define DO_USE_OPENLAGER_FOR_DATA_STREAM true
     // serial data stream, tested up to 20 floats at 2 kHz
     #if DO_USE_OPENLAGER_FOR_DATA_STREAM
-        // openlager UART2
-        #define MINI_SEGWAY_TX PC_10
-        #define MINI_SEGWAY_RX PC_11
+        // openlager
+        #define MINI_SEGWAY_TX PC_6
+        #define MINI_SEGWAY_RX NC
     #else
-        // serial via usb to matlab UART2
-        // #define MINI_SEGWAY_TX USBTX // usb to computer
+        // // serial via usb to matlab
+        // #define MINI_SEGWAY_TX USBTX
         // #define MINI_SEGWAY_RX USBRX
-        #define MINI_SEGWAY_TX PA_0 // usb 2.0-cable TTL serial 6 pin to computer or openlager
+        // usb 2.0-cable TTL serial 6 pin to computer
+        #define MINI_SEGWAY_TX PA_0
         #define MINI_SEGWAY_RX PA_1
     #endif
     // openlager runs at 2000000 baudrate
@@ -137,7 +142,9 @@
     #define MINI_SEGWAY_RC_ARMING_CHANNEL 7
     #define MINI_SEGWAY_RC_USE_UPSAMPLING_FILTERS true
     #define MINI_SEGWAY_RC_UPSAMPLING_DAMPING (sqrtf(3.0f) / 2.0f)
-    #define MINI_SEGWAY_RC_UPSAMPLING_FREQUENCY_HZ 40.0f
+    #define MINI_SEGWAY_RC_UPSAMPLING_FREQUENCY_HZ 20.0f
+    #define MINI_SEGWAY_RC_APPLY_EXPO true
+    #define MINI_SEGWAY_RC_EXPO_ALPHA 2.3f
 
     // button
     #define MINI_SEGWAY_BUTTON BUTTON1 // blue button
@@ -153,11 +160,15 @@
     #define MINI_SEGWAY_ENCB_M2 PB_7
 
     // motors
-    #define MINI_SEGWAY_COUNTS_PER_TURN (31.25f * 20.0f)
+    #define MINI_SEGWAY_GEAR_RATIO 31.25f
+    #define MINI_SEGWAY_COUNTS_PER_TURN (20.0f * MINI_SEGWAY_GEAR_RATIO)
     #define MINI_SEGWAY_KN (450.0f / 12.0f) // 31:1 Metal Gearmotor 20Dx41L mm 12V CB with Extended Motor Shaft
-    #define MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY 20.0f
     #define MINI_SEGWAY_VOLTAGE_MAX 6.0f
-    #define MINI_SEGWAY_VEL_MAX_RADS (MINI_SEGWAY_KN * MINI_SEGWAY_VOLTAGE_MAX * 2.0f * M_PI / 60.0f) // TODO: use this
+    #define MINI_SEGWAY_VELOCITY_FILTER_DAMPING (sqrtf(3.0f) / 2.0f)
+    #define MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY 20.0f
+    #define MINI_SEGWAY_DC_MOTOR_KP 1.2 * 4.2f
+    #define MINI_SEGWAY_DC_MOTOR_KI 1.1 * 140.0f
+    #define MINI_SEGWAY_DC_MOTOR_KD 1.1 * 0.0192f;
 
     // motor driver (h-bridge)
     #define MINI_SEGWAY_ENABLE_MOTOR_DRIVER PB_15
@@ -174,9 +185,10 @@
     #define MINI_SEGWAY_IMU_CLK PB_10
     #define MINI_SEGWAY_IMU_CS PB_4
     #define MINI_SEGWAY_IMU_USE_ADDITIONAL_FILTERS true
-    #define MINI_SEGWAY_IMU_GYRO_FREQUENCY_HZ 80.0f
-    #define MINI_SEGWAY_IMU_ACC_FREQUENCY_HZ 20.0f
-
+    #define MINI_SEGWAY_IMU_GYRO_FREQUENCY_HZ 60.0f
+    #define MINI_SEGWAY_IMU_ACC_FREQUENCY_HZ 15.0f
+    #define MINI_SEGWAY_IMU_DO_USE_STATIC_ACC_CALIBRATION false // if this is false then acc gets averaged at the beginning and printed to the console
+    #define MINI_SEGWAY_IMU_ROTATE_SIGNALS_SEGWAY_STANDING false
     // imu acc bias and mahony gains
     #define MINI_SEGWAY_IMU_B_ACC {0.0f, 0.0f, 0.0f}
     // % bessel (D = sqrt(3)/2)
@@ -187,32 +199,37 @@
     // w0 = 3;
     // kp = w0;
     // ki = 0;
-    #define MINI_SEGWAY_IMU_KP_XY (0.1592f * 2.0f * M_PI)
-    // #define MINI_SEGWAY_KP_XY (3.0f * 2.0f * M_PI / (sqrtf(3.0f) / 3.0f))
-    #define MINI_SEGWAY_IMU_KP_Z  (0.1592f * 2.0f * M_PI)
+    #define MINI_SEGWAY_IMU_KP_XY (0.1592f * 2.0f * M_PIf)
+    // #define MINI_SEGWAY_IMU_KP_XY (0.1592f * 2.0f * M_PIf / (sqrtf(3.0f) / 3.0f))
+    #define MINI_SEGWAY_IMU_KP_Z  (0.1592f * 2.0f * M_PIf)
     #define MINI_SEGWAY_IMU_KI_XY 0.0f
-    // #define MINI_SEGWAY_KI_XY (MINI_SEGWAY_KP_XY * MINI_SEGWAY_KP_XY / 3.0f)
+    // #define MINI_SEGWAY_IMU_KI_XY (MINI_SEGWAY_IMU_KP_XY * MINI_SEGWAY_IMU_KP_XY / 3.0f)
     #define MINI_SEGWAY_IMU_KI_Z  0.0f
-    
+
     // robot kinematics
-    #define R_WHEEL 0.039f // TODO: use this
-    #define L_WHEEL 0.133f
-    #define B_TURN (L_WHEEL / (2.0f * R_WHEEL))
+    #define R_WHEEL 0.039f // wheel radius in meters
+    #define B_WHEEL 0.125f // wheelbase, distance from wheel to wheel in meters
     // math is design in the way that left turn is with the possitive sign
     // rc controller is sending negative sign when turning left with stick
     // thats why for the maths we need to multipline rc controller output by -1
-    #define TURN_RATIO -5.0f
+    // #define TURN_RATIO -5.0f
 
-    // // analog current sensor
-    // #define MINI_SEGWAY_AIN1 PB_0
-    // #define MINI_SEGWAY_AIN2 PC_1
-    
     // chirp signal
-    #define MINI_SEGWAY_CHIRP_T1 20.0f
-    #define MINI_SEGWAY_CHIRP_F0 (1.0f / MINI_SEGWAY_CHIRP_T1)
-    #define MINI_SEGWAY_CHIRP_F1 (1.0f / (2.0f * MINI_SEGWAY_TS))
-    #define MINI_SEGWAY_CHIRP_AMPLITUDE 2.0f
-    #define MINI_SEGWAY_CHIRP_OFFSET 3.5f
+    #define MINI_SEGWAY_CHIRP_USE_CHIRP false
+    #if MINI_SEGWAY_CHIRP_USE_CHIRP
+        #define MINI_SEGWAY_CHIRP_T1 20.0f
+        #define MINI_SEGWAY_CHIRP_F0 (1.0f / MINI_SEGWAY_CHIRP_T1)
+        #define MINI_SEGWAY_CHIRP_F1 (1.0f / (2.0f * MINI_SEGWAY_TS))
+        #define MINI_SEGWAY_CHIRP_AMPLITUDE 2.0f
+        #define MINI_SEGWAY_CHIRP_OFFSET 3.5f
+    #endif
+
+    // analog current sensor
+    #define MINI_SEGWAY_AIN_USE_CURRENT_SENSOR false
+    #if MINI_SEGWAY_AIN_USE_CURRENT_SENSOR
+        #define MINI_SEGWAY_AIN_1 PB_0
+        #define MINI_SEGWAY_AIN_2 PC_1
+    #endif
 
 #endif
 

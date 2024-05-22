@@ -5,7 +5,7 @@ Encoder::Encoder(PinName a,
                  uint16_t counts_per_turn,
                  float f_cut,
                  float Ts) : _EncoderCounter(a, b)
-                           , _IIR_Velocity_Filter(2.0f * M_PI * f_cut,
+                           , _IIR_Velocity_Filter(2.0f * M_PIf * f_cut,
                                                   1.0f,
                                                   Ts,
                                                   1.0f)

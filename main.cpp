@@ -5,7 +5,6 @@
  * - we need to find out which gear ratio we're going to use and order new motors
  * - imu internal filters need to be checked
  * - after checking the internal filter, mahony needs to be tuned
- * - double check mahony parametrization, bessel impl. might have a bug (pmic)
  * - think about acc calibration when we use the above signal order (might need to be static)
  *   function in minisegway directly
  * - we might need an external mechanical button
@@ -14,6 +13,11 @@
  * - reset via button needs to work properly (for all variables, obj, etc.)
  * - change all internal signals to SI units, e.g. rad/s, rad, meter, etc...
  * - look into kinematics and how this will be needed for segway
+*/
+
+/**
+ * TODO move tooling:
+ * - mahonyRP.m and eval file
 */
 
 /**
