@@ -9,7 +9,8 @@
 class Motor
 {
 public:
-    explicit Motor(PinName c,
+    explicit Motor(PinName a,
+                   PinName b,
                    float voltage_max);
     virtual ~Motor() {};
 
@@ -17,7 +18,7 @@ public:
     void setVoltage(float voltage);
 
 private:
-    FastPWM _pwm;
+    FastPWM _pwm_pos, _pwm_neg;
     float _voltage_max;
 };
 

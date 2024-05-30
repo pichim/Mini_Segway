@@ -128,8 +128,12 @@ void MiniSegway::threadTask()
     Encoder::encoder_signals_t encoder_signals_M2 = encoder_M2.read();
 
     // motors
-    Motor motor_M1(MINI_SEGWAY_PWM_M1, MINI_SEGWAY_VOLTAGE_MAX);
-    Motor motor_M2(MINI_SEGWAY_PWM_M2, MINI_SEGWAY_VOLTAGE_MAX);
+    Motor motor_M1(MINI_SEGWAY_PWM_M1_POS,
+                   MINI_SEGWAY_PWM_M1_NEG,
+                   MINI_SEGWAY_VOLTAGE_MAX);
+    Motor motor_M2(MINI_SEGWAY_PWM_M2_POS,
+                   MINI_SEGWAY_PWM_M2_NEG,
+                   MINI_SEGWAY_VOLTAGE_MAX);
     float voltage_M1{0.0f};
     float voltage_M2{0.0f};
 

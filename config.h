@@ -153,8 +153,14 @@
 
     // pwm
     #define MINI_SEGWAY_ENABLE_MOTOR_DRIVER PB_15
-    #define MINI_SEGWAY_PWM_M1 PB_13
-    #define MINI_SEGWAY_PWM_M2 PA_9
+    // if you want to switch the names you also need to adjust the following code in main.cpp:
+    // // invert polarity of pwms
+    // TIM3->CCER |= TIM_CCER_CC4P; // invert polarity of pwm on PC_9, PWM3/4 : TIM3_CH4
+    // TIM1->CCER |= TIM_CCER_CC2P; // invert polarity of pwm on PA_9, PWM1/2 : TIM1_CH2
+    #define MINI_SEGWAY_PWM_M1_POS PC_8 // PWM3/3 : TIM3_CH3
+    #define MINI_SEGWAY_PWM_M1_NEG PC_9 // PWM3/4 : TIM3_CH4
+    #define MINI_SEGWAY_PWM_M2_POS PA_8 // PWM1/1 : TIM1_CH1
+    #define MINI_SEGWAY_PWM_M2_NEG PA_9 // PWM1/2 : TIM1_CH2
     #define MINI_SEGWAY_PWM_MIN_VALUE 0.001f
     #define MINI_SEGWAY_PWM_MAX_VALUE 0.999f
 
