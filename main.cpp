@@ -3,13 +3,14 @@
 #include "src/DebounceIn.h"
 #include "src/FastPWM/FastPWM.h"
 
-#define MINI_SEGWAY_PWM_M1_POS PC_8 // PWM3/3 : TIM3_CH3
-#define MINI_SEGWAY_PWM_M1_NEG PC_9 // PWM3/4 : TIM3_CH4
+#define MINI_SEGWAY_PWM_M1_POS PA_15 // PWM2/1 : TIM2_CH1
+#define MINI_SEGWAY_PWM_M1_NEG PB_9  // PWM2/2 : TIM2_CH2
+#define MINI_SEGWAY_PWM_M2_POS PA_8  // PWM1/1 : TIM1_CH1
+#define MINI_SEGWAY_PWM_M2_NEG PA_9  // PWM1/2 : TIM1_CH2
+
 FastPWM pwm_M1_pos(MINI_SEGWAY_PWM_M1_POS);
 FastPWM pwm_M1_neg(MINI_SEGWAY_PWM_M1_NEG);
 
-#define MINI_SEGWAY_PWM_M2_POS PA_8 // PWM1/1 : TIM1_CH1
-#define MINI_SEGWAY_PWM_M2_NEG PA_9 // PWM1/2 : TIM1_CH2
 FastPWM pwm_M2_pos(MINI_SEGWAY_PWM_M2_POS);
 FastPWM pwm_M2_neg(MINI_SEGWAY_PWM_M2_NEG);
 
@@ -25,7 +26,7 @@ int main()
     user_button.fall(&toggle_do_execute_main_fcn);
 
     // invert polarity of pwms
-    TIM3->CCER |= TIM_CCER_CC4P; // invert polarity of pwm on PC_9, PWM3/4 : TIM3_CH4
+    TIM2->CCER |= TIM_CCER_CC2P; // invert polarity of pwm on PB_9, PWM2/2 : TIM2_CH2
     TIM1->CCER |= TIM_CCER_CC2P; // invert polarity of pwm on PA_9, PWM1/2 : TIM1_CH2
 
     pwm_M1_pos.write(val_M1);
