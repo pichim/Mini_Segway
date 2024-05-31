@@ -56,9 +56,6 @@ MiniSegway miniSegway(rc, imu);
 // main thread is just blinking the led on the nucleo
 int main()
 {
-    // invert polarity of pwms
-    TIM3->CCER |= TIM_CCER_CC4P; // invert polarity of pwm on PC_9, PWM3/4 : TIM3_CH4
-    TIM1->CCER |= TIM_CCER_CC2P; // invert polarity of pwm on PA_9, PWM1/2 : TIM1_CH2
 
     DigitalOut led1(LED1);
     while (true) {

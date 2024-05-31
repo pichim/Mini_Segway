@@ -109,8 +109,8 @@
     // serial data stream, tested up to 20 floats at 2 kHz
     #if DO_USE_OPENLAGER_FOR_DATA_STREAM
         // openlager UART2
-        #define MINI_SEGWAY_TX PC_10
-        #define MINI_SEGWAY_RX PC_11
+        #define MINI_SEGWAY_TX PC_6
+        #define MINI_SEGWAY_RX NC
     #else
         // serial via usb to matlab UART2
         // #define MINI_SEGWAY_TX USBTX // usb to computer
@@ -136,7 +136,7 @@
     // #define MINI_SEGWAY_BUTTON PC_5 // additonal button
 
     // additional led
-    #define MINI_SEGWAY_LED PB_9
+    #define MINI_SEGWAY_LED PA_7
 
     // encoders
     #define MINI_SEGWAY_ENCA_M1 PA_6
@@ -155,10 +155,10 @@
     #define MINI_SEGWAY_ENABLE_MOTOR_DRIVER PB_15
     // if you want to switch the names you also need to adjust the following code in main.cpp:
     // // invert polarity of pwms
-    // TIM3->CCER |= TIM_CCER_CC4P; // invert polarity of pwm on PC_9, PWM3/4 : TIM3_CH4
+    // TIM2->CCER |= TIM_CCER_CC2P; // invert polarity of pwm on PB_9, PWM2/2 : TIM2_CH2
     // TIM1->CCER |= TIM_CCER_CC2P; // invert polarity of pwm on PA_9, PWM1/2 : TIM1_CH2
-    #define MINI_SEGWAY_PWM_M1_POS PC_8 // PWM3/3 : TIM3_CH3
-    #define MINI_SEGWAY_PWM_M1_NEG PC_9 // PWM3/4 : TIM3_CH4
+    #define MINI_SEGWAY_PWM_M1_POS PA_15 // PWM2/1 : TIM2_CH1
+    #define MINI_SEGWAY_PWM_M1_NEG PB_9 // PWM2/2 : TIM2_CH2
     #define MINI_SEGWAY_PWM_M2_POS PA_8 // PWM1/1 : TIM1_CH1
     #define MINI_SEGWAY_PWM_M2_NEG PA_9 // PWM1/2 : TIM1_CH2
     #define MINI_SEGWAY_PWM_MIN_VALUE 0.001f

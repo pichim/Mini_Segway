@@ -159,8 +159,8 @@ void MiniSegway::threadTask()
     float sinarg = 0.0f;
 
     // current sensor
-    AnalogIn current_sens_1(PC_5);
-    AnalogIn current_sens_2(PC_3);
+    AnalogIn current_sens_1(PB_0);
+    AnalogIn current_sens_2(PC_1);
     float sensor_voltage_output_1;
     float current_value_1;
     float sensor_voltage_output_2;
@@ -168,6 +168,9 @@ void MiniSegway::threadTask()
     const float lin_fun_A = 0.8f;
     const float lin_fun_B = 2.5f;  
 
+    // invert polarity of pwms
+    TIM2->CCER |= TIM_CCER_CC2P; // invert polarity of pwm on PB_9, PWM2/2 : TIM2_CH2
+    TIM1->CCER |= TIM_CCER_CC2P; // invert polarity of pwm on PA_9, PWM1/2 : TIM1_CH2
 
     // give the openLager 1000 msec time to start
     thread_sleep_for(1000);
