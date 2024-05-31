@@ -1,6 +1,8 @@
 #ifndef MOTOR_H_
 #define MOTOR_H_
 
+#include "config.h"
+
 #include "FastPWM/FastPWM.h"
 
 #define MOTOR_DUTY_CYCLE_MIN_VALUE 0.01f
@@ -9,15 +11,16 @@
 class Motor
 {
 public:
-    explicit Motor(PinName c,
-                   float voltage_max);
+    explicit Motor(PinName pin_pwm_pos,
+                   PinName pin_pwm_neg,
+                   float voltage_max = 12.0f);
     virtual ~Motor() {};
 
-    void reset();
+    void reset(float voltage = 0.0f);
     void setVoltage(float voltage);
 
 private:
-    FastPWM _pwm;
+    FastPWM _pwm_pos, _pwm_neg;
     float _voltage_max;
 };
 

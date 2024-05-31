@@ -38,14 +38,15 @@ void MiniSegway::threadTask()
                               MINI_SEGWAY_BAUDRATE);
 
     // motors
-    DigitalOut enable_motor_driver(MINI_SEGWAY_ENABLE_MOTOR_DRIVER);
-    DCMotor motor_M1(MINI_SEGWAY_PWM_M1,
+    DCMotor motor_M1(MINI_SEGWAY_PWM_M1_POS,
+                     MINI_SEGWAY_PWM_M1_NEG,
                      MINI_SEGWAY_ENCA_M1,
                      MINI_SEGWAY_ENCB_M1,
                      MINI_SEGWAY_GEAR_RATIO,
                      MINI_SEGWAY_KN,
                      MINI_SEGWAY_VOLTAGE_MAX);
-    DCMotor motor_M2(MINI_SEGWAY_PWM_M2,
+    DCMotor motor_M2(MINI_SEGWAY_PWM_M2_POS,
+                     MINI_SEGWAY_PWM_M1_NEG,
                      MINI_SEGWAY_ENCA_M2,
                      MINI_SEGWAY_ENCB_M2,
                      MINI_SEGWAY_GEAR_RATIO,
@@ -99,6 +100,9 @@ void MiniSegway::threadTask()
     float current_M2;
 #endif
 
+    // invert polarity of pwms
+    // TIM2->CCER |= TIM_CCER_CC2P; // invert polarity of pwm on PB_9, PWM2/2 : TIM2_CH2
+    // TIM1->CCER |= TIM_CCER_CC2P; // invert polarity of pwm on PA_9, PWM1/2 : TIM1_CH2
 
     // give the openLager 1000 msec time to start
     thread_sleep_for(1000);
@@ -141,10 +145,6 @@ void MiniSegway::threadTask()
 
         // arm is only true if receiver data is valid and arm button is pressed
         if (_do_execute && rc_pkg.armed) {
-
-            // TODO: mmove enable motor drivers to a better place
-            if (enable_motor_driver == 0)
-                enable_motor_driver = 1;
             
             // mix wheel speed based on rc input
             robot_coord << flip_mixer_sign * mixer_gain * forward_speed_max * rc_pkg.forward_speed, 

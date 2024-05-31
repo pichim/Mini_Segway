@@ -1,18 +1,23 @@
 #include "DCMotor.h"
 
-DCMotor::DCMotor(PinName pin_pwm,
+DCMotor::DCMotor(PinName pin_pwm_pos,
+                 PinName pin_pwm_neg,
                  PinName pin_enc_a,
                  PinName pin_enc_b,
                  float gear_ratio,
                  float kn,
                  float voltage_max,
-                 float counts_per_turn) : m_FastPWM(pin_pwm),
-                                          m_EncoderCounter(pin_enc_a, pin_enc_b),
-                                          m_Thread(osPriorityHigh1, 4096)
+                 float counts_per_turn) : m_FastPWM_pos(pin_pwm_pos)
+                                        , m_FastPWM_neg(pin_pwm_neg)
+                                        , m_EncoderCounter(pin_enc_a, pin_enc_b)
+                                        , m_Thread(osPriorityHigh1, 4096)
 #if PERFORM_CHIRP_MEAS
-                                          , m_BufferedSerial(USBTX, USBRX)
+                                        , m_BufferedSerial(USBTX, USBRX)
 #endif
 {
+    m_FastPWM_pos.period_mus(MINI_SEGWAY_PWM_PERIOD_US);
+    m_FastPWM_neg.period_mus(MINI_SEGWAY_PWM_PERIOD_US);
+
     // motor parameters
     m_counts_per_turn = gear_ratio * counts_per_turn;
     m_voltage_max = voltage_max;
@@ -346,7 +351,8 @@ void DCMotor::threadTask()
 
         // calculate pwm and write output
         const float pwm = 0.5f + 0.5f * voltage / m_voltage_max;
-        m_FastPWM.write(pwm);
+        m_FastPWM_pos.write(pwm);
+        m_FastPWM_neg.write(pwm);
 
         // update signals
         m_velocity_setpoint = velocity_setpoint;

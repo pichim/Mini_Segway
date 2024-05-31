@@ -72,7 +72,8 @@ public:
     /**
      * @brief Construct a new DCMotor object.
      *
-     * @param pin_pwm The pin name for PWM control of the motor.
+     * @param pin_pwm_pos The pin name for PWM control of the motor.
+     * @param pin_pwm_neg The pin name for inverted PWM control of the motor.
      * @param pin_enc_a The first pin name for the encoder.
      * @param pin_enc_b The second pin name for the encoder.
      * @param gear_ratio The gear ratio of the gear box.
@@ -80,7 +81,8 @@ public:
      * @param voltage_max The maximum voltage for the motor.
      * @param counts_per_turn The number of encoder counts per turn of the motor.
      */
-    explicit DCMotor(PinName pin_pwm,
+    explicit DCMotor(PinName pin_pwm_pos,
+                     PinName pin_pwm_neg,
                      PinName pin_enc_a,
                      PinName pin_enc_b,
                      float gear_ratio,
@@ -276,7 +278,7 @@ private:
     static constexpr float KD = MINI_SEGWAY_DC_MOTOR_KD;
     static constexpr float P = 16.0f;
 
-    FastPWM m_FastPWM;
+    FastPWM m_FastPWM_pos, m_FastPWM_neg;
     EncoderCounter m_EncoderCounter;
     Motion m_Motion;
     PID_Cntrl M_PIfD_Cntrl_velocity;

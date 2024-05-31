@@ -1,5 +1,6 @@
 # MiniSegway
 
+THIS IS NOT UP TO DATE
 
 WIP
 *** The readme is out of date... still belongs to the work with the NUCLEO_L432KC ***

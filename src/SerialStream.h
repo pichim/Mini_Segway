@@ -27,14 +27,14 @@ public:
     void reset();
 
 private:
+    char _buffer[4 * S_STREAM_NUM_OF_FLOATS_MAX];
+    uint8_t _buffer_size;
+    uint8_t _byte_cntr{0};
 #if S_STREAM_DO_USE_SERIAL_PIPE
     SerialPipe _SerialPipe;
 #else
     BufferedSerial _BufferedSerial;
 #endif
-    char _buffer[4 * S_STREAM_NUM_OF_FLOATS_MAX];
-    uint8_t _buffer_size;
-    uint8_t _byte_cntr{0};
 
     typedef struct byte_msg_s {
         uint8_t byte{0};
