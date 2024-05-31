@@ -4,9 +4,10 @@ Encoder::Encoder(PinName a,
                  PinName b,
                  uint16_t counts_per_turn,
                  float f_cut,
+                 float D,
                  float Ts) : _EncoderCounter(a, b)
                            , _IIR_Velocity_Filter(2.0f * M_PIf * f_cut,
-                                                  1.0f,
+                                                  D,
                                                   Ts,
                                                   1.0f)
                            , _counts_per_turn(static_cast<float>(counts_per_turn))

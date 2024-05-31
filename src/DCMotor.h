@@ -267,15 +267,15 @@ public:
 #endif
 
 private:
-    static constexpr int64_t PERIOD_MUS = 100;
+    static constexpr int64_t PERIOD_MUS = MINI_SEGWAY_PWM_PERIOD_US;
     static constexpr float TS = 1.0e-6f * static_cast<float>(PERIOD_MUS);
     static constexpr float PWM_MIN = 0.001f;
     static constexpr float PWM_MAX = 0.999f;
     static constexpr float ROTATION_ERROR_MAX = 5.0e-3f;
     // Default controller parameters where found using a motor with gear ratio 78.125:1
-    static constexpr float KP = MINI_SEGWAY_DC_MOTOR_KP;
-    static constexpr float KI = MINI_SEGWAY_DC_MOTOR_KI;
-    static constexpr float KD = MINI_SEGWAY_DC_MOTOR_KD;
+    static constexpr float KP = MINI_SEGWAY_VEL_CNTRL_KP;
+    static constexpr float KI = MINI_SEGWAY_VEL_CNTRL_KI;
+    static constexpr float KD = MINI_SEGWAY_VEL_CNTRL_KD;
     static constexpr float P = 16.0f;
 
     FastPWM m_FastPWM_pos, m_FastPWM_neg;

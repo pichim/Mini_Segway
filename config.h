@@ -24,7 +24,7 @@
 #define MINI_SEGWAY_TS (static_cast<float>(MINI_SEGWAY_PERIOD_US) * 1.0e-6f)
 
 // streaming device, openlager or laptop / pc
-#define DO_USE_OPENLAGER_FOR_DATA_STREAM true
+#define DO_USE_OPENLAGER_FOR_DATA_STREAM false
 // serial data stream, tested up to 20 floats at 2 kHz
 #if DO_USE_OPENLAGER_FOR_DATA_STREAM
     // openlager
@@ -75,9 +75,9 @@
 #define MINI_SEGWAY_VOLTAGE_MAX 12.0f
 #define MINI_SEGWAY_VELOCITY_FILTER_DAMPING (sqrtf(3.0f) / 2.0f)
 #define MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY 20.0f
-#define MINI_SEGWAY_DC_MOTOR_KP 0.2f * 1.2f * 4.2f   // 0.2f so that it is stable (but slow)
-#define MINI_SEGWAY_DC_MOTOR_KI 0.2f * 1.1f * 140.0f // 0.2f so that it is stable (but slow)
-#define MINI_SEGWAY_DC_MOTOR_KD 1.1f * 0.0192f;
+#define MINI_SEGWAY_VEL_CNTRL_KP 0.2f * 1.2f * 4.2f   // 0.2f so that it is stable (but slow)
+#define MINI_SEGWAY_VEL_CNTRL_KI 0.2f * 1.1f * 140.0f // 0.2f so that it is stable (but slow)
+#define MINI_SEGWAY_VEL_CNTRL_KD 1.1f * 0.0192f;
 
 // pwm
 // if you want to switch the names you also need to adjust the following code in MiniSegway.cpp:
@@ -85,7 +85,7 @@
 // TIM2->CCER |= TIM_CCER_CC2P; // invert polarity of pwm on PB_9, PWM2/2 : TIM2_CH2
 // TIM1->CCER |= TIM_CCER_CC2P; // invert polarity of pwm on PA_9, PWM1/2 : TIM1_CH2
 #define MINI_SEGWAY_PWM_PERIOD_US 200 // 5 kHz
-#define MINI_SEGWAY_PWM_M1_POS PB_13 // PA_15 // PWM2/1 : TIM2_CH1
+#define MINI_SEGWAY_PWM_M1_POS PA_15 // PWM2/1 : TIM2_CH1
 #define MINI_SEGWAY_PWM_M1_NEG PB_9  // PWM2/2 : TIM2_CH2
 #define MINI_SEGWAY_PWM_M2_POS PA_8  // PWM1/1 : TIM1_CH1
 #define MINI_SEGWAY_PWM_M2_NEG PA_9  // PWM1/2 : TIM1_CH2

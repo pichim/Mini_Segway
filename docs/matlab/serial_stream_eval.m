@@ -2,7 +2,7 @@ clc, clear all
 addpath fcns\
 %%
 
-port = 'COM10';
+port = 'COM13';
 baudrate = 2e6;
 
 if (~exist('serialStream', 'var'))
@@ -34,7 +34,7 @@ ind.gyro = 9:11;
 ind.acc = 12:14;
 ind.rpy = 15:17;
 ind.voltage_M = 18:19;
-ind.vel_sp_M = 20:21;
+% ind.vel_sp_M = 20:21;
 
 
 Ts = mean(diff(data.time));
@@ -69,7 +69,8 @@ ax(1) = subplot(311);
 plot(data.time, data.values(:,ind.voltage_M)), grid on
 ylabel('Voltage (V)')
 ax(2) = subplot(312);
-plot(data.time, data.values(:,[ind.vel_sp_M, ind.vel_M])), grid on
+% plot(data.time, data.values(:,[ind.vel_sp_M, ind.vel_M])), grid on
+plot(data.time, data.values(:,ind.vel_M)), grid on
 ylabel('Velocity (RPS)')
 ax(3) = subplot(313);
 plot(data.time, data.values(:,ind.ang_M)), grid on

@@ -6,7 +6,7 @@ addpath fcns\
 % max_num_of_floats = 2000000 / (4 * (8 + 2) * 2000)
 
 % openlager
-file_id = fopen('LOG012.TXT');
+file_id = fopen('LOG008.TXT');
 
 num_of_floats = fread(file_id, 1, 'uint8')
 
@@ -38,7 +38,7 @@ ind.gyro = 9:11;
 ind.acc = 12:14;
 ind.rpy = 15:17;
 ind.voltage_M = 18:19;
-ind.vel_sp_M = 20:21;
+% ind.vel_sp_M = 20:21;
 
 
 Ts = mean(diff(data.time));
@@ -73,7 +73,8 @@ ax(1) = subplot(311);
 plot(data.time, data.values(:,ind.voltage_M)), grid on
 ylabel('Voltage (V)')
 ax(2) = subplot(312);
-plot(data.time, data.values(:,[ind.vel_sp_M, ind.vel_M])), grid on
+% plot(data.time, data.values(:,[ind.vel_sp_M, ind.vel_M])), grid on
+plot(data.time, data.values(:,ind.vel_M)), grid on
 ylabel('Velocity (RPS)')
 ax(3) = subplot(313);
 plot(data.time, data.values(:,ind.ang_M)), grid on

@@ -15,6 +15,7 @@ public:
                      PinName b,
                      uint16_t counts_per_turn,
                      float f_cut,
+                     float D,
                      float Ts);
     virtual ~Encoder() {};
 

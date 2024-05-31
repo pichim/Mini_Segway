@@ -8,9 +8,11 @@
 #if MINI_SEGWAY_CHIRP_USE_CHIRP
     #include "Chirp.h"
 #endif
+#include "Encoder.h" // TODO: Remove
 #include "DCMotor.h"
 #include "DebounceIn.h"
 #include "IMU.h"
+#include "Motor.h" // TODO: Remove
 #include "RC.h"
 #include "SerialStream.h"
 #include "ThreadFlag.h"
