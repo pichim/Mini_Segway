@@ -4,9 +4,7 @@
 #include <math.h>
 #include <stdint.h>
 
-#ifndef M_PIf
-    #define M_PIf 3.14159265358979323846f
-#endif
+#define M_PIf 3.14159265358979323846f /* pi */
 
 class Chirp
 {
@@ -29,7 +27,7 @@ private:
         uint32_t count, N;
         float exc, fchirp, sinarg;
         bool isFinished;
-    } chirp;
+    } m_chirp;
 
     void resetSignals();
 };

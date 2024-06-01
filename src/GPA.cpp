@@ -484,14 +484,14 @@ void GPA::calculateDecreasingAmplitudeCoefficients(float Aexc0, float Aexc1)
 
 void GPA::initializeConstants(float Ts)
 {
-    this->fnyq     = 1.0f/2.0f/Ts;
-    this->pi2      = 2.0*M_PIf;
-    this->pi4      = 4.0f*M_PIf;
-    this->pi2Ts    = 2.0*M_PIf*(double)Ts;
-    this->piDiv2   = M_PIf/2.0f;
-    this->rad2deg  = 180.0f/M_PIf;
-    this->div12pi  = 1.0f/(12.0f*M_PIf);
-    this->div812pi = 8.0f/(12.0f*M_PIf);
+    this->fnyq     = 1.0f / (2.0f * Ts);
+    this->pi2      = 2.0 * M_PI;
+    this->pi4      = 4.0f * M_PIf;
+    this->pi2Ts    = 2.0 * M_PI * (double)Ts;
+    this->piDiv2   = M_PIf / 2.0f;
+    this->rad2deg  = 180.0f / M_PIf;
+    this->div12pi  = 1.0f / (12.0f * M_PIf);
+    this->div812pi = 8.0f / (12.0f * M_PIf);
 }
 
 void GPA::assignFilterStorage()
@@ -566,7 +566,7 @@ void GPA::precalcParam()
 float GPA::wrapAngle(float angle)
 {
     // wrap angle from (-2pi,2pi) into (-pi,pi)
-    if(fabsf(angle) > (float)M_PIf)
+    if(fabsf(angle) > M_PIf)
         angle -= copysignf(-(float)pi2, angle); // -1*sign(angle)*2*pi + angle;
     return angle;
 }

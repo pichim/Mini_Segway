@@ -1,7 +1,7 @@
 #ifndef MAHONY_H_
 #define MAHONY_H_
 
-#include "eigen/Dense"
+#include "eigen/Dense.h"
 
 class Mahony
 {

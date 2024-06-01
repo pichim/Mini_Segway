@@ -1,13 +1,12 @@
 #ifndef GPA_H_
 #define GPA_H_
 
-#include "math.h"
-
 #include "mbed.h"
 
-#ifndef M_PIf
-    #define M_PIf 3.14159265358979323846f /* pi */
-#endif
+#include "math.h"
+
+#define M_PIf 3.14159265358979323846f /* pi */
+#define M_PI 3.141592653589793238462643383279502884
 
 #define GPA_EXC_VIA_FILTER false
 #define BUFFER_LENGTH 120

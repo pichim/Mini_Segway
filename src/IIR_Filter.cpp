@@ -1,5 +1,3 @@
-#include <math.h>
-
 #include "IIR_Filter.h"
 
 /*
@@ -11,7 +9,7 @@
               - nth order, with arbitrary values
     - billinear transformation is used for s -> z
     - reseting the filter only makes sense for static signals, whatch out if you're using the differentiator, static corresponds to output zero
-    - you need to be carefull with small sampling times, since the filter is running in float prescision
+    - you need to be carefull with with small sampling times, since the filter is running in float prescision
 */
 
 // G(s) = s/(T*s + 1)

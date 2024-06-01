@@ -49,7 +49,7 @@ void PID_Cntrl::setup(float I, float Ts, float uMin, float uMax)
     P = 0.0f;
     D = 0.0f;
     double Ts_d = static_cast<double>(Ts);
-    tau_f = static_cast<float>(Ts_d / (0.95 * M_PIf)); // unused
+    tau_f = static_cast<float>(Ts_d / (0.95 * M_PI));
     tau_ro = 0.0f;
     setup(P, I, D, tau_f, tau_ro, Ts, uMin, uMax);
 }
@@ -58,7 +58,7 @@ void PID_Cntrl::setup(float P, float I, float Ts, float uMin, float uMax)
 {
     D = 0.0f;
     double Ts_d = static_cast<double>(Ts);
-    tau_f = static_cast<float>(Ts_d / (0.95 * M_PIf)); // unused
+    tau_f = static_cast<float>(Ts_d / (0.95 * M_PI));
     tau_ro = 0.0f;
     setup(P, I, D, tau_f, tau_ro, Ts, uMin, uMax);
 }
@@ -66,7 +66,7 @@ void PID_Cntrl::setup(float P, float I, float Ts, float uMin, float uMax)
 void PID_Cntrl::setup(float P, float I, float D, float Ts, float uMin, float uMax)
 {
     double Ts_d = static_cast<double>(Ts);
-    tau_f = static_cast<float>(Ts_d / (0.95 * M_PIf)); // 1.0/(0.95*2.0*pi*fnyq)
+    tau_f = static_cast<float>(Ts_d / (0.95 * M_PI));
     tau_ro = 0.0f;
     setup(P, I, D, tau_f, tau_ro, Ts, uMin, uMax);
 }
