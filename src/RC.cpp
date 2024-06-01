@@ -1,19 +1,19 @@
 #include "RC.h"
 
-#if DO_USE_PPM_IN
 RC::RC(PinName pin) : _rc(pin)
-#else
-RC::RC(PinName pin) : _rc(pin)
-#endif
-                    , _upsampling_filters{IIR_Filter(2.0f * M_PIf * MINI_SEGWAY_RC_UPSAMPLING_FREQUENCY_HZ,
-                                                     MINI_SEGWAY_RC_UPSAMPLING_DAMPING, MINI_SEGWAY_TS, 1.0f),
-                                          IIR_Filter(2.0f * M_PIf * MINI_SEGWAY_RC_UPSAMPLING_FREQUENCY_HZ,
-                                                     MINI_SEGWAY_RC_UPSAMPLING_DAMPING, MINI_SEGWAY_TS, 1.0f)}
+                    , _upsampling_filters{IIR_Filter(MINI_SEGWAY_RC_UPSAMPLING_FREQUENCY_RAD_SEC,
+                                                     MINI_SEGWAY_RC_UPSAMPLING_DAMPING, MINI_SEGWAY_TS,
+                                                     1.0f),
+                                          IIR_Filter(MINI_SEGWAY_RC_UPSAMPLING_FREQUENCY_RAD_SEC,
+                                                     MINI_SEGWAY_RC_UPSAMPLING_DAMPING, MINI_SEGWAY_TS,
+                                                     1.0f)}
 {}
 
 void RC::processReceivedData()
 {
+#if !DO_USE_PPM_IN
     _rc.processReceivedData();
+#endif
 }
 
 float RC::getPeriod()

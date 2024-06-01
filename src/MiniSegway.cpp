@@ -61,13 +61,13 @@ void MiniSegway::threadTask()
     Encoder encoder_M1(MINI_SEGWAY_ENCA_M1,
                        MINI_SEGWAY_ENCB_M1,
                        MINI_SEGWAY_COUNTS_PER_TURN,
-                       MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY,
+                       MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY_RAD_SEC,
                        MINI_SEGWAY_VELOCITY_FILTER_DAMPING,
                        MINI_SEGWAY_TS);
     Encoder encoder_M2(MINI_SEGWAY_ENCA_M2,
                        MINI_SEGWAY_ENCB_M2,
                        MINI_SEGWAY_COUNTS_PER_TURN,
-                       MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY,
+                       MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY_RAD_SEC,
                        MINI_SEGWAY_VELOCITY_FILTER_DAMPING,
                        MINI_SEGWAY_TS);
     Encoder::encoder_signals_t encoder_signals_M1 = encoder_M1.read();

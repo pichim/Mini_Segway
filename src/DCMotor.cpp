@@ -28,11 +28,11 @@ DCMotor::DCMotor(PinName pin_pwm_pos,
     const float k_gear = gear_ratio / 78.125f;
     setVelocityCntrl(DCMotor::KP * k_gear, DCMotor::KI * k_gear, DCMotor::KD * k_gear);
     if (kn != 0.0f)
-        M_PIfD_Cntrl_velocity.setCoeff_F(60.0f / kn);
+        m_PID_Cntrl_velocity.setCoeff_F(60.0f / kn);
     setRotationCntrlGain();
 
     // iir filter
-    m_IIR_Filter_velocity.setup(2.0f * M_PIf * MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY,
+    m_IIR_Filter_velocity.setup(MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY_RAD_SEC,
                                 MINI_SEGWAY_VELOCITY_FILTER_DAMPING,
                                 TS,
                                 1.0f);
@@ -111,7 +111,7 @@ void DCMotor::setRotation(float rotation)
 void DCMotor::setRotationRelative(float rotation_relative)
 {
     m_cntrlMode = CntrlMode::Rotation;
-    m_rotation_target += rotation_relative;
+    m_rotation_target = getRotation() + rotation_relative;
 }
 
 float DCMotor::getRotationTarget() const
@@ -158,7 +158,7 @@ void DCMotor::setVelocityCntrl(float kp, float ki, float kd)
 {
     const float tau_f = 1.0f / (2.0f * M_PIf * 30.0f);
     const float tau_ro = 1.0f / (2.0f * M_PIf * 0.4f / (2.0f * TS));
-    M_PIfD_Cntrl_velocity.setup(kp,
+    m_PID_Cntrl_velocity.setup(kp,
                                ki,
                                kd,
                                tau_f,
@@ -173,7 +173,7 @@ void DCMotor::setVelocityCntrl(float kp, float ki, float kd)
 void DCMotor::setVelocityCntrlIntegratorLimitsPercent(float percent_of_max)
 {
     const float scale = percent_of_max * 0.01f * m_voltage_max;
-    M_PIfD_Cntrl_velocity.setIntegratorLimits(scale * (2.0f * PWM_MIN - 1.0f),
+    m_PID_Cntrl_velocity.setIntegratorLimits(scale * (2.0f * PWM_MIN - 1.0f),
                                              scale * (2.0f * PWM_MAX - 1.0f));
 }
 
@@ -314,7 +314,7 @@ void DCMotor::threadTask()
 #if PERFORM_GPA_MEAS
         static float exc = 0.0f;
         // closed-loop measurement
-        const float voltage = M_PIfD_Cntrl_velocity.update(0.6f * m_velocity_max - m_velocity + exc);
+        const float voltage = m_PID_Cntrl_velocity.update(0.6f * m_velocity_max - m_velocity + exc);
         if (m_start_gpa) {
             exc = m_GPA.update(voltage, m_velocity);
         }
@@ -339,11 +339,11 @@ void DCMotor::threadTask()
             }
         }
 #else
-        // const float voltage = M_PIfD_Cntrl_velocity.update(velocity_setpoint,       // w
+        // const float voltage = m_PID_Cntrl_velocity.update(velocity_setpoint,       // w
         //                                                   m_velocity,              // y_p
         //                                                   rotation_increment / TS, // y_i
         //                                                   m_velocity);             // y_d
-        const float voltage = M_PIfD_Cntrl_velocity.update(velocity_setpoint,       // w
+        const float voltage = m_PID_Cntrl_velocity.update(velocity_setpoint,       // w
                                                           m_velocity,              // y_p
                                                           m_velocity,              // y_i
                                                           m_velocity);             // y_d

@@ -117,7 +117,7 @@ public:
     void setRotation(float rotation);
 
     /**
-     * @brief Set the relative target rotation of the motor.
+     * @brief Set the relative target rotation of the motor. Keep in mind that you do this only once.
      *
      * @param rotation_relative The relative target rotation in degrees.
      */
@@ -269,8 +269,8 @@ public:
 private:
     static constexpr int64_t PERIOD_MUS = MINI_SEGWAY_PWM_PERIOD_US;
     static constexpr float TS = 1.0e-6f * static_cast<float>(PERIOD_MUS);
-    static constexpr float PWM_MIN = 0.001f;
-    static constexpr float PWM_MAX = 0.999f;
+    static constexpr float PWM_MIN = MINI_SEGWAY_PWM_MIN_VALUE;
+    static constexpr float PWM_MAX = MINI_SEGWAY_PWM_MAX_VALUE;
     static constexpr float ROTATION_ERROR_MAX = 5.0e-3f;
     // Default controller parameters where found using a motor with gear ratio 78.125:1
     static constexpr float KP = MINI_SEGWAY_VEL_CNTRL_KP;
@@ -281,7 +281,7 @@ private:
     FastPWM m_FastPWM_pos, m_FastPWM_neg;
     EncoderCounter m_EncoderCounter;
     Motion m_Motion;
-    PID_Cntrl M_PIfD_Cntrl_velocity;
+    PID_Cntrl m_PID_Cntrl_velocity;
     IIR_Filter m_IIR_Filter_velocity;
 #if PERFORM_GPA_MEAS
     GPA m_GPA;

@@ -4,17 +4,13 @@
 #include "EncoderCounter.h"
 #include "IIR_Filter.h"
 
-#ifndef M_PIf
-    #define M_PIf 3.14159265358979323846f /* pi */
-#endif
-
 class Encoder
 {
 public:
     explicit Encoder(PinName a,
                      PinName b,
                      uint16_t counts_per_turn,
-                     float f_cut,
+                     float w_cut,
                      float D,
                      float Ts);
     virtual ~Encoder() {};

@@ -32,11 +32,7 @@
 #include "MiniSegway.h"
 #include "RC.h"
 
-#if DO_USE_PPM_IN
-RC rc(MINI_SEGWAY_RC_DI);
-#else
 RC rc(MINI_SEGWAY_RC_RX);
-#endif
 IMU imu(MINI_SEGWAY_IMU_MOSI,
         MINI_SEGWAY_IMU_MISO,
         MINI_SEGWAY_IMU_CLK,

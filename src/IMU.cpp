@@ -3,12 +3,12 @@
 IMU::IMU(PinName pin_mosi,
          PinName pin_miso,
          PinName pin_clk,
-         PinName pin_cl) : m_gyro_filter{IIR_Filter(1.0f / (2.0f * M_PIf * MINI_SEGWAY_IMU_GYRO_FREQUENCY_HZ), MINI_SEGWAY_TS, 1.0f),
-                                         IIR_Filter(1.0f / (2.0f * M_PIf * MINI_SEGWAY_IMU_GYRO_FREQUENCY_HZ), MINI_SEGWAY_TS, 1.0f),
-                                         IIR_Filter(1.0f / (2.0f * M_PIf * MINI_SEGWAY_IMU_GYRO_FREQUENCY_HZ), MINI_SEGWAY_TS, 1.0f)}
-                         , m_acc_filter{IIR_Filter(1.0f / (2.0f * M_PIf * MINI_SEGWAY_IMU_ACC_FREQUENCY_HZ), MINI_SEGWAY_TS, 1.0f),
-                                        IIR_Filter(1.0f / (2.0f * M_PIf * MINI_SEGWAY_IMU_ACC_FREQUENCY_HZ), MINI_SEGWAY_TS, 1.0f),
-                                        IIR_Filter(1.0f / (2.0f * M_PIf * MINI_SEGWAY_IMU_ACC_FREQUENCY_HZ), MINI_SEGWAY_TS, 1.0f)}
+         PinName pin_cl) : m_gyro_filter{IIR_Filter(1.0f / MINI_SEGWAY_IMU_GYRO_FREQUENCY_RAD_SEC, MINI_SEGWAY_TS, 1.0f),
+                                         IIR_Filter(1.0f / MINI_SEGWAY_IMU_GYRO_FREQUENCY_RAD_SEC, MINI_SEGWAY_TS, 1.0f),
+                                         IIR_Filter(1.0f / MINI_SEGWAY_IMU_GYRO_FREQUENCY_RAD_SEC, MINI_SEGWAY_TS, 1.0f)}
+                         , m_acc_filter{IIR_Filter(1.0f / MINI_SEGWAY_IMU_ACC_FREQUENCY_RAD_SEC, MINI_SEGWAY_TS, 1.0f),
+                                        IIR_Filter(1.0f / MINI_SEGWAY_IMU_ACC_FREQUENCY_RAD_SEC, MINI_SEGWAY_TS, 1.0f),
+                                        IIR_Filter(1.0f / MINI_SEGWAY_IMU_ACC_FREQUENCY_RAD_SEC, MINI_SEGWAY_TS, 1.0f)}
                          , m_spi(pin_mosi, pin_miso, pin_clk)
                          , m_ImuMPU6500(m_spi, pin_cl)
                          , m_Mahony(MINI_SEGWAY_IMU_KP_XY, MINI_SEGWAY_IMU_KP_XY, MINI_SEGWAY_IMU_KP_Z,

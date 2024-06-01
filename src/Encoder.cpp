@@ -3,10 +3,10 @@
 Encoder::Encoder(PinName a,
                  PinName b,
                  uint16_t counts_per_turn,
-                 float f_cut,
+                 float w_cut,
                  float D,
                  float Ts) : _EncoderCounter(a, b)
-                           , _IIR_Velocity_Filter(2.0f * M_PIf * f_cut,
+                           , _IIR_Velocity_Filter(w_cut,
                                                   D,
                                                   Ts,
                                                   1.0f)

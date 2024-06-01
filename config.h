@@ -1,20 +1,12 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-// MPU6500 runs at 1kHz, so we want to run the control loop at 1kHz
+#ifndef M_PIf
+    #define M_PIf 3.14159265358979323846f /* pi */
+#endif
 
-// task period
-// #define MINI_SEGWAY_PERIOD_US 10000  //   100 Hz
-// #define MINI_SEGWAY_PERIOD_US 2500   //   400 Hz
-// #define MINI_SEGWAY_PERIOD_US 2000   //   500 Hz
-#define MINI_SEGWAY_PERIOD_US 1000   //  1000 Hz
-// #define MINI_SEGWAY_PERIOD_US 500    //  2000 Hz
-// #define MINI_SEGWAY_PERIOD_US 333    //  3000 Hz
-// #define MINI_SEGWAY_PERIOD_US 200    //  5000 Hz
-// #define MINI_SEGWAY_PERIOD_US 150    //  6666 Hz
-// #define MINI_SEGWAY_PERIOD_US 133    //  7500 Hz
-// #define MINI_SEGWAY_PERIOD_US 100    // 10000 Hz
-// #define MINI_SEGWAY_PERIOD_US  50    // 20000 Hz
+// task period, MPU6500 runs at 1kHz, so we want to run the control loop at 1kHz
+#define MINI_SEGWAY_PERIOD_US 1000
 
 // sampling time
 #define MINI_SEGWAY_TS (static_cast<float>(MINI_SEGWAY_PERIOD_US) * 1.0e-6f)
@@ -38,8 +30,7 @@
 #define MINI_SEGWAY_BAUDRATE 2000000
 #define MINI_SEGWAY_NUM_OF_FLOATS 30 // tested up to 20 floats at 2 kHz, so 30 floats at 1 kHz should work
 
-// remote control receiver
-// radiomaster elrs rx, running at 111 Hz := ~9000 mus
+// remote control receiver, radiomaster elrs rx, running at 111 Hz := ~9000 mus
 #define MINI_SEGWAY_RC_TX NC // not connected
 #define MINI_SEGWAY_RC_RX PA_10
 #define MINI_SEGWAY_RC_NUM_OF_ALLOWED_INVALID_DATA_PKG (10 * (9000 / MINI_SEGWAY_PERIOD_US + 1))
@@ -47,13 +38,12 @@
 #define MINI_SEGWAY_RC_ARMING_CHANNEL 7
 #define MINI_SEGWAY_RC_USE_UPSAMPLING_FILTERS true
 #define MINI_SEGWAY_RC_UPSAMPLING_DAMPING (sqrtf(3.0f) / 2.0f)
-#define MINI_SEGWAY_RC_UPSAMPLING_FREQUENCY_HZ 20.0f
+#define MINI_SEGWAY_RC_UPSAMPLING_FREQUENCY_RAD_SEC (2.0f * M_PIf * 20.0f)
 #define MINI_SEGWAY_RC_APPLY_EXPO true
 #define MINI_SEGWAY_RC_EXPO_ALPHA 2.3f
 
 // button
 #define MINI_SEGWAY_BUTTON BUTTON1 // blue button
-// #define MINI_SEGWAY_BUTTON PC_5 // additonal button
 
 // additional led
 #define MINI_SEGWAY_LED PA_7
@@ -67,16 +57,16 @@
 // motors
 #define MINI_SEGWAY_GEAR_RATIO 46.85f
 #define MINI_SEGWAY_COUNTS_PER_TURN (48.0f * MINI_SEGWAY_GEAR_RATIO)
-#define MINI_SEGWAY_KN (170.0f / 12.0f) // 31:1 Metal Gearmotor 20Dx41L mm 12V CB with Extended Motor Shaft
+#define MINI_SEGWAY_KN (170.0f / 12.0f)
 #define MINI_SEGWAY_VOLTAGE_MAX 12.0f
 #define MINI_SEGWAY_VELOCITY_FILTER_DAMPING (sqrtf(3.0f) / 2.0f)
-#define MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY 20.0f
+#define MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY_RAD_SEC (2.0f * M_PIf * 20.0f)
 #define MINI_SEGWAY_VEL_CNTRL_KP 0.2f * 1.2f * 4.2f   // 0.2f so that it is stable (but slow)
 #define MINI_SEGWAY_VEL_CNTRL_KI 0.2f * 1.1f * 140.0f // 0.2f so that it is stable (but slow)
 #define MINI_SEGWAY_VEL_CNTRL_KD 1.1f * 0.0192f;
 
 // pwm
-// if you want to switch the names you also need to adjust the following code in MiniSegway.cpp:
+// if you want to switch the pins you also need to adjust the following code in MiniSegway.cpp:
 // // invert polarity of pwms
 // TIM2->CCER |= TIM_CCER_CC2P; // invert polarity of pwm on PB_9, PWM2/2 : TIM2_CH2
 // TIM1->CCER |= TIM_CCER_CC2P; // invert polarity of pwm on PA_9, PWM1/2 : TIM1_CH2
@@ -85,8 +75,8 @@
 #define MINI_SEGWAY_PWM_M1_NEG PB_9  // PWM2/2 : TIM2_CH2
 #define MINI_SEGWAY_PWM_M2_POS PA_8  // PWM1/1 : TIM1_CH1
 #define MINI_SEGWAY_PWM_M2_NEG PA_9  // PWM1/2 : TIM1_CH2
-#define MINI_SEGWAY_PWM_MIN_VALUE 0.001f
-#define MINI_SEGWAY_PWM_MAX_VALUE 0.999f
+#define MINI_SEGWAY_PWM_MIN_VALUE 0.01f
+#define MINI_SEGWAY_PWM_MAX_VALUE 0.99f
 
 // imu
 #define MINI_SEGWAY_IMU_MOSI PC_3
@@ -94,8 +84,8 @@
 #define MINI_SEGWAY_IMU_CLK PB_10
 #define MINI_SEGWAY_IMU_CS PB_4
 #define MINI_SEGWAY_IMU_USE_ADDITIONAL_FILTERS true
-#define MINI_SEGWAY_IMU_GYRO_FREQUENCY_HZ 60.0f
-#define MINI_SEGWAY_IMU_ACC_FREQUENCY_HZ 15.0f
+#define MINI_SEGWAY_IMU_GYRO_FREQUENCY_RAD_SEC (2.0f * M_PIf * 60.0f)
+#define MINI_SEGWAY_IMU_ACC_FREQUENCY_RAD_SEC (2.0f * M_PIf * 15.0f)
 #define MINI_SEGWAY_IMU_DO_USE_STATIC_ACC_CALIBRATION false // if this is false then acc gets averaged at the beginning and printed to the console
 #define MINI_SEGWAY_IMU_ROTATE_SIGNALS_SEGWAY_STANDING false
 // imu acc bias and mahony gains
@@ -118,10 +108,6 @@
 // robot kinematics
 #define R_WHEEL 0.039f // wheel radius in meters
 #define B_WHEEL 0.125f // wheelbase, distance from wheel to wheel in meters
-// math is design in the way that left turn is with the possitive sign
-// rc controller is sending negative sign when turning left with stick
-// thats why for the maths we need to multipline rc controller output by -1
-// #define TURN_RATIO -5.0f
 
 // chirp signal
 #define MINI_SEGWAY_CHIRP_USE_CHIRP false
