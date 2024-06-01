@@ -100,16 +100,6 @@ public:
     unsigned int set_acc_scale(int scale);
 
     /*-----------------------------------------------------------------------------------------------
-                                    READ ACCELEROMETER CALIBRATION
-    usage: call this function to read accelerometer data. Axis represents selected axis:
-    0 -> X axis
-    1 -> Y axis
-    2 -> Z axis
-    returns Factory Trim value
-    -----------------------------------------------------------------------------------------------*/
-    int calib_acc(int axis);
-
-    /*-----------------------------------------------------------------------------------------------
                                     READ TEMPERATURE
     usage: call this function to read temperature data.
     returns the value in °C

@@ -2,7 +2,7 @@
 #define IMU_H_
 
 #include "mbed.h"
-#include "eigen/Dense.h"
+#include "eigen/Dense"
 
 #include "config.h"
 

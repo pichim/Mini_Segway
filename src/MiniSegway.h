@@ -3,7 +3,7 @@
 
 #include "config.h"
 
-#include "eigen/Dense.h"
+#include "eigen/Dense"
 
 #if MINI_SEGWAY_CHIRP_USE_CHIRP
     #include "Chirp.h"

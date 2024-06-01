@@ -1,10 +1,6 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-#ifndef M_PIf
-    #define M_PIf 3.14159265358979323846f /* pi */
-#endif
-
 // MPU6500 runs at 1kHz, so we want to run the control loop at 1kHz
 
 // task period
