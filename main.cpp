@@ -2,6 +2,8 @@
 
 /**
  * TODO new (F446RE):
+ * - Figure out sign with Cw2r transformation.
+ * - Adjust DCMotor class according to Motor class.
  * - Run DCMotor not as thread.
  * - imu internal filters need to be checked
  * - after checking the internal filter, mahony needs to be tuned

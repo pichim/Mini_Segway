@@ -23,8 +23,8 @@
     // #define MINI_SEGWAY_TX USBTX
     // #define MINI_SEGWAY_RX USBRX
     // usb 2.0-cable TTL serial 6 pin to computer
-    #define MINI_SEGWAY_TX PA_0
-    #define MINI_SEGWAY_RX PA_1
+    #define MINI_SEGWAY_TX PC_10
+    #define MINI_SEGWAY_RX PC_11
 #endif
 // openlager runs at 2000000 baudrate
 #define MINI_SEGWAY_BAUDRATE 2000000
@@ -65,14 +65,17 @@
 #define MINI_SEGWAY_VEL_CNTRL_KI 0.2f * 1.1f * 140.0f // 0.2f so that it is stable (but slow)
 #define MINI_SEGWAY_VEL_CNTRL_KD 1.1f * 0.0192f;
 
+// motor driver (h-bridge)
+#define MINI_SEGWAY_ENABLE_MOTOR_DRIVER PB_15
+
 // pwm
-#define MINI_SEGWAY_PWM_PERIOD_US 100 // 10 kHz
-#define MINI_SEGWAY_PWM_M1 PA_15
-#define MINI_SEGWAY_PWM_DIR_M1 PA_9
-#define MINI_SEGWAY_PWM_M2 PB_9
+#define MINI_SEGWAY_PWM_PERIOD_US 50
+#define MINI_SEGWAY_PWM_M1 PB_13
+#define MINI_SEGWAY_PWM_DIR_M1 PB_9
+#define MINI_SEGWAY_PWM_M2 PA_9
 #define MINI_SEGWAY_PWM_DIR_M2 PA_8
-#define MINI_SEGWAY_PWM_MIN_VALUE 0.000f // TODO: Remove tihs
-#define MINI_SEGWAY_PWM_MAX_VALUE 0.999f
+#define MINI_SEGWAY_PWM_MIN_VALUE 0.00f // TODO: Remove tihs
+#define MINI_SEGWAY_PWM_MAX_VALUE 0.99f
 
 // imu
 #define MINI_SEGWAY_IMU_MOSI PC_3
@@ -106,20 +109,23 @@
 #define B_WHEEL 0.125f // wheelbase, distance from wheel to wheel in meters
 
 // chirp signal
-#define MINI_SEGWAY_CHIRP_USE_CHIRP false
+#define MINI_SEGWAY_CHIRP_USE_CHIRP true
 #if MINI_SEGWAY_CHIRP_USE_CHIRP
     #define MINI_SEGWAY_CHIRP_T1 20.0f
     #define MINI_SEGWAY_CHIRP_F0 (1.0f / MINI_SEGWAY_CHIRP_T1)
-    #define MINI_SEGWAY_CHIRP_F1 (1.0f / (2.0f * MINI_SEGWAY_TS))
-    #define MINI_SEGWAY_CHIRP_AMPLITUDE 2.0f
-    #define MINI_SEGWAY_CHIRP_OFFSET 3.5f
+    #define MINI_SEGWAY_CHIRP_F1 (0.95f / (2.0f * MINI_SEGWAY_TS))
+    #define MINI_SEGWAY_CHIRP_AMPLITUDE 3.0f
+    #define MINI_SEGWAY_CHIRP_OFFSET 5.0f
 #endif
 
+#define MINI_SEGWAY_AIN_M1 PC_1
+#define MINI_SEGWAY_AIN_M2 PB_0
+
 // analog current sensor
-#define MINI_SEGWAY_AIN_USE_CURRENT_SENSOR false
+#define MINI_SEGWAY_AIN_USE_CURRENT_SENSOR true
 #if MINI_SEGWAY_AIN_USE_CURRENT_SENSOR
-    #define MINI_SEGWAY_AIN_1 PB_0
-    #define MINI_SEGWAY_AIN_2 PC_1
+    #define MINI_SEGWAY_AIN_ADDITIONAL_M1 PA_0
+    #define MINI_SEGWAY_AIN_ADDITIONAL_M2 PA_1
 #endif
 
 #endif /* CONFIG_H_ */

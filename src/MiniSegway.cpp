@@ -37,6 +37,9 @@ void MiniSegway::threadTask()
                               MINI_SEGWAY_RX,
                               MINI_SEGWAY_BAUDRATE);
 
+    // motor driver enable
+    DigitalOut enable_motor_driver(MINI_SEGWAY_ENABLE_MOTOR_DRIVER);
+
     // // motors
     // DCMotor motor_M1(MINI_SEGWAY_PWM_M1_POS,
     //                  MINI_SEGWAY_PWM_M1_NEG,
@@ -83,6 +86,12 @@ void MiniSegway::threadTask()
     float voltage_M1{0.0f};
     float voltage_M2{0.0f};
 
+    // additional current sensor
+    AnalogIn analog_in_M1(MINI_SEGWAY_AIN_M1);
+    AnalogIn analog_in_M2(MINI_SEGWAY_AIN_M2);
+    float current_M1;
+    float current_M2;
+
     // imu
     IMU::ImuData imu_data;
 
@@ -119,11 +128,13 @@ void MiniSegway::threadTask()
 #endif
 
 #if MINI_SEGWAY_AIN_USE_CURRENT_SENSOR
-    // current sensor
-    AnalogIn analog_in_M1(MINI_SEGWAY_AIN_1);
-    AnalogIn analog_in_M2(MINI_SEGWAY_AIN_2);
-    float current_M1;
-    float current_M2;
+    // additional current sensor
+    AnalogIn analog_additional_in_M1(MINI_SEGWAY_AIN_ADDITIONAL_M1);
+    AnalogIn analog_additional_in_M2(MINI_SEGWAY_AIN_ADDITIONAL_M2);
+    float current_additional_M1;
+    float current_additional_M2;
+    motor_M1.setVoltage(MINI_SEGWAY_CHIRP_OFFSET);
+    motor_M2.setVoltage(MINI_SEGWAY_CHIRP_OFFSET);
 #endif
 
     // give the openLager 1000 msec time to start
@@ -147,7 +158,7 @@ void MiniSegway::threadTask()
 #endif
         rc_pkg = _rc.update();
 
-        // read motor signals
+        // // read motor signals
         // motor_signals_M1 = motor_M1.read();
         // motor_signals_M2 = motor_M2.read();
 
@@ -155,13 +166,17 @@ void MiniSegway::threadTask()
         encoder_signals_M1 = encoder_M1.read();
         encoder_signals_M2 = encoder_M2.read();
 
+        // read additional current sensor
+        current_M1 = analog_in_M1.read() * 3.3f;
+        current_M2 = analog_in_M2.read() * 3.3f;
+
         // read imu data
         imu_data = _imu.update();
 
 #if MINI_SEGWAY_AIN_USE_CURRENT_SENSOR
-        // read current sensor
-        current_M1 = 0.8f * (analog_in_M1.read() * 3.3f) - 2.5f;
-        current_M2 = 0.8f * (analog_in_M2.read() * 3.3f) - 2.5f;
+        // read additional current sensor
+        current_additional_M1 = (analog_additional_in_M1.read() * 3.3f - 2.5f) / 0.8f;
+        current_additional_M2 = (analog_additional_in_M2.read() * 3.3f - 2.5f) / 0.8f;
 #endif
 
         // measure delta time
@@ -170,7 +185,11 @@ void MiniSegway::threadTask()
         time_previous_us = time_us;
 
         // arm is only true if receiver data is valid and arm button is pressed
-        if (_do_execute) { // && rc_pkg.armed) {
+        if (_do_execute && rc_pkg.armed) {
+
+            // TODO: move enable motor drivers to a better place
+            if (enable_motor_driver == 0)
+                enable_motor_driver = 1;
             
             // mix wheel speed based on rc input
             robot_coord << flip_mixer_sign * mixer_gain * forward_speed_max * rc_pkg.forward_speed, 
@@ -179,15 +198,12 @@ void MiniSegway::threadTask()
             // motor_M1.setVelocity(wheel_speed(0) / (2.0f * M_PIf));
             // motor_M2.setVelocity(wheel_speed(1) / (2.0f * M_PIf));
 
-            // 2.0f * M_PIf * MINI_SEGWAY_KN / 60.0f * MINI_SEGWAY_VOLTAGE_MAX
-            voltage_M1 = (wheel_speed(0) / (2.0f * M_PIf)) / (MINI_SEGWAY_KN / 60.0f);
-            voltage_M2 = (wheel_speed(1) / (2.0f * M_PIf)) / (MINI_SEGWAY_KN / 60.0f);
+            // // 2.0f * M_PIf * MINI_SEGWAY_KN / 60.0f * MINI_SEGWAY_VOLTAGE_MAX
+            // // voltage_M1 = (wheel_speed(0) / (2.0f * M_PIf)) / (MINI_SEGWAY_KN / 60.0f);
+            // // voltage_M2 = (wheel_speed(1) / (2.0f * M_PIf)) / (MINI_SEGWAY_KN / 60.0f);
+            // voltage_M1 = rc_pkg.forward_speed * MINI_SEGWAY_VOLTAGE_MAX;
+            // voltage_M2 = rc_pkg.forward_speed * MINI_SEGWAY_VOLTAGE_MAX;
 
-            // write voltage to motors
-            motor_M1.setVoltage(voltage_M1);
-            motor_M2.setVoltage(voltage_M2);
-
-// TODO: adjust code if you want to use the following section again
 #if MINI_SEGWAY_CHIRP_USE_CHIRP
             // perform frequency response measurement
             if (chirp.update()) {
@@ -199,7 +215,12 @@ void MiniSegway::threadTask()
                 // toggleDoExecute();
                 _do_execute = false;
             }
+            voltage_M1 = voltage;
+            voltage_M2 = voltage;
 #endif
+            // write voltage to motors
+            motor_M1.setVoltage(voltage_M1);
+            motor_M2.setVoltage(voltage_M2);
 
             // send data to serial stream (openlager or laptop / pc)
             serialStream.write( dtime_us );                      //  0 
@@ -234,6 +255,10 @@ void MiniSegway::threadTask()
             serialStream.write( voltage_M2 );      // 19
             // serialStream.write( motor_M1.getVelocitySetpoint()); // 20
             // serialStream.write( motor_M2.getVelocitySetpoint()); // 21
+            serialStream.write( current_M1 );                    // 20
+            serialStream.write( current_M2 );                    // 21
+            serialStream.write( current_additional_M1 );                    // 20
+            serialStream.write( current_additional_M2 );                    // 21
             serialStream.send();
 
             led = 1;
@@ -241,7 +266,7 @@ void MiniSegway::threadTask()
             if (_do_reset) {
                 _do_reset = false;
                 led = 0;
-                // enable_motor_driver = 0;
+                enable_motor_driver = 0;
                 serialStream.reset();
                 // motor_M1.setVelocity(0.0f);
                 // motor_M2.setVelocity(0.0f);

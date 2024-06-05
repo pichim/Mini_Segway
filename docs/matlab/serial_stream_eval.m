@@ -35,6 +35,8 @@ ind.acc = 12:14;
 ind.rpy = 15:17;
 ind.voltage_M = 18:19;
 % ind.vel_sp_M = 20:21;
+ind.curr = 20:21;
+ind.curr_add = 22:23;
 
 
 Ts = mean(diff(data.time));
@@ -107,4 +109,17 @@ xlim([0 data.time(end)])
 legend('dRoll', ...
        'dPitch', ...
        'dYaw')
+
+figure(expand_multiple_figure_nr(5, multp_fig_nr))
+ax(1) = subplot(211);
+plot(data.time, data.values(:,ind.voltage_M)), grid on
+ylabel('Voltage (V)')
+ax(2) = subplot(212);
+plot(data.time, data.values(:,[ind.curr, ind.curr_add])), grid on
+ylabel('Current (A)'), xlabel('Time (sec)')
+legend('Motor 1', ...
+    'Motor 2', ...
+    'Location', 'best')
+linkaxes(ax, 'x'), clear ax
+xlim([0 data.time(end)])
 
