@@ -74,11 +74,11 @@ void MiniSegway::threadTask()
     Encoder::encoder_signals_t encoder_signals_M2 = encoder_M2.read();
 
     // motors
-    Motor motor_M1(MINI_SEGWAY_PWM_M1_POS,
-                   MINI_SEGWAY_PWM_M1_NEG,
+    Motor motor_M1(MINI_SEGWAY_PWM_M1,
+                   MINI_SEGWAY_PWM_DIR_M1,
                    MINI_SEGWAY_VOLTAGE_MAX);
-    Motor motor_M2(MINI_SEGWAY_PWM_M2_POS,
-                   MINI_SEGWAY_PWM_M2_NEG,
+    Motor motor_M2(MINI_SEGWAY_PWM_M2,
+                   MINI_SEGWAY_PWM_DIR_M2,
                    MINI_SEGWAY_VOLTAGE_MAX);
     float voltage_M1{0.0f};
     float voltage_M2{0.0f};
@@ -125,10 +125,6 @@ void MiniSegway::threadTask()
     float current_M1;
     float current_M2;
 #endif
-
-    // invert polarity of pwms
-    TIM2->CCER |= TIM_CCER_CC2P; // invert polarity of pwm on PB_9, PWM2/2 : TIM2_CH2
-    TIM1->CCER |= TIM_CCER_CC2P; // invert polarity of pwm on PA_9, PWM1/2 : TIM1_CH2
 
     // give the openLager 1000 msec time to start
     thread_sleep_for(1000);

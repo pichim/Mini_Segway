@@ -1,6 +1,8 @@
 #ifndef MOTOR_H_
 #define MOTOR_H_
 
+// #include <cmath>
+
 #include "config.h"
 
 #include "FastPWM/FastPWM.h"
@@ -11,8 +13,8 @@
 class Motor
 {
 public:
-    explicit Motor(PinName pin_pwm_pos,
-                   PinName pin_pwm_neg,
+    explicit Motor(PinName pwm,
+                   PinName dout,
                    float voltage_max = 12.0f);
     virtual ~Motor() {};
 
@@ -20,7 +22,8 @@ public:
     void setVoltage(float voltage);
 
 private:
-    FastPWM _pwm_pos, _pwm_neg;
+    FastPWM _pwm;
+    DigitalOut _dir;
     float _voltage_max;
 };
 
