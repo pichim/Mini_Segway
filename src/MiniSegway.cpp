@@ -133,8 +133,8 @@ void MiniSegway::threadTask()
     AnalogIn analog_additional_in_M2(MINI_SEGWAY_AIN_ADDITIONAL_M2);
     float current_additional_M1;
     float current_additional_M2;
-    motor_M1.setVoltage(MINI_SEGWAY_CHIRP_OFFSET);
-    motor_M2.setVoltage(MINI_SEGWAY_CHIRP_OFFSET);
+    // motor_M1.setVoltage(MINI_SEGWAY_CHIRP_OFFSET);
+    // motor_M2.setVoltage(MINI_SEGWAY_CHIRP_OFFSET);
 #endif
 
     // give the openLager 1000 msec time to start
@@ -183,13 +183,14 @@ void MiniSegway::threadTask()
         const microseconds time_us = timer.elapsed_time();
         const float dtime_us = duration_cast<microseconds>(time_us - time_previous_us).count();
         time_previous_us = time_us;
-
+        if (enable_motor_driver == 0)
+            enable_motor_driver = 1;
         // arm is only true if receiver data is valid and arm button is pressed
         if (_do_execute && rc_pkg.armed) {
 
-            // TODO: move enable motor drivers to a better place
-            if (enable_motor_driver == 0)
-                enable_motor_driver = 1;
+            // // TODO: move enable motor drivers to a better place
+            // if (enable_motor_driver == 0)
+            //     enable_motor_driver = 1;
             
             // mix wheel speed based on rc input
             robot_coord << flip_mixer_sign * mixer_gain * forward_speed_max * rc_pkg.forward_speed, 
@@ -259,10 +260,13 @@ void MiniSegway::threadTask()
             serialStream.write( current_M2 );                    // 21
             serialStream.write( current_additional_M1 );                    // 20
             serialStream.write( current_additional_M2 );                    // 21
+            serialStream.write( sinarg );                    // 21
             serialStream.send();
 
             led = 1;
         } else {
+            motor_M1.setVoltage(MINI_SEGWAY_CHIRP_OFFSET);
+            motor_M2.setVoltage(MINI_SEGWAY_CHIRP_OFFSET);
             if (_do_reset) {
                 _do_reset = false;
                 led = 0;

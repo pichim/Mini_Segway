@@ -2,7 +2,7 @@ clc, clear all
 addpath fcns\
 %%
 
-port = 'COM13';
+port = 'COM19';
 baudrate = 2e6;
 
 if (~exist('serialStream', 'var'))
@@ -37,8 +37,9 @@ ind.voltage_M = 18:19;
 % ind.vel_sp_M = 20:21;
 ind.curr = 20:21;
 ind.curr_add = 22:23;
+ind.sinarg = 24;
 
-
+%%
 Ts = mean(diff(data.time));
 
 figure(expand_multiple_figure_nr(1, multp_fig_nr))

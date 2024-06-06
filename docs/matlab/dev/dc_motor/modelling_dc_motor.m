@@ -1,13 +1,26 @@
 clc, clear all
 addpath ..\..\fcns\
-%%
 
-load data_31_1bat.mat
+%%
+load motors_D25_without_wheels_v3.mat
+% load data_31_1bat.mat
 % load data_31_1bat_wheel.mat
 % load data_31_2bat.mat
 % load data_31_2bat_wheel.mat
 
 multp_fig_nr = 1;
+% 
+% % index
+% ind.rc = 1:4;
+% ind.vel_M = 5:6;
+% ind.ang_M = 7:8;
+% ind.gyro = 9:11;
+% ind.acc = 12:14;
+% ind.rpy = 15:17;
+% ind.voltage_M = 18:19;
+% ind.sinarg = 20; % might be temporary
+% ind.current = 21:22;
+
 
 % index
 ind.rc = 1:4;
@@ -17,12 +30,13 @@ ind.gyro = 9:11;
 ind.acc = 12:14;
 ind.rpy = 15:17;
 ind.voltage_M = 18:19;
-ind.sinarg = 20; % might be temporary
-ind.current = 21:22;
-
+% ind.vel_sp_M = 20:21;
+ind.curr = 20:21;
+ind.curr_add = 22:23;
+ind.sinarg = 24;
 
 Ts = mean(diff(data.time));
-
+%%
 figure(1)
 plot(data.time(1:end-1), diff(data.time * 1e6)), grid on
 title( sprintf(['Mean %0.0f mus, ', ...
@@ -54,7 +68,7 @@ xlim([0 data.time(end)])
 
 
 figure(expand_multiple_figure_nr(3, multp_fig_nr))
-plot(data.time, data.values(:,ind.current)), grid on
+plot(data.time, data.values(:,ind.curr_add)), grid on
 ylabel('Current'), xlabel('Time (sec)')
 xlim([0 data.time(end)])
 
@@ -71,11 +85,11 @@ Noverlap = round(koverlap * Nest);
 window   = hann(Nest);
 
 inp = apply_rotfiltfilt(Glp, data.values(:,ind.sinarg), data.values(:,ind.voltage_M(1)));
-out = apply_rotfiltfilt(Glp, data.values(:,ind.sinarg), data.values(:,ind.current(1)));
+out = apply_rotfiltfilt(Glp, data.values(:,ind.sinarg), data.values(:,ind.curr_add(1)));
 [Gi1, Ci1] = estimate_frequency_response(inp, out, window, Noverlap, Nest, Ts);
 
 inp = apply_rotfiltfilt(Glp, data.values(:,ind.sinarg), data.values(:,ind.voltage_M(2)));
-out = apply_rotfiltfilt(Glp, data.values(:,ind.sinarg), data.values(:,ind.current(2)));
+out = apply_rotfiltfilt(Glp, data.values(:,ind.sinarg), data.values(:,ind.curr_add(2)));
 [Gi2, Ci2] = estimate_frequency_response(inp, out, window, Noverlap, Nest, Ts);
 
 inp = apply_rotfiltfilt(Glp, data.values(:,ind.sinarg), data.values(:,ind.voltage_M(1)));
