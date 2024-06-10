@@ -109,7 +109,7 @@
 #define B_WHEEL 0.125f // wheelbase, distance from wheel to wheel in meters
 
 // chirp signal
-#define MINI_SEGWAY_CHIRP_USE_CHIRP true
+#define MINI_SEGWAY_CHIRP_USE_CHIRP false
 #if MINI_SEGWAY_CHIRP_USE_CHIRP
     #define MINI_SEGWAY_CHIRP_T1 60.0f
     #define MINI_SEGWAY_CHIRP_F0 (1.0f / MINI_SEGWAY_CHIRP_T1)

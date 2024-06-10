@@ -6,7 +6,7 @@ addpath fcns\
 % max_num_of_floats = 2000000 / (4 * (8 + 2) * 2000)
 
 % openlager
-file_id = fopen('LOG008.TXT');
+file_id = fopen('LOG003.TXT');
 
 num_of_floats = fread(file_id, 1, 'uint8')
 
@@ -28,6 +28,20 @@ data.values = data.values(:,2:end);
 
 %%
 
+% multp_fig_nr = 1;
+% 
+% % index
+% ind.rc = 1:4;
+% ind.vel_M = 5:6;
+% ind.ang_M = 7:8;
+% ind.gyro = 9:11;
+% ind.acc = 12:14;
+% ind.rpy = 15:17;
+% ind.voltage_M = 18:19;
+% % ind.vel_sp_M = 20:21;
+
+%%
+
 multp_fig_nr = 1;
 
 % index
@@ -39,6 +53,9 @@ ind.acc = 12:14;
 ind.rpy = 15:17;
 ind.voltage_M = 18:19;
 % ind.vel_sp_M = 20:21;
+ind.curr = 20:21;
+ind.curr_add = 22:23;
+% ind.sinarg = 24;
 
 
 Ts = mean(diff(data.time));

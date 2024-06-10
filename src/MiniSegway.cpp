@@ -199,9 +199,9 @@ void MiniSegway::threadTask()
             // motor_M1.setVelocity(wheel_speed(0) / (2.0f * M_PIf));
             // motor_M2.setVelocity(wheel_speed(1) / (2.0f * M_PIf));
 
-            // // 2.0f * M_PIf * MINI_SEGWAY_KN / 60.0f * MINI_SEGWAY_VOLTAGE_MAX
-            // // voltage_M1 = (wheel_speed(0) / (2.0f * M_PIf)) / (MINI_SEGWAY_KN / 60.0f);
-            // // voltage_M2 = (wheel_speed(1) / (2.0f * M_PIf)) / (MINI_SEGWAY_KN / 60.0f);
+            // 2.0f * M_PIf * MINI_SEGWAY_KN / 60.0f * MINI_SEGWAY_VOLTAGE_MAX
+            voltage_M1 = (wheel_speed(0) / (2.0f * M_PIf)) / (MINI_SEGWAY_KN / 60.0f);
+            voltage_M2 = (wheel_speed(1) / (2.0f * M_PIf)) / (MINI_SEGWAY_KN / 60.0f);
             // voltage_M1 = rc_pkg.forward_speed * MINI_SEGWAY_VOLTAGE_MAX;
             // voltage_M2 = rc_pkg.forward_speed * MINI_SEGWAY_VOLTAGE_MAX;
 
@@ -260,13 +260,13 @@ void MiniSegway::threadTask()
             serialStream.write( current_M2 );                    // 21
             serialStream.write( current_additional_M1 );                    // 20
             serialStream.write( current_additional_M2 );                    // 21
-            serialStream.write( sinarg );                    // 21
+            //serialStream.write( sinarg );                    // 21
             serialStream.send();
 
             led = 1;
         } else {
-            motor_M1.setVoltage(MINI_SEGWAY_CHIRP_OFFSET);
-            motor_M2.setVoltage(MINI_SEGWAY_CHIRP_OFFSET);
+            // motor_M1.setVoltage(MINI_SEGWAY_CHIRP_OFFSET);
+            // motor_M2.setVoltage(MINI_SEGWAY_CHIRP_OFFSET);
             if (_do_reset) {
                 _do_reset = false;
                 led = 0;
