@@ -1,5 +1,4 @@
-#ifndef MAHONY_H_
-#define MAHONY_H_
+#pragma once
 
 #include "eigen/Dense.h"
 
@@ -10,6 +9,7 @@ public:
     explicit Mahony(float kp_x, float kp_y, float kp_z, float ki_x, float ki_y, float ki_z, float Ts);
     virtual ~Mahony();
 
+    void setInitialOrientation(float qw, float qx, float qy, float qz);
     void setup(float kp_x, float kp_y, float kp_z, float ki_x, float ki_y, float ki_z, float Ts);
     void setGains(float kp_x, float kp_y, float kp_z, float ki_x, float ki_y, float ki_z);
     void setSamplingTime(float Ts);
@@ -33,5 +33,3 @@ private:
     Eigen::Vector3f quat2rpy(Eigen::Quaternionf quat);
     Eigen::Vector3f calcRotationError(Eigen::Vector3f v1, Eigen::Vector3f v2);
 };
-
-#endif /* MAHONY_H_ */

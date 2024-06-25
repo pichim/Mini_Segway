@@ -1,9 +1,12 @@
 #include "MiniSegway.h"
 
-MiniSegway::MiniSegway(RC& rc, IMU& imu) : _Thread(osPriorityHigh, 4096)
-                                         , _rc(rc)
-                                         , _imu(imu)
-                                         , _button(MINI_SEGWAY_BUTTON, PullUp)
+MiniSegway::MiniSegway(RC& rc) : _Thread(osPriorityHigh, 4096)
+                               , _rc(rc)
+                               , _imu(MINI_SEGWAY_IMU_MOSI,
+                                      MINI_SEGWAY_IMU_MISO,
+                                      MINI_SEGWAY_IMU_CLK,
+                                      MINI_SEGWAY_IMU_CS)
+                               , _button(MINI_SEGWAY_BLUE_BUTTON, PullUp)
 {
     _button.fall(callback(this, &MiniSegway::toggleDoExecute));
 
@@ -18,18 +21,14 @@ MiniSegway::~MiniSegway()
 }
 
 void MiniSegway::threadTask()
-{
+{   
     // additional LED
-    DigitalOut led(MINI_SEGWAY_LED);
-    led = 0;
+    DigitalOut led2(MINI_SEGWAY_LED);
 
     // timer to measure delta time
     Timer timer;
     timer.start();
     microseconds time_previous_us{0};
-
-    // processed rc package
-    RC::rc_pkg_t rc_pkg;
 
     // serial stream either to matlab or to the openlager
     SerialStream serialStream(MINI_SEGWAY_NUM_OF_FLOATS,
@@ -40,82 +39,72 @@ void MiniSegway::threadTask()
     // motor driver enable
     DigitalOut enable_motor_driver(MINI_SEGWAY_ENABLE_MOTOR_DRIVER);
 
-    // // motors
-    // DCMotor motor_M1(MINI_SEGWAY_PWM_M1_POS,
-    //                  MINI_SEGWAY_PWM_M1_NEG,
-    //                  MINI_SEGWAY_ENCA_M1,
-    //                  MINI_SEGWAY_ENCB_M1,
-    //                  MINI_SEGWAY_GEAR_RATIO,
-    //                  MINI_SEGWAY_KN,
-    //                  MINI_SEGWAY_VOLTAGE_MAX);
-    // DCMotor motor_M2(MINI_SEGWAY_PWM_M2_POS,
-    //                  MINI_SEGWAY_PWM_M1_NEG,
-    //                  MINI_SEGWAY_ENCA_M2,
-    //                  MINI_SEGWAY_ENCB_M2,
-    //                  MINI_SEGWAY_GEAR_RATIO,
-    //                  MINI_SEGWAY_KN,
-    //                  MINI_SEGWAY_VOLTAGE_MAX);
-    // motor_M1.setVelocityCntrlIntegratorLimitsPercent(80.0f);
-    // motor_M2.setVelocityCntrlIntegratorLimitsPercent(80.0f);
-    // DCMotor::motor_signals_t motor_signals_M1;
-    // DCMotor::motor_signals_t motor_signals_M2;
-
     // encoders
     Encoder encoder_M1(MINI_SEGWAY_ENCA_M1,
                        MINI_SEGWAY_ENCB_M1,
-                       MINI_SEGWAY_COUNTS_PER_TURN,
-                       MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY_RAD_SEC,
-                       MINI_SEGWAY_VELOCITY_FILTER_DAMPING,
+                       MINI_SEGWAY_MOTOR_COUNTS_PER_TURN,
+                       MINI_SEGWAY_MOTOR_VELOCITY_FILTER_FREQUENCY_HZ,
+                       MINI_SEGWAY_MOTOR_VELOCITY_FILTER_DAMPING,
                        MINI_SEGWAY_TS);
     Encoder encoder_M2(MINI_SEGWAY_ENCA_M2,
                        MINI_SEGWAY_ENCB_M2,
-                       MINI_SEGWAY_COUNTS_PER_TURN,
-                       MINI_SEGWAY_VELOCITY_FILTER_FREQUENCY_RAD_SEC,
-                       MINI_SEGWAY_VELOCITY_FILTER_DAMPING,
+                       MINI_SEGWAY_MOTOR_COUNTS_PER_TURN,
+                       MINI_SEGWAY_MOTOR_VELOCITY_FILTER_FREQUENCY_HZ,
+                       MINI_SEGWAY_MOTOR_VELOCITY_FILTER_DAMPING,
                        MINI_SEGWAY_TS);
-    Encoder::encoder_signals_t encoder_signals_M1 = encoder_M1.read();
-    Encoder::encoder_signals_t encoder_signals_M2 = encoder_M2.read();
 
     // motors
     Motor motor_M1(MINI_SEGWAY_PWM_M1,
                    MINI_SEGWAY_PWM_DIR_M1,
-                   MINI_SEGWAY_VOLTAGE_MAX);
+                   MINI_SEGWAY_MOTOR_VOLTAGE_MAX);
     Motor motor_M2(MINI_SEGWAY_PWM_M2,
                    MINI_SEGWAY_PWM_DIR_M2,
-                   MINI_SEGWAY_VOLTAGE_MAX);
-    float voltage_M1{0.0f};
-    float voltage_M2{0.0f};
+                   MINI_SEGWAY_MOTOR_VOLTAGE_MAX);
 
-    // additional current sensor
-    AnalogIn analog_in_M1(MINI_SEGWAY_AIN_M1);
-    AnalogIn analog_in_M2(MINI_SEGWAY_AIN_M2);
-    float current_M1;
-    float current_M2;
-
-    // imu
-    IMU::ImuData imu_data;
+    // current sensor
+    AnalogIn analog_in_M1(MINI_SEGWAY_CURRENT_AIN_M1);
+    AnalogIn analog_in_M2(MINI_SEGWAY_CURRENT_AIN_M2);
+    IIRFilter currentLowPass2[2];
+    currentLowPass2[0].lowPass2Init(MINI_SEGWAY_CURRENT_FILTER_FREQUENCY_HZ,
+                                    MINI_SEGWAY_CURRENT_FILTER_DAMPING,
+                                    MINI_SEGWAY_TS);
+    currentLowPass2[1].lowPass2Init(MINI_SEGWAY_CURRENT_FILTER_FREQUENCY_HZ,
+                                    MINI_SEGWAY_CURRENT_FILTER_DAMPING,
+                                    MINI_SEGWAY_TS);
 
     // differential drive kinematic
-    // q = Cwheel2robot * s
+    // q = Cwheel2robot * w
     // q = (v, w)    v : forward speed in m/sec
     //               w : turn rate in rad/sec
     // w = (w1, w2)  w1: right wheel speed in rad/sec
     //               w2: left  wheel speed in rad/sec
     const Eigen::Matrix2f Cwheel2robot = (Eigen::Matrix2f() << R_WHEEL / 2.0f   ,  R_WHEEL / 2.0f   ,
                                                                R_WHEEL / B_WHEEL, -R_WHEEL / B_WHEEL).finished();
-    // const float wheel_speed_max = 2.0f * M_PIf * motor_M1.getMaxVelocity();
-    const float wheel_speed_max = 2.0f * M_PIf * MINI_SEGWAY_KN / 60.0f * MINI_SEGWAY_VOLTAGE_MAX;
 
+    // max forward speed and turn rate
+    const float k_voltage2wheel_speed = 2.0f * M_PIf * (MINI_SEGWAY_MOTOR_KN / 60.0f);
+    const float wheel_speed_max = k_voltage2wheel_speed * MINI_SEGWAY_MOTOR_VOLTAGE_MAX;
     const float forward_speed_max = Cwheel2robot.row(0) * (Eigen::Vector2f() <<  wheel_speed_max,
                                                                                  wheel_speed_max).finished();
     const float turn_rate_max     = Cwheel2robot.row(1) * (Eigen::Vector2f() <<  wheel_speed_max,
                                                                                 -wheel_speed_max).finished();
-    // forward speed to turn rate mix gain, mix_gain in (0.0, 1.0)
-    const float mixer_gain = 0.7f;
-    // flip_sign = 1.0 -> mini segway, flip_sign = -1.0 -> car on ground
-    const float flip_mixer_sign = -1.0f;
-    Eigen::Vector2f wheel_speed = {0.0f, 0.0f};
-    Eigen::Vector2f robot_coord = {0.0f, 0.0f};
+
+    // PID controllers
+    PIDController Cpi_vel;
+    Cpi_vel.piControllerInit(MINI_SEGWAY_CPI_VEL_KP,
+                             MINI_SEGWAY_CPI_VEL_KI,
+                             MINI_SEGWAY_TS);
+    // PIDController Cpd_ang;
+    // Cpd_ang.pdt1ControllerInit(MINI_SEGWAY_CPD_ANG_KP,
+    //                            MINI_SEGWAY_CPD_ANG_KD,
+    //                            MINI_SEGWAY_CPD_ANG_FCUT_D,
+    //                            MINI_SEGWAY_TS);
+
+    // states for state machine
+    enum RobotState {
+        CAR,     // 0
+        SEGWAY,  // 1
+    } robot_state = RobotState::CAR;
 
 #if MINI_SEGWAY_CHIRP_USE_CHIRP
     // chirp generator
@@ -127,18 +116,18 @@ void MiniSegway::threadTask()
     float sinarg = 0.0f;
 #endif
 
-#if MINI_SEGWAY_AIN_USE_CURRENT_SENSOR
+#if MINI_SEGWAY_AIN_USE_ADDITIONAL_CURRENT_SENSOR
     // additional current sensor
     AnalogIn analog_additional_in_M1(MINI_SEGWAY_AIN_ADDITIONAL_M1);
     AnalogIn analog_additional_in_M2(MINI_SEGWAY_AIN_ADDITIONAL_M2);
     float current_additional_M1;
     float current_additional_M2;
-    // motor_M1.setVoltage(MINI_SEGWAY_CHIRP_OFFSET);
-    // motor_M2.setVoltage(MINI_SEGWAY_CHIRP_OFFSET);
 #endif
 
-    // give the openLager 1000 msec time to start
-    thread_sleep_for(1000);
+    // give the system some time to start, e.g. opelager and imu angle estimate (openLager needs 1 second)
+    thread_sleep_for(MINI_SEGWAY_IMU_NUM_FOR_AVERAGE);
+    printf("MiniSegway running...\n");
+
 
     while (true) {
         ThisThread::flags_wait_any(_ThreadFlag);
@@ -150,132 +139,171 @@ void MiniSegway::threadTask()
             toggleDoExecute();
         }
 
-// only process the sbus pkg if sbus is used and is running as an own thread
-#if !DO_USE_PPM_IN && !SBUS_DO_RUN_AS_THREAD
         // sbus pkg needs to be processed to update the rc_pkg
-        // whereas when its ppm in, the rc_pkg is updated via ISR
         _rc.processReceivedData();
-#endif
-        rc_pkg = _rc.update();
 
-        // // read motor signals
-        // motor_signals_M1 = motor_M1.read();
-        // motor_signals_M2 = motor_M2.read();
-
-        // read motor signals
-        encoder_signals_M1 = encoder_M1.read();
-        encoder_signals_M2 = encoder_M2.read();
-
-        // read additional current sensor
-        current_M1 = analog_in_M1.read() * 3.3f;
-        current_M2 = analog_in_M2.read() * 3.3f;
+        // read processed rc package
+        const RC::rc_pkg_t rc_pkg = _rc.update();
 
         // read imu data
-        imu_data = _imu.update();
+        const IMU::ImuData imu_data = _imu.update();
 
-#if MINI_SEGWAY_AIN_USE_CURRENT_SENSOR
-        // read additional current sensor
-        current_additional_M1 = (analog_additional_in_M1.read() * 3.3f - 2.5f) / 0.8f;
-        current_additional_M2 = (analog_additional_in_M2.read() * 3.3f - 2.5f) / 0.8f;
-#endif
+        // TODO: Implement I2T protection (slow lowpass applied to current sensor signal, if current is too high, disable motor driver)
+        // read current sensor from motor driver (really ruff estimation of the current scaling, current is always positive)
+        const float current_M1 = currentLowPass2[0].apply(analog_in_M1.read() * 3.3f * 5.5f);
+        const float current_M2 = currentLowPass2[1].apply(analog_in_M2.read() * 3.3f * 5.5f);
 
         // measure delta time
         const microseconds time_us = timer.elapsed_time();
         const float dtime_us = duration_cast<microseconds>(time_us - time_previous_us).count();
         time_previous_us = time_us;
-        if (enable_motor_driver == 0)
-            enable_motor_driver = 1;
+
         // arm is only true if receiver data is valid and arm button is pressed
         if (_do_execute && rc_pkg.armed) {
 
-            // // TODO: move enable motor drivers to a better place
-            // if (enable_motor_driver == 0)
-            //     enable_motor_driver = 1;
+            // enable motor driver
+            if (enable_motor_driver == 0) {
+                enable_motor_driver = 1;
+                led2 = 1;
+            }
+
+            // read encoder signals
+            const Encoder::encoder_signals_t encoder_signals_M1 = encoder_M1.read();
+            const Encoder::encoder_signals_t encoder_signals_M2 = encoder_M2.read();
             
-            // mix wheel speed based on rc input
-            robot_coord << flip_mixer_sign * mixer_gain * forward_speed_max * rc_pkg.forward_speed, 
-                           flip_mixer_sign * (1.0f - mixer_gain) * turn_rate_max * rc_pkg.turn_rate;
-            wheel_speed = Cwheel2robot.inverse() * robot_coord;
-            // motor_M1.setVelocity(wheel_speed(0) / (2.0f * M_PIf));
-            // motor_M2.setVelocity(wheel_speed(1) / (2.0f * M_PIf));
 
-            // 2.0f * M_PIf * MINI_SEGWAY_KN / 60.0f * MINI_SEGWAY_VOLTAGE_MAX
-            voltage_M1 = (wheel_speed(0) / (2.0f * M_PIf)) / (MINI_SEGWAY_KN / 60.0f);
-            voltage_M2 = (wheel_speed(1) / (2.0f * M_PIf)) / (MINI_SEGWAY_KN / 60.0f);
-            // voltage_M1 = rc_pkg.forward_speed * MINI_SEGWAY_VOLTAGE_MAX;
-            // voltage_M2 = rc_pkg.forward_speed * MINI_SEGWAY_VOLTAGE_MAX;
+#if MINI_SEGWAY_AIN_USE_ADDITIONAL_CURRENT_SENSOR
+            // read additional current sensor
+            current_additional_M1 = (analog_additional_in_M1.read() * 3.3f - 2.5f) / 0.8f;
+            current_additional_M2 = (analog_additional_in_M2.read() * 3.3f - 2.5f) / 0.8f;
+#endif
 
+            // calculate robot velocities from wheel speeds and gyro data
+            Eigen::Vector2f wheel_speed{encoder_signals_M1.velocity + imu_data.gyro(0),
+                                        encoder_signals_M2.velocity + imu_data.gyro(0)};
+            Eigen::Vector2f robot_coord = Cwheel2robot * wheel_speed;
+
+            // state machine mainly calculates the setpoints for the motors
+            Eigen::Vector2f robot_coord_setpoint{0.0f, 0.0f};
+
+            switch (robot_state) {
+                case RobotState::CAR: {
+                    
+                    // mix wheel speed based on rc input
+                    float flip_mixer_sign = 1.0f;
+                    if (imu_data.rpy(0) < 0.0f)
+                        flip_mixer_sign = -1.0f;
+                    robot_coord_setpoint << flip_mixer_sign * MINI_SEGWAY_CAR_MIXER_GAIN * forward_speed_max * rc_pkg.forward_speed, 
+                                            flip_mixer_sign * (1.0f - MINI_SEGWAY_CAR_MIXER_GAIN) * turn_rate_max * rc_pkg.turn_rate;
+
+                    // if the absolute angle is small enough we switch to segway mode
+                    if (fabs(imu_data.rpy(0)) < MINI_SEGWAY_ABS_ANGLE_START_BALANCE_RAD)
+                        robot_state = RobotState::SEGWAY;
+
+                    break;
+                }
+                case RobotState::SEGWAY: {
+
+                    // mix wheel speed based on rc input
+                    robot_coord_setpoint << MINI_SEGWAY_CAR_MIXER_GAIN * forward_speed_max * rc_pkg.forward_speed, 
+                                            -1.0f * (1.0f - MINI_SEGWAY_CAR_MIXER_GAIN) * turn_rate_max * rc_pkg.turn_rate;
+
+                    // cascaded pid controller for velocity and angle
+                    const float u_pi_vel = Cpi_vel.apply(robot_coord_setpoint(0) - robot_coord(0));
+                    const float u_pd_ang = MINI_SEGWAY_CPD_ANG_KP * imu_data.rpy(0) + MINI_SEGWAY_CPD_ANG_KD * imu_data.gyro(0);
+                    // TODO: implement saturation
+                    robot_coord_setpoint(0) = -1.0f * (u_pi_vel - u_pd_ang);
+
+                    // TODO: implement angle controller
+                    // robot_coord_setpoint(1) = ...;
+
+                    // if the absolute angle is bigger than a certain threshold we switch to reset mode
+                    if (fabs(imu_data.rpy(0)) > MINI_SEGWAY_ABS_ANGLE_STOP_BALANCE_RAD) {
+                        robot_state = RobotState::CAR;
+                        Cpi_vel.reset(0.0f);
+                    }
+
+                    break;
+                }
+            }
+
+            // write velocity setpoints to motors
+            const Eigen::Vector2f voltage = Cwheel2robot.inverse() * robot_coord_setpoint / k_voltage2wheel_speed;
+            motor_M1.setVoltage(voltage(0));
+            motor_M2.setVoltage(voltage(1));
+
+// TODO: if you want to use this code, you have to think about the logic again, was last used to identify the dc motors
 #if MINI_SEGWAY_CHIRP_USE_CHIRP
+            float voltage_M1 = MINI_SEGWAY_CHIRP_OFFSET;
+            float voltage_M2 = MINI_SEGWAY_CHIRP_OFFSET;
+            float sinarg = 0.0f;
+            float voltage_M = 0.0f;
             // perform frequency response measurement
             if (chirp.update()) {
                 const float exc = chirp.getExc();
                 // const float fchirp = chirp.getFreq();
                 sinarg = chirp.getSinarg();
-                voltage = MINI_SEGWAY_CHIRP_AMPLITUDE * exc + MINI_SEGWAY_CHIRP_OFFSET;
+                voltage_M = MINI_SEGWAY_CHIRP_AMPLITUDE * exc + MINI_SEGWAY_CHIRP_OFFSET;
             } else {
-                // toggleDoExecute();
                 _do_execute = false;
             }
-            voltage_M1 = voltage;
-            voltage_M2 = voltage;
+            voltage_M1 = voltage_M;
+            voltage_M2 = voltage_M;
 #endif
-            // write voltage to motors
-            motor_M1.setVoltage(voltage_M1);
-            motor_M2.setVoltage(voltage_M2);
 
             // send data to serial stream (openlager or laptop / pc)
-            serialStream.write( dtime_us );                      //  0 
-            serialStream.write( rc_pkg.turn_rate );              //  1 
-            serialStream.write( rc_pkg.forward_speed );          //  2
-            serialStream.write( (rc_pkg.armed ? 1.0f : 0.0f) );  //  3
-#if DO_USE_PPM_IN
-            serialStream.write( _rc.getPeriod() * 1.0e-4f );     //  4 
-#else
-            serialStream.write( _rc.getPeriod() * 2.2222e-04f ); //  4
-#endif
-            // serialStream.write( motor_signals_M1.velocity );     //  5
-            // serialStream.write( motor_signals_M2.velocity );     //  6
-            serialStream.write( encoder_signals_M1.velocity );     //  5
-            serialStream.write( encoder_signals_M2.velocity );     //  6
-            // serialStream.write( motor_signals_M1.rotations );    //  7
-            // serialStream.write( motor_signals_M2.rotations );    //  8
-            serialStream.write( encoder_signals_M1.rotations );    //  7
-            serialStream.write( encoder_signals_M2.rotations );    //  8
-            serialStream.write( imu_data.gyro(0) );              //  9
-            serialStream.write( imu_data.gyro(1) );              // 10
-            serialStream.write( imu_data.gyro(2) );              // 11
-            serialStream.write( imu_data.acc(0) );               // 12
-            serialStream.write( imu_data.acc(1) );               // 13
-            serialStream.write( imu_data.acc(2) );               // 14
-            serialStream.write( imu_data.rpy(0) );               // 15
-            serialStream.write( imu_data.rpy(1) );               // 16
-            serialStream.write( imu_data.rpy(2) );               // 17
-            // serialStream.write( motor_signals_M1.voltage );      // 18
-            // serialStream.write( motor_signals_M2.voltage );      // 19
-            serialStream.write( voltage_M1 );      // 18
-            serialStream.write( voltage_M2 );      // 19
-            // serialStream.write( motor_M1.getVelocitySetpoint()); // 20
-            // serialStream.write( motor_M2.getVelocitySetpoint()); // 21
-            serialStream.write( current_M1 );                    // 20
-            serialStream.write( current_M2 );                    // 21
-            serialStream.write( current_additional_M1 );                    // 20
-            serialStream.write( current_additional_M2 );                    // 21
-            //serialStream.write( sinarg );                    // 21
+            serialStream.write( dtime_us );                        //  0 micro seconds
+
+            serialStream.write( rc_pkg.turn_rate );                //  1 normalized between -1.0 and 1.0
+            serialStream.write( rc_pkg.forward_speed );            //  2 normalized between -1.0 and 1.0
+            serialStream.write( (rc_pkg.armed ? 1.0f : 0.0f) );    //  3 arming switch (1.0f (armed) or 0.0f)
+            serialStream.write( _rc.getPeriod() * 2.2222e-04f );   //  4 microseconds
+
+            serialStream.write( encoder_signals_M1.velocity );     //  5 rad/sec
+            serialStream.write( encoder_signals_M2.velocity );     //  6 rad/sec
+
+            serialStream.write( encoder_signals_M1.rotations );    //  7 rad
+            serialStream.write( encoder_signals_M2.rotations );    //  8 rad
+
+            serialStream.write( imu_data.gyro(0) );                //  9 rad/sec
+            serialStream.write( imu_data.gyro(1) );                // 10 rad/sec
+            serialStream.write( imu_data.gyro(2) );                // 11 rad/sec
+
+            serialStream.write( imu_data.acc(0) );                 // 12 m/sec^2
+            serialStream.write( imu_data.acc(1) );                 // 13 m/sec^2
+            serialStream.write( imu_data.acc(2) );                 // 14 m/sec^2
+
+            serialStream.write( imu_data.rpy(0) );                 // 15 rad
+            serialStream.write( imu_data.rpy(1) );                 // 16 rad
+            serialStream.write( imu_data.rpy(2) );                 // 17 rad
+
+            serialStream.write( voltage(0) );                      // 18 voltage
+            serialStream.write( voltage(1) );                      // 19 voltage
+
+            serialStream.write( current_M1 );                      // 20 amps (or at least approximately)
+            serialStream.write( current_M2 );                      // 21 amps (or at least approximately)
+
+            serialStream.write( robot_coord(0) );                  // 22 forward speed in m/sec
+            serialStream.write( robot_coord(1) );                  // 23 turn rate in rad/sec
+
+            serialStream.write( robot_coord_setpoint(0) );         // 24 forward speed setpoint in m/sec
+            serialStream.write( robot_coord_setpoint(1) );         // 25 turn rate setpoint in rad/sec
+
+            serialStream.write( static_cast<float>(robot_state) ); // 26 robot state
+
             serialStream.send();
 
-            led = 1;
         } else {
-            // motor_M1.setVoltage(MINI_SEGWAY_CHIRP_OFFSET);
-            // motor_M2.setVoltage(MINI_SEGWAY_CHIRP_OFFSET);
+            // reset the system once
             if (_do_reset) {
                 _do_reset = false;
-                led = 0;
+
                 enable_motor_driver = 0;
+                led2 = 0;
                 serialStream.reset();
-                // motor_M1.setVelocity(0.0f);
-                // motor_M2.setVelocity(0.0f);
                 motor_M1.setVoltage(0.0f);
                 motor_M2.setVoltage(0.0f);
+                robot_state = RobotState::CAR;
             }
         }
     }
@@ -288,7 +316,7 @@ void MiniSegway::sendThreadFlag()
 
 void MiniSegway::toggleDoExecute()
 {
-    _do_execute = !_do_execute;
+   _do_execute = !_do_execute;
     if (_do_execute)
         _do_reset = true;
 }

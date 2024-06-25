@@ -1,6 +1,24 @@
 #include "mbed.h"
 
 /**
+ * TODO new construction:
+ * - check sbus, why is armed not always true when button is pressed? sometimes you have to disarm and arm it again...
+ */
+
+/**
+ * TODO new construction:
+ * - updating Hardware F446RE - Connection
+ * - 2 additional buttons (reset and blue)
+ * - 1 additional power switch
+ * - nothing in the way or at least nut much shen plugging in a cable
+ * - find out if current measurement from motor driver can be improved with additional cap, maybe talk to camille
+ * - update hardwarelist_F446RE.txt
+ * - move wheels as close to the body as possible (sunk srews) while maintaining thick enough walls (trade off)
+ * - would be nice if the segway was level lying on one of the two sides when on a level ground
+ * - test software filter for motor driver current
+ */
+
+/**
  * TODO new (F446RE):
  * - Figure out sign with Cw2r transformation.
  * - Adjust DCMotor class according to Motor class.
@@ -19,35 +37,23 @@
  * - mahonyRP.m and eval file
 */
 
-/**
- * TODO old:
- * - check for all threads the destructor
- *      _Timeout.detach();
- *      _Ticker.detach();
- *      _Thread.terminate();
- * - check for all const functions possible move to header
- * - move all unused destructors to header
- * - check all defines to have the header name first
-*/
 
-#include "IMU.h"
+#include "DebounceIn.h"
 #include "MiniSegway.h"
 #include "RC.h"
 
-RC rc(MINI_SEGWAY_RC_RX);
-IMU imu(MINI_SEGWAY_IMU_MOSI,
-        MINI_SEGWAY_IMU_MISO,
-        MINI_SEGWAY_IMU_CLK,
-        MINI_SEGWAY_IMU_CS);
-MiniSegway miniSegway(rc, imu);
+RC rc(MINI_SEGWAY_RC_RX); // rc needs to be declared here and passed to miniSegway
+MiniSegway miniSegway(rc);
 
-// main thread is just blinking the led on the nucleo
 int main()
 {
-    printf("MiniSegway running...\n");
+    // additional reset button
+    DebounceIn additionalResetButton(MINI_SEGWAY_RESET_BUTTON);
+    additionalResetButton.fall(&NVIC_SystemReset);
+
     DigitalOut led1(LED1);
     while (true) {
-        led1 = !led1;
+        led1 = !led1; // main thread is just blinking the green led on the nucleo
         thread_sleep_for(1000);
     }
 }

@@ -1,7 +1,4 @@
-#ifndef MOTOR_H_
-#define MOTOR_H_
-
-// #include <cmath>
+#pragma once
 
 #include "config.h"
 
@@ -16,15 +13,12 @@ public:
     explicit Motor(PinName pwm,
                    PinName dout,
                    float voltage_max = 12.0f);
-    virtual ~Motor() {};
+    virtual ~Motor() = default;
 
-    void reset(float voltage = 0.0f);
-    void setVoltage(float voltage);
+    float setVoltage(float voltage);
 
 private:
     FastPWM _pwm;
     DigitalOut _dir;
     float _voltage_max;
 };
-
-#endif /* MOTOR_H_ */

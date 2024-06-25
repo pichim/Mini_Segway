@@ -1,5 +1,4 @@
-#ifndef MINI_SEGWAY_H_
-#define MINI_SEGWAY_H_
+#pragma once
 
 #include "config.h"
 
@@ -9,11 +8,12 @@
     #include "Chirp.h"
 #endif
 #include "Encoder.h" // TODO: Remove
-#include "DCMotor.h"
+// #include "DCMotor.h"
 #include "DebounceIn.h"
+#include "IIRFilter.h"
 #include "IMU.h"
 #include "Motor.h" // TODO: Remove
-// #include "FastPWM/FastPWM.h" // TODO: Remove
+#include "PIDController.h"
 #include "RC.h"
 #include "SerialStream.h"
 #include "ThreadFlag.h"
@@ -27,7 +27,7 @@ using namespace std::chrono;
 class MiniSegway
 {
 public:
-    explicit MiniSegway(RC& rc, IMU& imu);
+    explicit MiniSegway(RC& rc);
     virtual ~MiniSegway();
 
 private:
@@ -36,7 +36,7 @@ private:
     ThreadFlag _ThreadFlag;
 
     RC &_rc;
-    IMU &_imu;
+    IMU _imu;
 
     DebounceIn _button;    
     bool _do_execute{false};
@@ -46,4 +46,3 @@ private:
     void sendThreadFlag();
     void toggleDoExecute();
 };
-#endif /* MINI_SEGWAY_H_ */

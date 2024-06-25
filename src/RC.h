@@ -1,14 +1,11 @@
-#ifndef RC_
-#define RC_
+#pragma once
 
 #include "config.h"
 
-#include "IIR_Filter.h"
-#if DO_USE_PPM_IN
-    #include "PpmIn.h"
-#else
-    #include "SBus.h"
-#endif
+#include "IIRFilter.h"
+#include "SBus.h"
+
+#define RC_PRINT_DEBUG false
 
 class RC
 {
@@ -27,16 +24,10 @@ public:
     rc_pkg_t update();
 
 private:
-#if DO_USE_PPM_IN
-    PpmIn _rc;
-#else
     SBus _rc;
-#endif
-    IIR_Filter _upsampling_filters[2];
+    IIRFilter _upsamplingLowPass2[2];
 
     rc_pkg_t _rc_pkg;
 
     float applyExpoMinusToPlusOne(float val);
 };
-
-#endif /* RC_ */

@@ -1,5 +1,4 @@
-#ifndef PWM_IN_H_
-#define PWM_IN_H_
+#pragma once
 
 #include "mbed.h"
 
@@ -27,5 +26,3 @@ private:
     void rise();
     void fall();
 };
-
-#endif /* PWM_IN_H_ */

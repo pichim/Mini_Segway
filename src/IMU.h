@@ -1,12 +1,11 @@
-#ifndef IMU_H_
-#define IMU_H_
+#pragma once
 
 #include "mbed.h"
 #include "eigen/Dense.h"
 
 #include "config.h"
 
-#include "IIR_Filter.h"
+#include "IIRFilter.h"
 #include "Mahony.h"
 #include "MPU6500/mpu6500_spi.h"
 
@@ -40,8 +39,8 @@ public:
     };
 
     ImuData update();
-    IIR_Filter m_gyro_filter[3];
-    IIR_Filter m_acc_filter[3];
+    IIRFilter m_gyro_filter[3];
+    IIRFilter m_acc_filter[3];
 
 private:
     SPI m_spi;
@@ -49,5 +48,3 @@ private:
     Mahony m_Mahony;
     ImuData m_ImuData;
 };
-
-#endif /* IMU_H_ */

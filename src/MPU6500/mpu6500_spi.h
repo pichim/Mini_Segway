@@ -1,5 +1,4 @@
-#ifndef MPU6000_SPI_H_
-#define MPU6000_SPI_H_
+#pragma once
 
 #include "mbed.h"
 
@@ -142,5 +141,3 @@ private:
 
     void write2spi(uint8_t, uint8_t);
 };
-
-#endif /* MPU6000_SPI_H_ */

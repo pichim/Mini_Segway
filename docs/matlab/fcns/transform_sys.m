@@ -1,0 +1,9 @@
+function sys = transform_sys(sys, Tu, Ty, Tx)
+
+    sys = ss(Tx * sys.A * Tx^-1, ...
+             Tx * sys.B * Tu^-1, ...
+             Ty * sys.C * Tx^-1, ...
+             Ty * sys.D * Tu^-1);
+
+end
+

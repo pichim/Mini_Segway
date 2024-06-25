@@ -67,6 +67,15 @@ float Mahony::getTiltAngle() const
     return m_tilt;
 }
 
+void Mahony::setInitialOrientation(float qw, float qx, float qy, float qz)
+{
+    m_quat.w() = qw;
+    m_quat.x() = qx;
+    m_quat.y() = qy;
+    m_quat.z() = qz;
+    m_quat.normalize();
+}
+
 void Mahony::setup(float kp_x, float kp_y, float kp_z, float ki_x, float ki_y, float ki_z, float Ts)
 {
     setGains(kp_x, kp_y, kp_z, ki_x, ki_y, ki_z);

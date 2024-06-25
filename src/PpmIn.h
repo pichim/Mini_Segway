@@ -1,5 +1,4 @@
-#ifndef PPM_IN_H_
-#define PPM_IN_H_
+#pragma once
 
 /**
  * This class is designed to read PPM signals from a crsf xf nano rx
@@ -63,5 +62,3 @@ private:
     void rise();
     void fall();
 };
-
-#endif /* PPM_IN_H_ */

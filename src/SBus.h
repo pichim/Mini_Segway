@@ -1,5 +1,4 @@
-#ifndef SBUS_H_
-#define SBUS_H_
+#pragma once
 
 /**
  * This class is designed to read SBUS signals from a elrs receiver
@@ -21,12 +20,6 @@
 
 #include "ThreadFlag.h"
 #include "SerialPipe/serial_pipe.h"
-
-#define  SBUS_DO_RUN_AS_THREAD false
-#if SBUS_DO_RUN_AS_THREAD
-    // radiomaster elrs rx, running at 111 Hz := ~9000 mus
-    #define SBUS_PERIOD_US 500
-#endif
 
 #define SBUS_NUM_OF_CHANNELS 8 // 18 reduced to 8, since I don't need more channels
 #define SBUS_NUM_OF_BYTES 25
@@ -56,31 +49,22 @@ public:
     float getChannelZeroToPlusOne(uint8_t idx) const;
     bool isPkgValid() const { return _is_pkg_valid; }
     void setPkgValidFalse() { _is_pkg_valid = false; }
-#if !SBUS_DO_RUN_AS_THREAD
     void processReceivedData();
-#endif
+
+    uint32_t getNumOfDecoderErrorFrames() const { return _num_of_decoder_error_frames; }
+    bool isFailSafe() const { return _is_failsafe; }
+    uint32_t getNumOfLostFrames() const { return _num_of_lost_frames; }
+    uint32_t getNumOfSkippedStartFrames() const { return _num_of_skipped_start_frames; }
 
 private:
-#if SBUS_DO_RUN_AS_THREAD
-    Thread _Thread;
-    Ticker _Ticker;
-    ThreadFlag _ThreadFlag;
-#endif
-
     SerialPipe _SerialPipe;
     Timer _Timer;
 
     uint16_t _channels[SBUS_NUM_OF_CHANNELS] = {0};
+    uint32_t _num_of_skipped_start_frames{0};
     uint32_t _num_of_decoder_error_frames{0};
     bool _is_failsafe{false};
     uint32_t _num_of_lost_frames{0};
     uint32_t _period{0};
     bool _is_pkg_valid{false};
-
-#if SBUS_DO_RUN_AS_THREAD
-    void processReceivedData();
-    void sendThreadFlag();
-#endif
 };
-
-#endif /* SBUS_H_ */

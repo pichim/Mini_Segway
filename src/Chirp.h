@@ -1,10 +1,6 @@
-#ifndef CHIRP_H_
-#define CHIRP_H_
+#pragma once
 
-#include <math.h>
 #include <stdint.h>
-
-#define M_PIf 3.14159265358979323846f /* pi */
 
 class Chirp
 {
@@ -27,9 +23,7 @@ private:
         uint32_t count, N;
         float exc, fchirp, sinarg;
         bool isFinished;
-    } m_chirp;
+    } chirp;
 
     void resetSignals();
 };
-
-#endif /* CHIRP_H_ */

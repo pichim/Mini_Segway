@@ -1,5 +1,4 @@
-#ifndef MPU6000_SPI_REGS_H_
-#define MPU6000_SPI_REGS_H_
+#pragma once
 
 // MPU6500 registers
 #define MPUREG_XG_OFFS_TC           0x00
@@ -90,5 +89,3 @@
 #define BIT_I2C_IF_DIS              0x10
  
 #define READ_FLAG                   0x80
-
-#endif /* MPU6000_SPI_REGS_H_ */

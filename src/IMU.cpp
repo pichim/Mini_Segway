@@ -3,19 +3,21 @@
 IMU::IMU(PinName pin_mosi,
          PinName pin_miso,
          PinName pin_clk,
-         PinName pin_cl) : m_gyro_filter{IIR_Filter(1.0f / MINI_SEGWAY_IMU_GYRO_FREQUENCY_RAD_SEC, MINI_SEGWAY_TS, 1.0f),
-                                         IIR_Filter(1.0f / MINI_SEGWAY_IMU_GYRO_FREQUENCY_RAD_SEC, MINI_SEGWAY_TS, 1.0f),
-                                         IIR_Filter(1.0f / MINI_SEGWAY_IMU_GYRO_FREQUENCY_RAD_SEC, MINI_SEGWAY_TS, 1.0f)}
-                         , m_acc_filter{IIR_Filter(1.0f / MINI_SEGWAY_IMU_ACC_FREQUENCY_RAD_SEC, MINI_SEGWAY_TS, 1.0f),
-                                        IIR_Filter(1.0f / MINI_SEGWAY_IMU_ACC_FREQUENCY_RAD_SEC, MINI_SEGWAY_TS, 1.0f),
-                                        IIR_Filter(1.0f / MINI_SEGWAY_IMU_ACC_FREQUENCY_RAD_SEC, MINI_SEGWAY_TS, 1.0f)}
-                         , m_spi(pin_mosi, pin_miso, pin_clk)
+         PinName pin_cl) : m_spi(pin_mosi, pin_miso, pin_clk)
                          , m_ImuMPU6500(m_spi, pin_cl)
                          , m_Mahony(MINI_SEGWAY_IMU_KP_XY, MINI_SEGWAY_IMU_KP_XY, MINI_SEGWAY_IMU_KP_Z,
                                     MINI_SEGWAY_IMU_KI_XY, MINI_SEGWAY_IMU_KI_XY, MINI_SEGWAY_IMU_KI_Z,
                                     MINI_SEGWAY_TS)
                          
 {
+    m_gyro_filter[0].lowPass1Init(MINI_SEGWAY_IMU_GYRO_FILTER_FREQUENCY_HZ, MINI_SEGWAY_TS);
+    m_gyro_filter[1].lowPass1Init(MINI_SEGWAY_IMU_GYRO_FILTER_FREQUENCY_HZ, MINI_SEGWAY_TS);
+    m_gyro_filter[2].lowPass1Init(MINI_SEGWAY_IMU_GYRO_FILTER_FREQUENCY_HZ, MINI_SEGWAY_TS);
+
+    m_acc_filter[0].lowPass1Init(MINI_SEGWAY_IMU_ACC_FILTER_FREQUENCY_HZ, MINI_SEGWAY_TS);
+    m_acc_filter[1].lowPass1Init(MINI_SEGWAY_IMU_ACC_FILTER_FREQUENCY_HZ, MINI_SEGWAY_TS);
+    m_acc_filter[2].lowPass1Init(MINI_SEGWAY_IMU_ACC_FILTER_FREQUENCY_HZ, MINI_SEGWAY_TS);
+
     m_ImuMPU6500.init();
     m_ImuMPU6500.configuration();
     m_ImuMPU6500.testConnection();
@@ -23,7 +25,7 @@ IMU::IMU(PinName pin_mosi,
 
 IMU::ImuData IMU::update()
 {
-    static const uint16_t Navg = 200;
+    static const uint16_t Navg = MINI_SEGWAY_IMU_NUM_FOR_AVERAGE;
     static uint16_t avg_cntr = 0;
     static bool imu_is_calibrated = false;
     static Eigen::Vector3f gyro_offset = (Eigen::Vector3f() << 0.0f, 0.0f, 0.0f).finished();
@@ -32,14 +34,16 @@ IMU::ImuData IMU::update()
     // update imu
     m_ImuMPU6500.readGyro();
     m_ImuMPU6500.readAcc();
-#if MINI_SEGWAY_IMU_ROTATE_SIGNALS_SEGWAY_STANDING
-    Eigen::Vector3f gyro(m_ImuMPU6500.gyroX, -m_ImuMPU6500.gyroZ, m_ImuMPU6500.gyroY);
-    Eigen::Vector3f acc(m_ImuMPU6500.accX, -m_ImuMPU6500.accZ, m_ImuMPU6500.accY);
-#else
-    Eigen::Vector3f gyro(m_ImuMPU6500.gyroX, m_ImuMPU6500.gyroY, m_ImuMPU6500.gyroZ);
-    Eigen::Vector3f acc(m_ImuMPU6500.accX, m_ImuMPU6500.accY, m_ImuMPU6500.accZ);
-#endif
 
+    // segway imu alignment:
+    // the alignment was chosen so that roll can be used for controlling
+    // the segway since yaw has a singularity at +/-90 deg
+    //   when standing upright, the IMU is mounted on the robot with:
+    //   - the x-axis pointing to the left
+    //   - the y-axis pointing backwards
+    //   - the z-axis pointing upwards
+    Eigen::Vector3f gyro(-m_ImuMPU6500.gyroX, m_ImuMPU6500.gyroZ, m_ImuMPU6500.gyroY);
+    Eigen::Vector3f acc(-m_ImuMPU6500.accX, m_ImuMPU6500.accZ, m_ImuMPU6500.accY);
 
     if (!imu_is_calibrated) {
         avg_cntr++;
@@ -49,14 +53,40 @@ IMU::ImuData IMU::update()
         // calculate average
         if (avg_cntr == Navg) {
             imu_is_calibrated = true;
+
             gyro_offset /= avg_cntr;
             acc_offset /= avg_cntr;
-            // we have to keep gravity in acc z direction
-            acc_offset(2) = 0.0f;
+
+            printf("Avg. Gyr offset: %.4f, %.4f, %.4f; ...\n", gyro_offset(0), gyro_offset(1), gyro_offset(2));
+            printf("Avg. Acc offset: %.4f, %.4f, %.4f; ...\n", acc_offset(0), acc_offset(1), acc_offset(2));
+
+            // set initial rotation
+            // currently only 3 initial orientations are supported:
+            // - system is hanging
+            // - system is lying and segway forward is facing upwards
+            // - system is lying and segway forward is facing downwards
+            // system is hanging
+            if ( fabs(acc_offset(2)) > fabs(acc_offset(1))) {
+                m_Mahony.setInitialOrientation(0.0f, -1.0f, 0.0f, 0.0f); // system is hanging
+                // keep gravity
+                acc_offset(2) = 0.0f;
+            // system is lying
+            } else {
+                const float reci_sqrt_two = 1.0f / sqrtf(2.0f);
+                if (acc_offset(1) < 0.0f) {
+                    // segway forward facing upwards
+                    m_Mahony.setInitialOrientation(reci_sqrt_two, -reci_sqrt_two, 0.0f, 0.0f); // -90 deg roll
+                } else {
+                    // segway forward facing downwards
+                    m_Mahony.setInitialOrientation(reci_sqrt_two, reci_sqrt_two, 0.0f, 0.0f); // 90 deg roll
+                }
+                // keep gravity
+                acc_offset(1) = 0.0f;
+            }
+
 #if MINI_SEGWAY_IMU_DO_USE_STATIC_ACC_CALIBRATION
             acc_offset = MINI_SEGWAY_IMU_B_ACC;
 #endif
-            printf("Averaged acc offset: {%.4ff, %.4ff, %.4ff}\n", acc_offset(0), acc_offset(1), acc_offset(2));
         }
     } else {
         // remove static bias
@@ -74,8 +104,8 @@ IMU::ImuData IMU::update()
         }
         // filter gyro and acc data
         for (uint8_t i = 0; i < 3; i++) {
-            gyro(i) = m_gyro_filter[i].filter(gyro(i));
-            acc(i) = m_acc_filter[i].filter(acc(i));
+            gyro(i) = m_gyro_filter[i].apply(gyro(i));
+            acc(i) = m_acc_filter[i].apply(acc(i));
         }
 #endif
 
