@@ -186,6 +186,10 @@ void MiniSegway::threadTask()
             // state machine mainly calculates the setpoints for the motors
             Eigen::Vector2f robot_coord_setpoint{0.0f, 0.0f};
 
+#if MINI_SEGWAY_CHIRP_USE_CHIRP
+            float sinarg = 0.0f;
+#endif
+
             switch (robot_state) {
                 case RobotState::CAR: {
                     
@@ -208,8 +212,21 @@ void MiniSegway::threadTask()
                     robot_coord_setpoint << MINI_SEGWAY_CAR_MIXER_GAIN * forward_speed_max * rc_pkg.forward_speed, 
                                             -1.0f * (1.0f - MINI_SEGWAY_CAR_MIXER_GAIN) * turn_rate_max * rc_pkg.turn_rate;
 
+#if MINI_SEGWAY_CHIRP_USE_CHIRP
+                    float exc = MINI_SEGWAY_CHIRP_OFFSET;
+                    if (rc_pkg.armed) {
+                        if (chirp.update()) {
+                            exc = MINI_SEGWAY_CHIRP_AMPLITUDE * chirp.getExc() + MINI_SEGWAY_CHIRP_OFFSET;
+                            sinarg = chirp.getSinarg();
+                        } 
+                    }
+                    robot_coord_setpoint(0) += exc;
+#endif
+
                     // cascaded pid controller for velocity and angle
-                    const float u_pi_vel = Cpi_vel.apply(robot_coord_setpoint(0) - robot_coord(0));
+                    const float u_pi_vel = Cpi_vel.applyConstrained(robot_coord_setpoint(0) - robot_coord(0),
+                                                                    -MINI_SEGWAY_CAR_MIXER_GAIN * forward_speed_max,
+                                                                    MINI_SEGWAY_CAR_MIXER_GAIN * forward_speed_max);
                     const float u_pd_ang = MINI_SEGWAY_CPD_ANG_KP * imu_data.rpy(0) + MINI_SEGWAY_CPD_ANG_KD * imu_data.gyro(0);
                     // TODO: implement saturation
                     robot_coord_setpoint(0) = -1.0f * (u_pi_vel - u_pd_ang);
@@ -231,25 +248,6 @@ void MiniSegway::threadTask()
             const Eigen::Vector2f voltage = Cwheel2robot.inverse() * robot_coord_setpoint / k_voltage2wheel_speed;
             motor_M1.setVoltage(voltage(0));
             motor_M2.setVoltage(voltage(1));
-
-// TODO: if you want to use this code, you have to think about the logic again, was last used to identify the dc motors
-#if MINI_SEGWAY_CHIRP_USE_CHIRP
-            float voltage_M1 = MINI_SEGWAY_CHIRP_OFFSET;
-            float voltage_M2 = MINI_SEGWAY_CHIRP_OFFSET;
-            float sinarg = 0.0f;
-            float voltage_M = 0.0f;
-            // perform frequency response measurement
-            if (chirp.update()) {
-                const float exc = chirp.getExc();
-                // const float fchirp = chirp.getFreq();
-                sinarg = chirp.getSinarg();
-                voltage_M = MINI_SEGWAY_CHIRP_AMPLITUDE * exc + MINI_SEGWAY_CHIRP_OFFSET;
-            } else {
-                _do_execute = false;
-            }
-            voltage_M1 = voltage_M;
-            voltage_M2 = voltage_M;
-#endif
 
             // send data to serial stream (openlager or laptop / pc)
             serialStream.write( dtime_us );                        //  0 micro seconds
@@ -290,6 +288,10 @@ void MiniSegway::threadTask()
             serialStream.write( robot_coord_setpoint(1) );         // 25 turn rate setpoint in rad/sec
 
             serialStream.write( static_cast<float>(robot_state) ); // 26 robot state
+
+#if MINI_SEGWAY_CHIRP_USE_CHIRP
+            serialStream.write( sinarg );                          // 27 (rad)
+#endif
 
             serialStream.send();
 

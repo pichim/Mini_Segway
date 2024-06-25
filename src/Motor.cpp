@@ -6,7 +6,7 @@ Motor::Motor(PinName pwm,
                                 , _dir(dout)
                                 , _voltage_max(voltage_max)
 {
-    _pwm.period_us(MINI_SEGWAY_PWM_PERIOD_US);
+    _pwm.period_mus(MINI_SEGWAY_PWM_PERIOD_US);
     setVoltage(0.0f);
 }
 

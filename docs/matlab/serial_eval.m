@@ -6,7 +6,7 @@ addpath fcns\
 % max_num_of_floats = 2000000 / (4 * (8 + 2) * 2000)
 
 % openlager
-file_id = fopen('LOG102.TXT');
+file_id = fopen('LOG109.TXT');
 
 num_of_floats = fread(file_id, 1, 'uint8')
 

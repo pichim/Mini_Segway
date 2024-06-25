@@ -8,7 +8,7 @@
 #define MINI_SEGWAY_PERIOD_US 1000
 #define MINI_SEGWAY_TS (static_cast<float>(MINI_SEGWAY_PERIOD_US) * 1.0e-6f) // sampling time
 #define MINI_SEGWAY_ABS_ANGLE_START_BALANCE_RAD (10.0f * M_PIf / 180.0f)
-#define MINI_SEGWAY_ABS_ANGLE_STOP_BALANCE_RAD (20.0f * M_PIf / 180.0f)
+#define MINI_SEGWAY_ABS_ANGLE_STOP_BALANCE_RAD (35.0f * M_PIf / 180.0f)
 #define MINI_SEGWAY_CAR_MIXER_GAIN 0.7f
 
 
@@ -144,8 +144,8 @@
     #define MINI_SEGWAY_CHIRP_T1 60.0f
     #define MINI_SEGWAY_CHIRP_F0 (1.0f / MINI_SEGWAY_CHIRP_T1)
     #define MINI_SEGWAY_CHIRP_F1 (0.95f / (2.0f * MINI_SEGWAY_TS))
-    #define MINI_SEGWAY_CHIRP_AMPLITUDE 3.0f
-    #define MINI_SEGWAY_CHIRP_OFFSET 5.0f
+    #define MINI_SEGWAY_CHIRP_AMPLITUDE 0.1f
+    #define MINI_SEGWAY_CHIRP_OFFSET 0.0f
 #endif
 
 // current sensors from h-bridge
