@@ -1,37 +1,32 @@
 #pragma once
 
-#include "mbed.h"
-#include "ThreadFlag.h"
+#include "config.h"
 
-#ifndef LED_H_
-#define LED_H_
+#include "mbed.h"
+
+#include "ThreadFlag.h"
 
 class Led
 {
 public:
-    explicit Led(PinName led_pin);
-    virtual ~Led() {};
+    explicit Led(PinName pin);
+    virtual ~Led();
 
-    void onLed();
-    void offLed();
-    void blinkLed();
+    void on();
+    void off();
+    void blink();
 
 private:
-    static constexpr int64_t PERIOD_MUS = 200000;
-    bool ledOn = false;
-    bool ledBlink = false;
+    Thread _Thread;
+    Ticker _Ticker;
+    ThreadFlag _ThreadFlag;
 
-    Thread m_Thread;
-    Ticker m_Ticker;
-    ThreadFlag m_ThreadFlag;
-    DigitalOut m_DigitalOut;
+    DigitalOut _DigitalOut;
+
+    bool _led_on;
+    bool _led_blink;
 
     void threadTask();
     void sendThreadFlag();
 
 };
-
-
-
-
-#endif /* MOTION_H_ */

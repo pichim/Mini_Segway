@@ -7,16 +7,15 @@
 #if MINI_SEGWAY_CHIRP_USE_CHIRP
     #include "Chirp.h"
 #endif
-#include "Encoder.h" // TODO: Remove
-// #include "DCMotor.h"
+#include "Encoder.h"
 #include "DebounceIn.h"
 #include "IIRFilter.h"
 #include "IMU.h"
-#include "Motor.h" // TODO: Remove
+#include "Led.h"
+#include "Motor.h"
 #include "PIDController.h"
 #include "RC.h"
 #include "SerialStream.h"
-#include "Led.h"
 #include "ThreadFlag.h"
 
 #ifndef M_PIf
@@ -38,13 +37,10 @@ private:
 
     RC &_rc;
     IMU _imu;
-    Led _led1;
-    Led _led2;
 
     DebounceIn _button;
-    DebounceIn _add_button;    
+    DebounceIn _additional_button;
     bool _do_execute{false};
-    bool _do_reset{false};
 
     void threadTask();
     void sendThreadFlag();

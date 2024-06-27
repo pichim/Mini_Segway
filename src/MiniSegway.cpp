@@ -6,13 +6,11 @@ MiniSegway::MiniSegway(RC& rc) : _Thread(osPriorityHigh, 4096)
                                       MINI_SEGWAY_IMU_MISO,
                                       MINI_SEGWAY_IMU_CLK,
                                       MINI_SEGWAY_IMU_CS)
-                               , _led1(MINI_SEGWAY_LED1)
-                               , _led2(MINI_SEGWAY_LED2)
                                , _button(MINI_SEGWAY_BLUE_BUTTON, PullUp)
-                               , _add_button(MINI_SEGWAY_ADD_BLUE_BUTTON, PullUp)
+                               , _additional_button(MINI_SEGWAY_ADD_BLUE_BUTTON, PullUp)
 {
     _button.fall(callback(this, &MiniSegway::toggleDoExecute));
-    _add_button.fall(callback(this, &MiniSegway::toggleDoExecute));
+    _additional_button.fall(callback(this, &MiniSegway::toggleDoExecute));
 
     _Thread.start(callback(this, &MiniSegway::threadTask));
     _Ticker.attach(callback(this, &MiniSegway::sendThreadFlag), microseconds{MINI_SEGWAY_PERIOD_US});
@@ -25,7 +23,10 @@ MiniSegway::~MiniSegway()
 }
 
 void MiniSegway::threadTask()
-{   
+{
+    // additional leds
+    Led led1(MINI_SEGWAY_LED1);
+    Led led2(MINI_SEGWAY_LED2);
 
     // timer to measure delta time
     Timer timer;
@@ -141,11 +142,25 @@ void MiniSegway::threadTask()
             toggleDoExecute();
         }
 
+        // led1 shows the status of user button
+        if (_do_execute)
+            led1.on();
+        else
+            led1.blink();
+
+
         // sbus pkg needs to be processed to update the rc_pkg
         _rc.processReceivedData();
 
         // read processed rc package
         const RC::rc_pkg_t rc_pkg = _rc.update();
+
+        // led2 shows the status of the arming switch
+        if (rc_pkg.armed)
+            led2.on();
+        else
+            led2.blink();
+
 
         // read imu data
         const IMU::ImuData imu_data = _imu.update();
@@ -160,11 +175,10 @@ void MiniSegway::threadTask()
         const float dtime_us = duration_cast<microseconds>(time_us - time_previous_us).count();
         time_previous_us = time_us;
 
-        // arm is only true if receiver data is valid and arm button is pressed
+        // user button was pressed and systems is armed
         if (_do_execute && rc_pkg.armed) {
 
-            _led1.onLed();
-            // enable motor driver
+            // enable h-bridges
             if (enable_motor_driver == 0) {
                 enable_motor_driver = 1;
             }
@@ -172,7 +186,6 @@ void MiniSegway::threadTask()
             // read encoder signals
             const Encoder::encoder_signals_t encoder_signals_M1 = encoder_M1.read();
             const Encoder::encoder_signals_t encoder_signals_M2 = encoder_M2.read();
-            
 
 #if MINI_SEGWAY_AIN_USE_ADDITIONAL_CURRENT_SENSOR
             // read additional current sensor
@@ -193,28 +206,23 @@ void MiniSegway::threadTask()
 #endif
 
             switch (robot_state) {
-                case RobotState::CAR: {
-                    
-                    _led2.blinkLed();
+                case RobotState::CAR: {     
                     // mix wheel speed based on rc input
                     float flip_mixer_sign = 1.0f;
                     if (imu_data.rpy(0) < 0.0f)
                         flip_mixer_sign = -1.0f;
-                    robot_coord_setpoint << flip_mixer_sign * MINI_SEGWAY_CAR_MIXER_GAIN * forward_speed_max * rc_pkg.forward_speed, 
-                                            flip_mixer_sign * (1.0f - MINI_SEGWAY_CAR_MIXER_GAIN) * turn_rate_max * rc_pkg.turn_rate;
+                    robot_coord_setpoint << flip_mixer_sign * MINI_SEGWAY_MIXER_GAIN * MINI_SEGWAY_SCALE_MAX_VEL_GAIN * forward_speed_max * rc_pkg.forward_speed, 
+                                            flip_mixer_sign * (1.0f - MINI_SEGWAY_MIXER_GAIN) * MINI_SEGWAY_SCALE_MAX_VEL_GAIN * turn_rate_max * rc_pkg.turn_rate;
 
                     // if the absolute angle is small enough we switch to segway mode
                     if (fabs(imu_data.rpy(0)) < MINI_SEGWAY_ABS_ANGLE_START_BALANCE_RAD)
                         robot_state = RobotState::SEGWAY;
-
                     break;
                 }
                 case RobotState::SEGWAY: {
-
-                    _led2.onLed();
                     // mix wheel speed based on rc input
-                    robot_coord_setpoint << MINI_SEGWAY_CAR_MIXER_GAIN * forward_speed_max * rc_pkg.forward_speed, 
-                                            -1.0f * (1.0f - MINI_SEGWAY_CAR_MIXER_GAIN) * turn_rate_max * rc_pkg.turn_rate;
+                    robot_coord_setpoint << MINI_SEGWAY_MIXER_GAIN * MINI_SEGWAY_SCALE_MAX_VEL_GAIN * forward_speed_max * rc_pkg.forward_speed, 
+                                            -1.0f * (1.0f - MINI_SEGWAY_MIXER_GAIN) * MINI_SEGWAY_SCALE_MAX_VEL_GAIN * turn_rate_max * rc_pkg.turn_rate;
 
 #if MINI_SEGWAY_CHIRP_USE_CHIRP
                     float exc = MINI_SEGWAY_CHIRP_OFFSET;
@@ -229,8 +237,8 @@ void MiniSegway::threadTask()
 
                     // cascaded pid controller for velocity and angle
                     const float u_pi_vel = Cpi_vel.applyConstrained(robot_coord_setpoint(0) - robot_coord(0),
-                                                                    -MINI_SEGWAY_CAR_MIXER_GAIN * forward_speed_max,
-                                                                    MINI_SEGWAY_CAR_MIXER_GAIN * forward_speed_max);
+                                                                    -MINI_SEGWAY_MIXER_GAIN * forward_speed_max,
+                                                                    MINI_SEGWAY_MIXER_GAIN * forward_speed_max);
                     const float u_pd_ang = MINI_SEGWAY_CPD_ANG_KP * imu_data.rpy(0) + MINI_SEGWAY_CPD_ANG_KD * imu_data.gyro(0);
                     // TODO: implement saturation
                     robot_coord_setpoint(0) = -1.0f * (u_pi_vel - u_pd_ang);
@@ -238,12 +246,11 @@ void MiniSegway::threadTask()
                     // TODO: implement angle controller
                     // robot_coord_setpoint(1) = ...;
 
-                    // if the absolute angle is bigger than a certain threshold we switch to reset mode
+                    // if the absolute angle is bigger than a certain threshold we switch to car mode
                     if (fabs(imu_data.rpy(0)) > MINI_SEGWAY_ABS_ANGLE_STOP_BALANCE_RAD) {
                         robot_state = RobotState::CAR;
                         Cpi_vel.reset(0.0f);
                     }
-
                     break;
                 }
             }
@@ -252,6 +259,7 @@ void MiniSegway::threadTask()
             const Eigen::Vector2f voltage = Cwheel2robot.inverse() * robot_coord_setpoint / k_voltage2wheel_speed;
             motor_M1.setVoltage(voltage(0));
             motor_M2.setVoltage(voltage(1));
+
 
             // send data to serial stream (openlager or laptop / pc)
             serialStream.write( dtime_us );                        //  0 micro seconds
@@ -300,18 +308,12 @@ void MiniSegway::threadTask()
             serialStream.send();
 
         } else {
-            _led1.blinkLed();
-            _led2.offLed();
-            // reset the system once
-            if (_do_reset) {
-                _do_reset = false;
-
+            if (enable_motor_driver) {
                 enable_motor_driver = 0;
-                _led1.blinkLed();
-                _led2.offLed();
                 serialStream.reset();
                 motor_M1.setVoltage(0.0f);
                 motor_M2.setVoltage(0.0f);
+                Cpi_vel.reset(0.0f);
                 robot_state = RobotState::CAR;
             }
         }
@@ -325,7 +327,5 @@ void MiniSegway::sendThreadFlag()
 
 void MiniSegway::toggleDoExecute()
 {
-   _do_execute = !_do_execute;
-    if (_do_execute)
-        _do_reset = true;
+    _do_execute = !_do_execute;        
 }

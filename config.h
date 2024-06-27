@@ -4,13 +4,15 @@
     #define M_PIf 3.14159265358979323846f /* pi */
 #endif
 
+#define MINI_SEGWAY_ORANGE_VERSION true // if false its the green segway
+
 // task period, MPU6500 runs at 1kHz, so we want to run the control loop at 1kHz
 #define MINI_SEGWAY_PERIOD_US 1000
 #define MINI_SEGWAY_TS (static_cast<float>(MINI_SEGWAY_PERIOD_US) * 1.0e-6f) // sampling time
-#define MINI_SEGWAY_ABS_ANGLE_START_BALANCE_RAD (15.0f * M_PIf / 180.0f)
-#define MINI_SEGWAY_ABS_ANGLE_STOP_BALANCE_RAD (45.0f * M_PIf / 180.0f)
-#define MINI_SEGWAY_CAR_MIXER_GAIN 0.7f
-
+#define MINI_SEGWAY_ABS_ANGLE_START_BALANCE_RAD (20.0f * M_PIf / 180.0f)
+#define MINI_SEGWAY_ABS_ANGLE_STOP_BALANCE_RAD (60.0f * M_PIf / 180.0f)
+#define MINI_SEGWAY_MIXER_GAIN 0.7f // e.g. 0.7f means 70% of the control signal is used forward speed and 30% for turning
+#define MINI_SEGWAY_SCALE_MAX_VEL_GAIN 0.5f
 
 
 // pid controller gains
@@ -80,9 +82,10 @@
 #define MINI_SEGWAY_ADD_BLUE_BUTTON PC_5// additional blue button
 #define MINI_SEGWAY_RESET_BUTTON PB_1   // additional reset button
 
-// additional led
-#define MINI_SEGWAY_LED1 PA_7
-#define MINI_SEGWAY_LED2 PB_5
+// additional leds
+#define MINI_SEGWAY_LED_PERIOD_US 250000
+#define MINI_SEGWAY_LED1 PB_5
+#define MINI_SEGWAY_LED2 PA_7
 
 // encoders
 #define MINI_SEGWAY_ENCA_M1 PA_6
@@ -118,9 +121,13 @@
 #define MINI_SEGWAY_IMU_USE_ADDITIONAL_FILTERS true
 // #define MINI_SEGWAY_IMU_GYRO_FILTER_FREQUENCY_HZ 40.0f
 // #define MINI_SEGWAY_IMU_ACC_FILTER_FREQUENCY_HZ 10.0f
-#define MINI_SEGWAY_IMU_NUM_FOR_AVERAGE 1500 // dont make this shorter than 1000 micro seconds
+#define MINI_SEGWAY_IMU_NUM_FOR_AVERAGE 2000 // dont make this shorter than 1000 micro seconds
 #define MINI_SEGWAY_IMU_DO_USE_STATIC_ACC_CALIBRATION true // if this is true then averages acc gets overwritten by MINI_SEGWAY_IMU_B_ACC
-#define MINI_SEGWAY_IMU_B_ACC {-0.1124f, -0.1255f, 0.1122f}
+#if MINI_SEGWAY_ORANGE_VERSION
+    #define MINI_SEGWAY_IMU_B_ACC {-0.2997f, -0.1381f, 0.0028f}
+#else // has to be green version
+    #define MINI_SEGWAY_IMU_B_ACC {-0.2997f, -0.1381f, 0.0028f}
+#endif
 // % bessel (D = sqrt(3)/2)
 // w0 = 3;
 // kp = w0 / ( sqrt(3)/3 )

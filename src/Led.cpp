@@ -1,53 +1,60 @@
 #include "Led.h"
 
-Led::Led(PinName led_pin) : m_DigitalOut(led_pin), 
-                            m_Thread(osPriorityLow, 4096)
-
-                             
+Led::Led(PinName pin) : _Thread(osPriorityLow, 4096)
+                      , _DigitalOut(pin)
+                      , _led_on(false)
+                      , _led_blink(false)
 {
-    // start thread
-    m_Thread.start(callback(this, &Led::threadTask));
-
-    // attach sendThreadFlag() to ticker so that sendThreadFlag() is called periodically, which signals the thread to execute
-    m_Ticker.attach(callback(this, &Led::sendThreadFlag), std::chrono::microseconds{PERIOD_MUS});
+    _Thread.start(callback(this, &Led::threadTask));
+    _Ticker.attach(callback(this, &Led::sendThreadFlag), std::chrono::microseconds{MINI_SEGWAY_LED_PERIOD_US});
 }
 
-void Led::onLed()
+Led::~Led()
 {
-    ledOn = true;
-    ledBlink = false;
+    _Ticker.detach();
+    _Thread.terminate();
 }
 
-void Led::offLed()
+void Led::on()
 {
-    ledOn = false;
-    ledBlink = false;
+    _led_on = true;
+    _led_blink = false;
 }
 
-void Led::blinkLed()
+void Led::off()
 {
-    ledOn = false;
-    ledBlink = true;
+    _led_on = false;
+    _led_blink = false;
+}
+
+void Led::blink()
+{
+    _led_on = false;
+    _led_blink = true;
 }
 
 void Led::threadTask()
 {
     while (true) {
-        ThisThread::flags_wait_any(m_ThreadFlag);
-        
-        if (ledOn == true){
-            m_DigitalOut = 1;
-        } else if (ledBlink == true) {
-            m_DigitalOut = !m_DigitalOut;
+        ThisThread::flags_wait_any(_ThreadFlag);
+
+        // led should either blink
+        if (_led_blink) {
+            _DigitalOut = !_DigitalOut;
+        // if not blinking then it should
         } else {
-            m_DigitalOut = 0;
+            // be on
+            if (_led_on && !_DigitalOut) {
+                _DigitalOut = 1;
+            // or off
+            } else if (!_led_on && _DigitalOut) {
+                _DigitalOut = 0;
+            }
         }
     }
 }
 
-
 void Led::sendThreadFlag()
 {
-    // set the thread flag to trigger the thread task
-    m_Thread.flags_set(m_ThreadFlag);
+    _Thread.flags_set(_ThreadFlag);
 }
