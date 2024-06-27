@@ -21,10 +21,12 @@
 #include "ThreadFlag.h"
 #include "SerialPipe/serial_pipe.h"
 
-#define SBUS_NUM_OF_CHANNELS 8 // 18 reduced to 8, since I don't need more channels
+#define SBUS_NUM_OF_CHANNELS 8 // 18 reduced to 8, if you want all 18 channels, you need to change the
+                               // number to 18 and uncomment the commented code in the decode function
 #define SBUS_NUM_OF_BYTES 25
-#define SBUS_START_BYTE 0x0f
+#define SBUS_START_BYTE 0x0F
 #define SBUS_END_BYTE 0x00
+#define SBUS_END_BYTE2 0x04
 #define SBUS_MASK 0x07FF
 #define SBUS_MIN_VALUE 192
 #define SBUS_MAX_VALUE 1792
