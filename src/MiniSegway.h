@@ -16,6 +16,7 @@
 #include "PIDController.h"
 #include "RC.h"
 #include "SerialStream.h"
+#include "Led.h"
 #include "ThreadFlag.h"
 
 #ifndef M_PIf
@@ -37,8 +38,11 @@ private:
 
     RC &_rc;
     IMU _imu;
+    Led _led1;
+    Led _led2;
 
-    DebounceIn _button;    
+    DebounceIn _button;
+    DebounceIn _add_button;    
     bool _do_execute{false};
     bool _do_reset{false};
 

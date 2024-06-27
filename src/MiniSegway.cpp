@@ -6,9 +6,13 @@ MiniSegway::MiniSegway(RC& rc) : _Thread(osPriorityHigh, 4096)
                                       MINI_SEGWAY_IMU_MISO,
                                       MINI_SEGWAY_IMU_CLK,
                                       MINI_SEGWAY_IMU_CS)
+                               , _led1(MINI_SEGWAY_LED1)
+                               , _led2(MINI_SEGWAY_LED2)
                                , _button(MINI_SEGWAY_BLUE_BUTTON, PullUp)
+                               , _add_button(MINI_SEGWAY_ADD_BLUE_BUTTON, PullUp)
 {
     _button.fall(callback(this, &MiniSegway::toggleDoExecute));
+    _add_button.fall(callback(this, &MiniSegway::toggleDoExecute));
 
     _Thread.start(callback(this, &MiniSegway::threadTask));
     _Ticker.attach(callback(this, &MiniSegway::sendThreadFlag), microseconds{MINI_SEGWAY_PERIOD_US});
@@ -22,8 +26,6 @@ MiniSegway::~MiniSegway()
 
 void MiniSegway::threadTask()
 {   
-    // additional LED
-    DigitalOut led2(MINI_SEGWAY_LED);
 
     // timer to measure delta time
     Timer timer;
@@ -161,10 +163,10 @@ void MiniSegway::threadTask()
         // arm is only true if receiver data is valid and arm button is pressed
         if (_do_execute && rc_pkg.armed) {
 
+            _led1.onLed();
             // enable motor driver
             if (enable_motor_driver == 0) {
                 enable_motor_driver = 1;
-                led2 = 1;
             }
 
             // read encoder signals
@@ -193,6 +195,7 @@ void MiniSegway::threadTask()
             switch (robot_state) {
                 case RobotState::CAR: {
                     
+                    _led2.blinkLed();
                     // mix wheel speed based on rc input
                     float flip_mixer_sign = 1.0f;
                     if (imu_data.rpy(0) < 0.0f)
@@ -208,6 +211,7 @@ void MiniSegway::threadTask()
                 }
                 case RobotState::SEGWAY: {
 
+                    _led2.onLed();
                     // mix wheel speed based on rc input
                     robot_coord_setpoint << MINI_SEGWAY_CAR_MIXER_GAIN * forward_speed_max * rc_pkg.forward_speed, 
                                             -1.0f * (1.0f - MINI_SEGWAY_CAR_MIXER_GAIN) * turn_rate_max * rc_pkg.turn_rate;
@@ -296,12 +300,15 @@ void MiniSegway::threadTask()
             serialStream.send();
 
         } else {
+            _led1.blinkLed();
+            _led2.offLed();
             // reset the system once
             if (_do_reset) {
                 _do_reset = false;
 
                 enable_motor_driver = 0;
-                led2 = 0;
+                _led1.blinkLed();
+                _led2.offLed();
                 serialStream.reset();
                 motor_M1.setVoltage(0.0f);
                 motor_M2.setVoltage(0.0f);

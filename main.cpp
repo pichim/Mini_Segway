@@ -48,7 +48,7 @@ MiniSegway miniSegway(rc);
 int main()
 {
     // additional reset button
-    DebounceIn additionalResetButton(MINI_SEGWAY_RESET_BUTTON);
+    DebounceIn additionalResetButton(MINI_SEGWAY_RESET_BUTTON, PullUp);
     additionalResetButton.fall(&NVIC_SystemReset);
 
     DigitalOut led1(LED1);

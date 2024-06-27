@@ -7,8 +7,8 @@
 // task period, MPU6500 runs at 1kHz, so we want to run the control loop at 1kHz
 #define MINI_SEGWAY_PERIOD_US 1000
 #define MINI_SEGWAY_TS (static_cast<float>(MINI_SEGWAY_PERIOD_US) * 1.0e-6f) // sampling time
-#define MINI_SEGWAY_ABS_ANGLE_START_BALANCE_RAD (10.0f * M_PIf / 180.0f)
-#define MINI_SEGWAY_ABS_ANGLE_STOP_BALANCE_RAD (35.0f * M_PIf / 180.0f)
+#define MINI_SEGWAY_ABS_ANGLE_START_BALANCE_RAD (15.0f * M_PIf / 180.0f)
+#define MINI_SEGWAY_ABS_ANGLE_STOP_BALANCE_RAD (45.0f * M_PIf / 180.0f)
 #define MINI_SEGWAY_CAR_MIXER_GAIN 0.7f
 
 
@@ -77,10 +77,12 @@
 
 // button
 #define MINI_SEGWAY_BLUE_BUTTON BUTTON1 // blue button
-#define MINI_SEGWAY_RESET_BUTTON PB_8   // additional reset button
+#define MINI_SEGWAY_ADD_BLUE_BUTTON PC_5// additional blue button
+#define MINI_SEGWAY_RESET_BUTTON PB_1   // additional reset button
 
 // additional led
-#define MINI_SEGWAY_LED PA_7
+#define MINI_SEGWAY_LED1 PA_7
+#define MINI_SEGWAY_LED2 PB_5
 
 // encoders
 #define MINI_SEGWAY_ENCA_M1 PA_6
