@@ -6,7 +6,7 @@ addpath fcns\
 % max_num_of_floats = 2000000 / (4 * (8 + 2) * 2000)
 
 % openlager
-file_id = fopen('LOG232.TXT');
+file_id = fopen('LOG258.TXT');
 
 num_of_floats = fread(file_id, 1, 'uint8')
 
@@ -40,12 +40,12 @@ ind.ang_M = 7:8;
 ind.gyro  = 9:11;
 ind.acc   = 12:14;
 ind.rpy   = 15:17;
-ind.voltage_M  = 18:19;
-% ind.curr  = 20:21;
-ind.rob_coord     = 20:21;
-ind.rob_coord_inp = 22:23;
-ind.rob_coord_sp  = 24:25;
-ind.ang_cntr_out  = 26:28;
+ind.voltage_M = 18:19;
+ind.curr  = 20:21;
+ind.rob_pos = 22:23;
+ind.rob_vel = 24:25;
+ind.rob_vel_inp = 26:27;
+ind.rob_vel_sp  = 28:29;
 
 
 Ts = mean(diff(data.time));
@@ -123,28 +123,28 @@ legend('dRoll', ...
        'dYaw')
 
 
-% figure(expand_multiple_figure_nr(5, multp_fig_nr))
-% 
-% % ax(1) = subplot(211);
-% plot(data.time, data.values(:,ind.voltage_M)), grid on
-% ylabel('Voltage (V)'), xlabel('Time (sec)')
-% % ax(2) = subplot(212);
-% % plot(data.time, data.values(:,ind.curr)), grid on
-% % ylabel('Current (A)'), xlabel('Time (sec)')
-% legend('Motor 1', ...
-%     'Motor 2', ...
-%     'Location', 'best')
-% linkaxes(ax, 'x'), clear ax
-% xlim([0 data.time(end)])
+figure(expand_multiple_figure_nr(5, multp_fig_nr))
+
+ax(1) = subplot(211);
+plot(data.time, data.values(:,ind.voltage_M)), grid on
+ylabel('Voltage (V)')
+ax(2) = subplot(212);
+plot(data.time, data.values(:,ind.curr)), grid on
+ylabel('Current (A)'), xlabel('Time (sec)')
+legend('Motor 1', ...
+    'Motor 2', ...
+    'Location', 'best')
+linkaxes(ax, 'x'), clear ax
+xlim([0 data.time(end)])
 
 
 figure(expand_multiple_figure_nr(6, multp_fig_nr))
 
 ax(1) = subplot(211);
-plot(data.time, data.values(:,[ind.rob_coord_sp(1), ind.rob_coord(1)])), grid on
+plot(data.time, data.values(:,[ind.rob_vel_sp(1), ind.rob_vel(1)])), grid on
 ylabel('Forward Speed (m/s)')
 ax(2) = subplot(212);
-plot(data.time, data.values(:,[ind.rob_coord_sp(2), ind.rob_coord(2)]) * 180/pi), grid on
+plot(data.time, data.values(:,[ind.rob_vel_sp(2), ind.rob_vel(2)]) * 180/pi), grid on
 ylabel('Turn Rate (deg/sec)'), xlabel('Time (sec)')
 legend('Setpoint', ...
     'Actual', ...

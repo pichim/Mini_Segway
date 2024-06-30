@@ -276,14 +276,17 @@ void MiniSegway::threadTask()
 
                 // send data to serial stream (openlager or laptop / pc)
                 serialStream.write( dtime_us );                      //  0 micro seconds
+
                 serialStream.write( rc_pkg.turn_rate );              //  1 normalized between -1.0 and 1.0
                 serialStream.write( rc_pkg.forward_speed );          //  2 normalized between -1.0 and 1.0
                 serialStream.write( (rc_pkg.armed ? 1.0f : 0.0f) );  //  3 arming switch (1.0f (armed) or 0.0f)
                 serialStream.write( _rc.getPeriod() * 2.2222e-04f ); //  4 microseconds
+
                 serialStream.write( encoder_signals_M1.velocity );   //  5 rad/sec
                 serialStream.write( encoder_signals_M2.velocity );   //  6 rad/sec
                 serialStream.write( encoder_signals_M1.rotations );  //  7 rad
                 serialStream.write( encoder_signals_M2.rotations );  //  8 rad
+
                 serialStream.write( imu_data.gyro(0) );              //  9 rad/sec
                 serialStream.write( imu_data.gyro(1) );              // 10 rad/sec
                 serialStream.write( imu_data.gyro(2) );              // 11 rad/sec
@@ -293,16 +296,21 @@ void MiniSegway::threadTask()
                 serialStream.write( imu_data.rpy(0) );               // 15 rad
                 serialStream.write( imu_data.rpy(1) );               // 16 rad
                 serialStream.write( imu_data.rpy(2) );               // 17 rad
+
                 serialStream.write( voltage(0) );                    // 18 voltage
                 serialStream.write( voltage(1) );                    // 19 voltage
                 serialStream.write( current_M1 );                    // 20 amps (or at least approximately)
                 serialStream.write( current_M2 );                    // 21 amps (or at least approximately)
+
                 serialStream.write( robot_pos(0) );                  // 22 forward speed setpoint in m/sec
                 serialStream.write( robot_pos(1) );                  // 23 turn rate setpoint in rad/sec
+
                 serialStream.write( robot_vel(0) );                  // 24 forward speed in m/sec
                 serialStream.write( robot_vel(1) );                  // 25 turn rate in rad/sec
+
                 serialStream.write( robot_vel_input(0) );            // 26 forward speed setpoint in m/sec
                 serialStream.write( robot_vel_input(1) );            // 27 turn rate setpoint in rad/sec
+
                 serialStream.write( robot_vel_setpoint(0) );         // 28 forward speed setpoint in m/sec
                 serialStream.write( robot_vel_setpoint(1) );         // 29 turn rate setpoint in rad/sec
                 serialStream.send();
