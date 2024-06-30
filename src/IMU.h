@@ -39,12 +39,15 @@ public:
     };
 
     ImuData update();
-    IIRFilter m_gyro_filter[3];
-    IIRFilter m_acc_filter[3];
+    bool isCalibrated() const { return m_is_calibrated; };
 
 private:
     SPI m_spi;
     mpu6500_spi m_ImuMPU6500;
     Mahony m_Mahony;
     ImuData m_ImuData;
+    IIRFilter m_gyro_filter[3];
+    IIRFilter m_acc_filter[3];
+
+    bool m_is_calibrated{false};
 };

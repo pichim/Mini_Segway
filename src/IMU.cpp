@@ -25,15 +25,22 @@ IMU::IMU(PinName pin_mosi,
 
 IMU::ImuData IMU::update()
 {
-    static const uint16_t Navg = MINI_SEGWAY_IMU_NUM_FOR_AVERAGE;
+    static const uint16_t Nskip = MINI_SEGWAY_IMU_NUM_RUNS_SKIP;
+    static uint16_t skip_cntr = 0;
+    static const uint16_t Navg = MINI_SEGWAY_IMU_NUM_RUNS_FOR_AVERAGE;
     static uint16_t avg_cntr = 0;
-    static bool imu_is_calibrated = false;
     static Eigen::Vector3f gyro_offset = (Eigen::Vector3f() << 0.0f, 0.0f, 0.0f).finished();
     static Eigen::Vector3f acc_offset = (Eigen::Vector3f() << 0.0f, 0.0f, 0.0f).finished();
 
     // update imu
     m_ImuMPU6500.readGyro();
     m_ImuMPU6500.readAcc();
+
+    // skip first Nskip runs
+    if (skip_cntr < Nskip) {
+        skip_cntr++;
+        return m_ImuData;
+    }
 
     // segway imu alignment:
     // the alignment was chosen so that roll can be used for controlling
@@ -45,14 +52,14 @@ IMU::ImuData IMU::update()
     Eigen::Vector3f gyro(-m_ImuMPU6500.gyroX, m_ImuMPU6500.gyroZ, m_ImuMPU6500.gyroY);
     Eigen::Vector3f acc(-m_ImuMPU6500.accX, m_ImuMPU6500.accZ, m_ImuMPU6500.accY);
 
-    if (!imu_is_calibrated) {
+    if (!m_is_calibrated) {
         avg_cntr++;
         // sum up gyro and acc
         gyro_offset += gyro;
         acc_offset += acc;
         // calculate average
         if (avg_cntr == Navg) {
-            imu_is_calibrated = true;
+            m_is_calibrated = true;
 
             gyro_offset /= avg_cntr;
             acc_offset /= avg_cntr;

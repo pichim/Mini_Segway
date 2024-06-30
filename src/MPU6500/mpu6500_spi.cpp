@@ -61,7 +61,7 @@ bool mpu6500_spi::configuration()
     ThisThread::sleep_for(chrono::milliseconds(20));
 
     // set gyro scale and acc range
-    set_gyro_scale(BITS_FS_1000DPS);
+    set_gyro_scale(BITS_FS_2000DPS);
     ThisThread::sleep_for(chrono::milliseconds(20));
     set_acc_scale(BITS_FS_2G);
     ThisThread::sleep_for(chrono::milliseconds(20));

@@ -2,10 +2,10 @@
 
 RC::RC(PinName pin) : _rc(pin)
 {
-    _upsamplingLowPass2[0].lowPass2Init(MINI_SEGWAY_RC_UPSAMPLING_FILTER_FREQUENCY_HZ,
+    _upsamplingLowPass2[0].lowPass2Init(MINI_SEGWAY_RC_TURN_RATE_UPSAMPLING_FILTER_FREQUENCY_HZ,
                                         MINI_SEGWAY_RC_UPSAMPLING_FILTER_DAMPING,
                                         MINI_SEGWAY_TS);
-    _upsamplingLowPass2[1].lowPass2Init(MINI_SEGWAY_RC_UPSAMPLING_FILTER_FREQUENCY_HZ,
+    _upsamplingLowPass2[1].lowPass2Init(MINI_SEGWAY_RC_FORWARD_SPEED_UPSAMPLING_FILTER_FREQUENCY_HZ,
                                         MINI_SEGWAY_RC_UPSAMPLING_FILTER_DAMPING,
                                         MINI_SEGWAY_TS);
 }
