@@ -1,5 +1,11 @@
-NUCLEO-F446RE
+Nucleo-F446RE
 - https://os.mbed.com/platforms/ST-Nucleo-F446RE/
+
+Pololu Dual MC33926 Motor Driver Shield for Arduino
+- https://www.play-zone.ch/en/pololu-dual-mc33926-motor-driver-shield-for-arduino.html
+
+47:1 Metal Gearmotor 25Dx67L mm MP 12V with 48 CPR Encoder
+- https://www.pololu.com/product/4865
 
 MPU6500 - 6DOF IMU
 - https://invensense.tdk.com/products/motion-tracking/6-axis/mpu-6500/
@@ -8,7 +14,7 @@ MPU6500 - 6DOF IMU
 - PS-MPU-6500A-01-v1.3.pdf
 - 1.71-3.45V
 
-OpenLager
+OpenLager Blackbox
 - https://www.racedayquads.com/products/airbot-openlager-blackbox
 - 3.3-5.5V
 
@@ -17,14 +23,18 @@ TBS CROSSFIRE Nano RX
 - tbs-crossfire-nano-quickstart.pdf
 - 5V
 
-2x Pololu 31:1 Metal Gearmotor 20Dx41L mm 12V CB with Extended Motor Shaft
-- https://www.pololu.com/product/3487
+0,28" Mini Digital-Voltmeter mit LED Anzeige, 3,2-30V, 2-Wire, red
+- https://www.berrybase.ch/0-28-mini-digital-voltmeter-mit-led-anzeige-3-2-30v-2-wire-rot
 
+Pololu mini push-button switch with reverse polarity protection
+- https://www.pololu.com/product/2808
 
-2x Pololu Magnetic Encoder Pair Kit for 20D mm Metal Gearmotors, 20 CPR, 2.7-18V
-- https://www.pololu.com/product/3499
-- 2.7-18.0V
+3 x Mini Pushbutton Switch: PCB-Mount, 2-Pin, SPST, 50mA (5-Pack)
+- https://www.pololu.com/product/1400
 
-Reely NIMH battery pack
+2 x LED diode
+
+2 x Conrad energy NiMH battery packs 6V, 2300mAh
 - https://www.conrad.ch/de/p/reely-modellbau-akkupack-nimh-6-v-2300-mah-zellen-zahl-5-mignon-aa-side-by-side-jr-buchse-2613252.html
-	
+
+Jumper wires	
