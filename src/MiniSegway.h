@@ -13,7 +13,6 @@
 #include "IMU.h"
 #include "Led.h"
 #include "Motor.h"
-#include "PIDController.h"
 #include "RC.h"
 #include "SerialStream.h"
 #include "ThreadFlag.h"

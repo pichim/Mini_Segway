@@ -28,6 +28,7 @@ RC::rc_pkg_t RC::update()
     static float turn_rate = 0.0f;
     static float forward_speed = 0.0f;
     static bool armed = false;
+    static bool mode = false;
 
     static bool reset_filters = true;
 
@@ -52,9 +53,14 @@ RC::rc_pkg_t RC::update()
                    _rc.getNumOfDecoderErrorFrames(),
                    _rc.getNumOfLostFrames(),
                    _rc.getNumOfSkippedStartFrames());
-            printf("ch0: %d, ch2: %d, ch7: %d\n",
+            printf("ch0: %d, ch1: %d, ch2: %d, ch3: %d, ch4: %d, ch5: %d, ch6: %d, ch7: %d\n",
                    _rc.getChannel(0),
+                   _rc.getChannel(1),
                    _rc.getChannel(2),
+                   _rc.getChannel(3),
+                   _rc.getChannel(4),
+                   _rc.getChannel(5),
+                   _rc.getChannel(6),
                    _rc.getChannel(7));
         }
 #endif
@@ -66,13 +72,14 @@ RC::rc_pkg_t RC::update()
         invalid_rc_pkg_cntr = 0;
         // update _rc_pkg
 #if MINI_SEGWAY_RC_APPLY_EXPO
-        turn_rate     = applyExpoMinusToPlusOne(_rc.getChannelMinusToPlusOne(0)); // right stick left to right
-        forward_speed = applyExpoMinusToPlusOne(_rc.getChannelMinusToPlusOne(2)); // left  stick down to up
+        turn_rate     = applyExpoMinusToPlusOne(_rc.getChannelMinusToPlusOne(MINI_SEGWAY_RC_TURN_RATE_CHANNEL));
+        forward_speed = applyExpoMinusToPlusOne(_rc.getChannelMinusToPlusOne(MINI_SEGWAY_RC_FORWARD_SPEED_CHANNEL));
 #else
-        turn_rate     = _rc.getChannelMinusToPlusOne(0); // right stick left to right
-        forward_speed = _rc.getChannelMinusToPlusOne(2); // left  stick down to up
+        turn_rate     = _rc.getChannelMinusToPlusOne(MINI_SEGWAY_RC_TURN_RATE_CHANNEL);
+        forward_speed = _rc.getChannelMinusToPlusOne(MINI_SEGWAY_RC_FORWARD_SPEED_CHANNEL);
 #endif
-        armed  = _rc.isHigh(MINI_SEGWAY_RC_ARMING_CHANNEL); // arm button
+        armed = _rc.isHigh(MINI_SEGWAY_RC_ARMING_CHANNEL);
+        mode = _rc.isHigh(MINI_SEGWAY_RC_MODE_CHANNEL);
         _rc.setPkgValidFalse();
     } else {
         invalid_rc_pkg_cntr++;
@@ -89,6 +96,7 @@ RC::rc_pkg_t RC::update()
         _rc_pkg.turn_rate     = 0.0f;
         _rc_pkg.forward_speed = 0.0f;
         _rc_pkg.armed = false;
+        _rc_pkg.mode = false;
     } else {
 #if MINI_SEGWAY_RC_USE_UPSAMPLING_FILTERS
         if (reset_filters) {
@@ -103,6 +111,7 @@ RC::rc_pkg_t RC::update()
         _rc_pkg.forward_speed = forward_speed;
 #endif
         _rc_pkg.armed = armed;
+        _rc_pkg.mode = mode;
     }
 
     return _rc_pkg;

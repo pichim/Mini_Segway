@@ -4,16 +4,16 @@
     #define M_PIf 3.14159265358979323846f /* pi */
 #endif
 
-#define MINI_SEGWAY_ORANGE_VERSION true // if false its the green segway
-
 // task period, MPU6500 runs at 1kHz, so we want to run the control loop at 1kHz
 #define MINI_SEGWAY_PERIOD_US 1000
 #define MINI_SEGWAY_TS (static_cast<float>(MINI_SEGWAY_PERIOD_US) * 1.0e-6f) // sampling time
 #define MINI_SEGWAY_ABS_ANGLE_START_BALANCE_RAD (20.0f * M_PIf / 180.0f)
 #define MINI_SEGWAY_ABS_ANGLE_STOP_BALANCE_RAD (50.0f * M_PIf / 180.0f)
 #define MINI_SEGWAY_MIXER_GAIN 0.7f // e.g. 0.7f means 70% of the control signal is used forward speed and 30% for turning
-#define MINI_SEGWAY_SCALE_FORWARD_SPEED_MAX 0.6f // scale theroretical max forward speed to 60%
-#define MINI_SEGWAY_SCALE_TURN_RATE_MAX 0.6f // scale theroretical max turn rate to 60%
+#define MINI_SEGWAY_SCALE_FORWARD_SPEED_MAX_FAST 1.0f // scaler for forward speed, 1.0f means full speed
+#define MINI_SEGWAY_SCALE_TURN_RATE_MAX_FAST 1.0f     // scaler for turn rate, 1.0f means full turn rate
+#define MINI_SEGWAY_SCALE_FORWARD_SPEED_MAX_SLOW 0.6f
+#define MINI_SEGWAY_SCALE_TURN_RATE_MAX_SLOW 0.6f
 #define MINI_SEGWAY_R_WHEEL 0.039f // wheel radius in meters
 #define MINI_SEGWAY_B_WHEEL 0.125f // wheelbase, distance from wheel to wheel in meters
 
@@ -21,11 +21,9 @@
 #define MINI_SEGWAY_CPD_ANG_KP 2.2f
 #define MINI_SEGWAY_CPD_ANG_KD 0.05f
 #define MINI_SEGWAY_CPD_ANG_FCUT_D 3.0f
-
 #define MINI_SEGWAY_CPD_VEL_KP 2.0f
 #define MINI_SEGWAY_CPD_VEL_KD 0.1f
 #define MINI_SEGWAY_CPD_VEL_FCUT_D 1.0f
-
 #define MINI_SEGWAY_CP_POS_KP 2.2f
 
 // streaming device, openlager or laptop / pc
@@ -52,7 +50,10 @@
 #define MINI_SEGWAY_RC_RX PA_10
 #define MINI_SEGWAY_RC_NUM_OF_ALLOWED_INVALID_DATA_PKG (10 * (9000 / MINI_SEGWAY_PERIOD_US + 1))
 #define MINI_SEGWAY_RC_NUM_OF_NECESSARY_VALID_DATA_PKG MINI_SEGWAY_RC_NUM_OF_ALLOWED_INVALID_DATA_PKG
-#define MINI_SEGWAY_RC_ARMING_CHANNEL 7
+#define MINI_SEGWAY_RC_ARMING_CHANNEL 7        // top right switch
+#define MINI_SEGWAY_RC_MODE_CHANNEL 4          // top left switch
+#define MINI_SEGWAY_RC_TURN_RATE_CHANNEL 0     // right stick left to right
+#define MINI_SEGWAY_RC_FORWARD_SPEED_CHANNEL 2 // left stick down to up
 #define MINI_SEGWAY_RC_USE_UPSAMPLING_FILTERS true
 #define MINI_SEGWAY_RC_UPSAMPLING_FILTER_DAMPING 1.0f
 #define MINI_SEGWAY_RC_FORWARD_SPEED_UPSAMPLING_FILTER_FREQUENCY_HZ 30.0f
@@ -61,9 +62,9 @@
 #define MINI_SEGWAY_RC_EXPO_ALPHA 2.3f
 
 // button
-#define MINI_SEGWAY_BLUE_BUTTON BUTTON1 // blue button
-#define MINI_SEGWAY_ADD_BLUE_BUTTON PC_5// additional blue button
-#define MINI_SEGWAY_RESET_BUTTON PB_1   // additional reset button
+#define MINI_SEGWAY_BLUE_BUTTON BUTTON1  // blue button
+#define MINI_SEGWAY_ADD_BLUE_BUTTON PC_5 // additional blue button
+#define MINI_SEGWAY_RESET_BUTTON PB_1    // additional reset button
 
 // additional leds
 #define MINI_SEGWAY_LED_PERIOD_US 250000
@@ -107,11 +108,7 @@
 #define MINI_SEGWAY_IMU_NUM_RUNS_SKIP 1000
 #define MINI_SEGWAY_IMU_NUM_RUNS_FOR_AVERAGE 1000 // dont make this shorter than 1000 micro seconds, the openlager needs 1 second to start up
 #define MINI_SEGWAY_IMU_DO_USE_STATIC_ACC_CALIBRATION true // if this is true then averages acc gets overwritten by MINI_SEGWAY_IMU_B_ACC
-#if MINI_SEGWAY_ORANGE_VERSION
-    #define MINI_SEGWAY_IMU_B_ACC {-0.2997f, -0.1381f, 0.0028f}
-#else // has to be green version
-    #define MINI_SEGWAY_IMU_B_ACC {-0.2997f, -0.1381f, 0.0028f}
-#endif
+#define MINI_SEGWAY_IMU_B_ACC {0.0f, 0.0f, 0.0f}
 #define MINI_SEGWAY_IMU_KP_XY (0.1592f * 2.0f * M_PIf)
 #define MINI_SEGWAY_IMU_KP_Z  (0.1592f * 2.0f * M_PIf)
 #define MINI_SEGWAY_IMU_KI_XY 0.0f

@@ -17,6 +17,7 @@ public:
         float turn_rate{0.0f};
         float forward_speed{0.0f};
         bool armed{false};
+        bool mode{false};
     } rc_pkg_t;
 
     void processReceivedData();

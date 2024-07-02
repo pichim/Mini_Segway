@@ -87,8 +87,8 @@ void MiniSegway::threadTask()
     // max forward speed and turn rate
     const float k_voltage2wheel_speed = 2.0f * M_PIf * (MINI_SEGWAY_MOTOR_KN / 60.0f);
     const float wheel_speed_max = k_voltage2wheel_speed * MINI_SEGWAY_MOTOR_VOLTAGE_MAX;
-    const float forward_speed_max = MINI_SEGWAY_R_WHEEL * wheel_speed_max * MINI_SEGWAY_SCALE_FORWARD_SPEED_MAX;
-    const float turn_rate_max = 2.0f * MINI_SEGWAY_R_WHEEL / MINI_SEGWAY_B_WHEEL * wheel_speed_max * MINI_SEGWAY_SCALE_TURN_RATE_MAX;
+    const float forward_speed_max = MINI_SEGWAY_R_WHEEL * wheel_speed_max;
+    const float turn_rate_max = 2.0f * MINI_SEGWAY_R_WHEEL / MINI_SEGWAY_B_WHEEL * wheel_speed_max;
 
     // pid controllers and filter for pid controllers
     IIRFilter robotVelSetpointIntegrator;
@@ -141,7 +141,8 @@ void MiniSegway::threadTask()
 
             // lowpass filter for gyro x
             const float gyro_theta_filtered = gyroLowPass1.apply(imu_data.gyro(0));
-
+            const float acc_x_filtered = accLowPass1.apply(-imu_data.acc(1) * cosf(imu_data.rpy(0))
+                                                           +imu_data.acc(2) * sinf(imu_data.rpy(0)));
 
             // logic so that _do_execute can also be triggered by the start byte via matlab
             static bool is_start_byte_received = false;
@@ -209,6 +210,16 @@ void MiniSegway::threadTask()
                 Eigen::Vector2f robot_vel_setpoint{0.0f, 0.0f};
                 Eigen::Vector2f robot_vel_input{0.0f, 0.0f};
 
+                // calculate max forward speed and turn rate based on mode switch
+                float forward_speed_max_scaled = 0.0f;
+                float turn_rate_max_scaled = 0.0f;
+                if (rc_pkg.mode) {
+                    forward_speed_max_scaled = forward_speed_max * MINI_SEGWAY_SCALE_FORWARD_SPEED_MAX_FAST;
+                    turn_rate_max_scaled = turn_rate_max * MINI_SEGWAY_SCALE_TURN_RATE_MAX_FAST;
+                } else {
+                    forward_speed_max_scaled = forward_speed_max * MINI_SEGWAY_SCALE_FORWARD_SPEED_MAX_SLOW;
+                    turn_rate_max_scaled = turn_rate_max * MINI_SEGWAY_SCALE_TURN_RATE_MAX_SLOW;
+                }
                 
                 // control logic
                 switch (robot_state) {
@@ -217,18 +228,22 @@ void MiniSegway::threadTask()
                         float flip_mixer_sign = 1.0f;
                         if (imu_data.rpy(0) < 0.0f)
                             flip_mixer_sign = -1.0f;
-                        robot_vel_input << flip_mixer_sign *         MINI_SEGWAY_MIXER_GAIN  * forward_speed_max * rc_pkg.forward_speed, 
-                                                      -1.0 * (1.0f - MINI_SEGWAY_MIXER_GAIN) * turn_rate_max * rc_pkg.turn_rate;
+                        robot_vel_input << flip_mixer_sign *         MINI_SEGWAY_MIXER_GAIN  * rc_pkg.forward_speed * forward_speed_max_scaled, 
+                                                      -1.0 * (1.0f - MINI_SEGWAY_MIXER_GAIN) * rc_pkg.turn_rate * turn_rate_max_scaled;
 
                         // if the absolute angle is small enough we switch to segway mode
-                        if (fabs(imu_data.rpy(0)) < MINI_SEGWAY_ABS_ANGLE_START_BALANCE_RAD)
+                        if (fabs(imu_data.rpy(0)) < MINI_SEGWAY_ABS_ANGLE_START_BALANCE_RAD) {
+                            encoder_M1.reset();
+                            encoder_M2.reset();
+                            robotVelSetpointIntegrator.reset(0.0f);
                             robot_state = RobotState::SEGWAY;
+                        }
                         break;
                     }
                     case RobotState::SEGWAY: {
                         // mix wheel speed based on rc input
-                        robot_vel_setpoint <<                 MINI_SEGWAY_MIXER_GAIN  * forward_speed_max * rc_pkg.forward_speed, 
-                                              -1.0f * (1.0f - MINI_SEGWAY_MIXER_GAIN) * turn_rate_max * rc_pkg.turn_rate;
+                        robot_vel_setpoint <<                 MINI_SEGWAY_MIXER_GAIN * rc_pkg.forward_speed * forward_speed_max_scaled, 
+                                              -1.0f * (1.0f - MINI_SEGWAY_MIXER_GAIN) * rc_pkg.turn_rate * turn_rate_max_scaled;
 
 #if MINI_SEGWAY_CHIRP_USE_CHIRP
                         float exc = MINI_SEGWAY_CHIRP_OFFSET;
@@ -247,8 +262,7 @@ void MiniSegway::threadTask()
                         // state space controller with additional d part on velociity
                         const float u_p_pos = MINI_SEGWAY_CP_POS_KP * (robotVelSetpointIntegrator.apply(robot_vel_setpoint(0)) - robot_pos(0));
                         const float u_p_vel = MINI_SEGWAY_CPD_VEL_KP * robot_vel(0);
-                        const float u_d_vel = MINI_SEGWAY_CPD_VEL_KD * accLowPass1.apply(-imu_data.acc(1) * cosf(imu_data.rpy(0))
-                                                                                         +imu_data.acc(2) * sinf(imu_data.rpy(0)));
+                        const float u_d_vel = MINI_SEGWAY_CPD_VEL_KD * acc_x_filtered;
                         const float u_p_ang = MINI_SEGWAY_CPD_ANG_KP * imu_data.rpy(0);
                         const float u_d_ang = MINI_SEGWAY_CPD_ANG_KD * gyro_theta_filtered;
                         robot_vel_input(0) = -1.0f * (u_p_pos - (u_p_vel + u_d_vel + u_p_ang + u_d_ang));
@@ -258,11 +272,6 @@ void MiniSegway::threadTask()
 
                         // if the absolute angle is bigger than a certain threshold we switch back car mode
                         if (fabs(imu_data.rpy(0)) > MINI_SEGWAY_ABS_ANGLE_STOP_BALANCE_RAD) {
-                            motor_M1.setVoltage(0.0f);
-                            motor_M2.setVoltage(0.0f);
-                            encoder_M1.reset();
-                            encoder_M2.reset();
-                            robotVelSetpointIntegrator.reset(0.0f);
                             robot_state = RobotState::CAR;
                         }
                         break;
@@ -322,6 +331,7 @@ void MiniSegway::threadTask()
 
                     motor_M1.setVoltage(0.0f);
                     motor_M2.setVoltage(0.0f);
+                    
                     encoder_M1.reset();
                     encoder_M2.reset();
                     robotVelSetpointIntegrator.reset(0.0f);
