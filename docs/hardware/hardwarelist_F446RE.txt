@@ -18,9 +18,8 @@ OpenLager Blackbox
 - https://www.racedayquads.com/products/airbot-openlager-blackbox
 - 3.3-5.5V
 
-TBS CROSSFIRE Nano RX
-- https://www.team-blacksheep.com/products/prod:crossfire_nano_rx
-- tbs-crossfire-nano-quickstart.pdf
+RP1 V2 ExpressLRS 2.4ghz Nano Receiver
+- https://www.radiomasterrc.com/products/rp1-expresslrs-2-4ghz-nano-receiver
 - 5V
 
 0,28" Mini Digital-Voltmeter mit LED Anzeige, 3,2-30V, 2-Wire, red
