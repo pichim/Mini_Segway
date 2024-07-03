@@ -91,13 +91,14 @@ void MiniSegway::threadTask()
     const float turn_rate_max = 2.0f * MINI_SEGWAY_R_WHEEL / MINI_SEGWAY_B_WHEEL * wheel_speed_max;
 
     // pid controllers and filter for pid controllers
-    IIRFilter robotVelSetpointIntegrator;
-    robotVelSetpointIntegrator.integratorInit(MINI_SEGWAY_TS);
+    IIRFilter robotSetPointIntegrator[2];
+    robotSetPointIntegrator[0].integratorInit(MINI_SEGWAY_TS);
+    robotSetPointIntegrator[1].integratorInit(MINI_SEGWAY_TS);
     IIRFilter accLowPass1;
-    accLowPass1.lowPass1Init(MINI_SEGWAY_CPD_VEL_FCUT_D,
+    accLowPass1.lowPass1Init(MINI_SEGWAY_FORWARD_CPD_VEL_FCUT_D,
                              MINI_SEGWAY_TS);
     IIRFilter gyroLowPass1;
-    gyroLowPass1.lowPass1Init(MINI_SEGWAY_CPD_ANG_FCUT_D,
+    gyroLowPass1.lowPass1Init(MINI_SEGWAY_FORWARD_CPD_ANG_FCUT_D,
                               MINI_SEGWAY_TS);
 
     // states for state machine
@@ -235,7 +236,8 @@ void MiniSegway::threadTask()
                         if (fabs(imu_data.rpy(0)) < MINI_SEGWAY_ABS_ANGLE_START_BALANCE_RAD) {
                             encoder_M1.reset();
                             encoder_M2.reset();
-                            robotVelSetpointIntegrator.reset(0.0f);
+                            robotSetPointIntegrator[0].reset(0.0f);
+                            robotSetPointIntegrator[1].reset(0.0f);
                             robot_state = RobotState::SEGWAY;
                         }
                         break;
@@ -260,15 +262,15 @@ void MiniSegway::threadTask()
 #endif
 
                         // state space controller with additional d part on velociity
-                        const float u_p_pos = MINI_SEGWAY_CP_POS_KP * (robotVelSetpointIntegrator.apply(robot_vel_setpoint(0)) - robot_pos(0));
-                        const float u_p_vel = MINI_SEGWAY_CPD_VEL_KP * robot_vel(0);
-                        const float u_d_vel = MINI_SEGWAY_CPD_VEL_KD * acc_x_filtered;
-                        const float u_p_ang = MINI_SEGWAY_CPD_ANG_KP * imu_data.rpy(0);
-                        const float u_d_ang = MINI_SEGWAY_CPD_ANG_KD * gyro_theta_filtered;
+                        const float u_p_pos = MINI_SEGWAY_FORWARD_CP_POS_KP * (robotSetPointIntegrator[0].apply(robot_vel_setpoint(0)) - robot_pos(0));
+                        const float u_p_vel = MINI_SEGWAY_FORWARD_CPD_VEL_KP * robot_vel(0);
+                        const float u_d_vel = MINI_SEGWAY_FORWARD_CPD_VEL_KD * acc_x_filtered;
+                        const float u_p_ang = MINI_SEGWAY_FORWARD_CPD_ANG_KP * imu_data.rpy(0);
+                        const float u_d_ang = MINI_SEGWAY_FORWARD_CPD_ANG_KD * gyro_theta_filtered;
                         robot_vel_input(0) = -1.0f * (u_p_pos - (u_p_vel + u_d_vel + u_p_ang + u_d_ang));
 
-                        // TODO: implement angle controller
-                        robot_vel_input(1) = robot_vel_setpoint(1);
+                        // proportional controller
+                        robot_vel_input(1) = MINI_SEGWAY_TURN_CP_POS_KP * (robotSetPointIntegrator[1].apply(robot_vel_setpoint(1)) - robot_pos(1));
 
                         // if the absolute angle is bigger than a certain threshold we switch back car mode
                         if (fabs(imu_data.rpy(0)) > MINI_SEGWAY_ABS_ANGLE_STOP_BALANCE_RAD) {
@@ -334,7 +336,8 @@ void MiniSegway::threadTask()
                     
                     encoder_M1.reset();
                     encoder_M2.reset();
-                    robotVelSetpointIntegrator.reset(0.0f);
+                    robotSetPointIntegrator[0].reset(0.0f);
+                    robotSetPointIntegrator[1].reset(0.0f);
                     robot_state = RobotState::CAR;
                 }
             }

@@ -18,13 +18,14 @@
 #define MINI_SEGWAY_B_WHEEL 0.125f // wheelbase, distance from wheel to wheel in meters
 
 // state space controller gains
-#define MINI_SEGWAY_CPD_ANG_KP 2.2f
-#define MINI_SEGWAY_CPD_ANG_KD 0.05f
-#define MINI_SEGWAY_CPD_ANG_FCUT_D 3.0f
-#define MINI_SEGWAY_CPD_VEL_KP 2.0f
-#define MINI_SEGWAY_CPD_VEL_KD 0.1f
-#define MINI_SEGWAY_CPD_VEL_FCUT_D 1.0f
-#define MINI_SEGWAY_CP_POS_KP 2.2f
+#define MINI_SEGWAY_FORWARD_CPD_ANG_KP 2.64f
+#define MINI_SEGWAY_FORWARD_CPD_ANG_KD 0.05f
+#define MINI_SEGWAY_FORWARD_CPD_ANG_FCUT_D 3.0f
+#define MINI_SEGWAY_FORWARD_CPD_VEL_KP 2.2f
+#define MINI_SEGWAY_FORWARD_CPD_VEL_KD 0.05f
+#define MINI_SEGWAY_FORWARD_CPD_VEL_FCUT_D 1.0f
+#define MINI_SEGWAY_FORWARD_CP_POS_KP 2.86f
+#define MINI_SEGWAY_TURN_CP_POS_KP 8.0f
 
 // streaming device, openlager or laptop / pc
 #define DO_USE_OPENLAGER_FOR_DATA_STREAM true
@@ -120,7 +121,7 @@
     #define MINI_SEGWAY_CHIRP_T1 60.0f
     #define MINI_SEGWAY_CHIRP_F0 0.5f //(1.0f / MINI_SEGWAY_CHIRP_T1)
     #define MINI_SEGWAY_CHIRP_F1 100.0f //(0.95f / (2.0f * MINI_SEGWAY_TS))
-    #define MINI_SEGWAY_CHIRP_AMPLITUDE 0.1f
+    #define MINI_SEGWAY_CHIRP_AMPLITUDE 0.07f
     #define MINI_SEGWAY_CHIRP_OFFSET 0.0f
 #endif
 

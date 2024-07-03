@@ -69,5 +69,3 @@ Gcl = -feedback(feedback(-Gw, Kd) * Gaw, Kp);
 figure(5)
 bode(G, Gcl, 2*pi*G.Frequency(G.Frequency < f_bode)), grid on
 
-
-
