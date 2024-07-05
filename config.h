@@ -8,12 +8,10 @@
 #define MINI_SEGWAY_PERIOD_US 1000
 #define MINI_SEGWAY_TS (static_cast<float>(MINI_SEGWAY_PERIOD_US) * 1.0e-6f) // sampling time
 #define MINI_SEGWAY_ABS_ANGLE_START_BALANCE_RAD (20.0f * M_PIf / 180.0f)
-#define MINI_SEGWAY_ABS_ANGLE_STOP_BALANCE_RAD (50.0f * M_PIf / 180.0f)
-#define MINI_SEGWAY_MIXER_GAIN 0.7f // e.g. 0.7f means 70% of the control signal is used forward speed and 30% for turning
-#define MINI_SEGWAY_SCALE_FORWARD_SPEED_MAX_FAST 1.0f // scaler for forward speed, 1.0f means full speed
-#define MINI_SEGWAY_SCALE_TURN_RATE_MAX_FAST 1.0f     // scaler for turn rate, 1.0f means full turn rate
-#define MINI_SEGWAY_SCALE_FORWARD_SPEED_MAX_SLOW 0.6f
-#define MINI_SEGWAY_SCALE_TURN_RATE_MAX_SLOW 0.6f
+#define MINI_SEGWAY_ABS_ANGLE_STOP_BALANCE_RAD (60.0f * M_PIf / 180.0f)
+#define MINI_SEGWAY_MIXER_GAIN 0.8f // e.g. 0.7f means 70% of the control signal is used forward speed and 30% for turning
+#define MINI_SEGWAY_SCALE_SPEED_MAX_FAST 1.0f
+#define MINI_SEGWAY_SCALE_SPEED_MAX_SLOW 0.6f
 #define MINI_SEGWAY_R_WHEEL 0.039f // wheel radius in meters
 #define MINI_SEGWAY_B_WHEEL 0.125f // wheelbase, distance from wheel to wheel in meters
 
@@ -25,7 +23,7 @@
 #define MINI_SEGWAY_FORWARD_CPD_VEL_KD 0.05f
 #define MINI_SEGWAY_FORWARD_CPD_VEL_FCUT_D 1.0f
 #define MINI_SEGWAY_FORWARD_CP_POS_KP 2.86f
-#define MINI_SEGWAY_TURN_CP_POS_KP 8.0f
+#define MINI_SEGWAY_TURN_CP_POS_KP 10.0f
 
 // streaming device, openlager or laptop / pc
 #define DO_USE_OPENLAGER_FOR_DATA_STREAM true

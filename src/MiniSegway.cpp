@@ -215,11 +215,11 @@ void MiniSegway::threadTask()
                 float forward_speed_max_scaled = 0.0f;
                 float turn_rate_max_scaled = 0.0f;
                 if (rc_pkg.mode) {
-                    forward_speed_max_scaled = forward_speed_max * MINI_SEGWAY_SCALE_FORWARD_SPEED_MAX_FAST;
-                    turn_rate_max_scaled = turn_rate_max * MINI_SEGWAY_SCALE_TURN_RATE_MAX_FAST;
+                    forward_speed_max_scaled = forward_speed_max * MINI_SEGWAY_SCALE_SPEED_MAX_FAST;
+                    turn_rate_max_scaled = turn_rate_max * MINI_SEGWAY_SCALE_SPEED_MAX_FAST;
                 } else {
-                    forward_speed_max_scaled = forward_speed_max * MINI_SEGWAY_SCALE_FORWARD_SPEED_MAX_SLOW;
-                    turn_rate_max_scaled = turn_rate_max * MINI_SEGWAY_SCALE_TURN_RATE_MAX_SLOW;
+                    forward_speed_max_scaled = forward_speed_max * MINI_SEGWAY_SCALE_SPEED_MAX_SLOW;
+                    turn_rate_max_scaled = turn_rate_max * MINI_SEGWAY_SCALE_SPEED_MAX_SLOW;
                 }
                 
                 // control logic
