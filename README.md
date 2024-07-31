@@ -39,6 +39,9 @@ Electrical components and sensors:
 - 2 x LED diode <br>
 - Jumper wires
 
+The electronics connection is included in the file, which can be found [HERE](/docs/hardware/Segway_connection_diagram_F446RE.pdf)
+
+
 ## Prerequisites
 - Mbed Studio
 - Libraries:
