@@ -18,8 +18,8 @@ The Segway is a robot that has the ability to balance itself using two motors an
 
 ## Hardware
 Mechanical components (ordered) employed in design: 
-- [Scooter/Skate Wheel 84×24mm][11] <br>
-- [Pololu Aluminum Scooter Wheel Adapter for 4mm Shaft][12] 
+- [Scooter/Skate Wheel 84×24mm][12] <br>
+- [Pololu Aluminum Scooter Wheel Adapter for 4mm Shaft][13] 
 
 All frame parts 3D models are localized in docs/cad/ folder
 
@@ -30,11 +30,12 @@ Electrical components and sensors:
 - 2 x [47:1 Metal Gearmotor 25Dx67L mm MP 12V with 48 CPR Encoder][3] <br>
 - [MPU6500 - 6DOF IMU][4] <br>
 - [OpenLager Blackbox][5] <br>
-- [RP1 V2 ExpressLRS 2.4ghz Nano Receiver][6] <br>
+- [RadioMaster RP2 ELRS 2.4GHz Nano Receiver][6] <br>
 - [0,28" Mini Digital-Voltmeter mit LED Anzeige, 3,2-30V, 2-Wire, red][7] <br>
 - [Pololu mini push-button switch][8] <br>
 - 3 x [Mini Pushbutton Switch: PCB-Mount][9] <br>
 - 2 x [Conrad energy NiMH battery packs 6V, 2300mAh][10] <br>
+- [RadioMaster Pocket Radio Controller (ELRS)][11]<br>
 - 2 x LED diode <br>
 - Jumper wires
 
@@ -130,11 +131,12 @@ This state-space controller is designed to keep a Segway in a vertical position 
 [3]: https://www.pololu.com/product/4865
 [4]: https://www.smart-prototyping.com/MPU6500-6DOF-Sensor-Breakout-Board
 [5]: https://www.racedayquads.com/products/airbot-openlager-blackbox
-[6]: https://www.radiomasterrc.com/products/rp1-expresslrs-2-4ghz-nano-receiver
+[6]: https://fpvracing.ch/de/funksystem/3575-radiomaster-rp2-elrs-24ghz-nano-receiver.html?
 [7]: https://www.berrybase.ch/0-28-mini-digital-voltmeter-mit-led-anzeige-3-2-30v-2-wire-rot
 [8]: https://www.pololu.com/product/2808
 [9]: https://www.pololu.com/product/1400
 [10]: https://www.conrad.ch/de/p/reely-modellbau-akkupack-nimh-6-v-2300-mah-zellen-zahl-5-mignon-aa-side-by-side-jr-buchse-2613252.html
+[11]: https://fpvracing.ch/de/funksystem/3785-radiomaster-pocket-radio-controller-elrs.html?
 
-[11]: https://www.pololu.com/product/3275
-[12]: https://www.pololu.com/product/2672
+[12]: https://www.pololu.com/product/3275
+[13]: https://www.pololu.com/product/2672
