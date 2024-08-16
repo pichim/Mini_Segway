@@ -49,8 +49,8 @@ IMU::ImuData IMU::update()
     //   - the x-axis pointing to the left
     //   - the y-axis pointing backwards
     //   - the z-axis pointing upwards
-    Eigen::Vector3f gyro(-m_ImuMPU6500.gyroX, m_ImuMPU6500.gyroZ, m_ImuMPU6500.gyroY);
-    Eigen::Vector3f acc(-m_ImuMPU6500.accX, m_ImuMPU6500.accZ, m_ImuMPU6500.accY);
+    Eigen::Vector3f gyro(m_ImuMPU6500.gyroX, -m_ImuMPU6500.gyroZ, m_ImuMPU6500.gyroY);
+    Eigen::Vector3f acc(m_ImuMPU6500.accX, -m_ImuMPU6500.accZ, m_ImuMPU6500.accY);
 
     if (!m_is_calibrated) {
         avg_cntr++;
