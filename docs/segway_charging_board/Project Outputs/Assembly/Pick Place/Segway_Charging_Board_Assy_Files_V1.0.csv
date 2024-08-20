@@ -1,0 +1,56 @@
+Altium Designer Pick and Place Locations
+C:\Users\Public\Documents\Altium\Segway_Charging_Board\Project Outputs\Assembly\Pick Place\Segway_Charging_Board_Assy_Files_V1.0.csv
+
+========================================================================================================================
+File Design Information:
+
+Date:       20.08.24
+Time:       13:22
+Revision:   8b798bf35d19996a4a22ef504ef1714681b52545
+Variant:    No variations
+Units used: mm
+
+"Designator","Comment","Layer","Footprint","Center-X(mm)","Center-Y(mm)","Rotation","Description"
+"J5","MPT 0.5/ 2-2.54 - 1725656","TopLayer","PHOENIX_1725656","7.4700mm","-18.3700mm","270","Wire to Board, Screw, 2 Pin, Pitch 2.54mm, 6A, 160V, Horizontal, THT, L6.2B5.54H12"
+"J2","MPT 0.5/ 2-2.54 - 1725656","TopLayer","PHOENIX_1725656","-7.9300mm","-18.3700mm","270","Wire to Board, Screw, 2 Pin, Pitch 2.54mm, 6A, 160V, Horizontal, THT, L6.2B5.54H12"
+"C13","100nF/50V","TopLayer","CAPC1005X05L","8.4800mm","-5.8000mm","180","Cap MLCC, 100nF, 50V, X7R, 10%, 0402"
+"C12","10uF/50V","TopLayer","CAPC3225X25L","2.9500mm","-8.4167mm","270","Cap MLCC, 10uF, 50V, X7R, 20%, 1210"
+"J3","MPT 0.5/ 2-2.54 - 1725656","TopLayer","PHOENIX_1725656","0.0700mm","-18.3700mm","270","Wire to Board, Screw, 2 Pin, Pitch 2.54mm, 6A, 160V, Horizontal, THT, L6.2B5.54H12"
+"U2","MP1496SGJ-x","TopLayer","TSOP65P280X100-8L","9.1000mm","-2.7000mm","0","Buck Converter, 0.8..15.2V, 2A, 4.5..16Vin, TSOP-8"
+"R12","10kR","TopLayer","RESC1005X04L","-9.3000mm","-10.0450mm","90","Res, 10kR, 1%, 0.1W, 0402"
+"R11","47kR","TopLayer","RESC1005X04L","9.5000mm","-0.1000mm","270","Res, 47kR, 1%, 0.063W, 0402"
+"R10","100kR","TopLayer","RESC1005X04L","10.3000mm","-0.1250mm","270","Res, 100kR, 1%, 0.1W, 0402"
+"R9","3.3kR","TopLayer","RESC1005X04L","6.6000mm","0.3000mm","180","Res, 3.3kR, 1%, 0.063W, 0402"
+"R8","5.6kR","TopLayer","RESC1005X04L","7.9000mm","-0.1000mm","90","Res, 5.6kR, 1%, 0.063W, 0402"
+"R7","33kR","TopLayer","RESC1005X04L","7.0000mm","-0.9000mm","90","Res, 33kR, 1%, 0.063W, 0402"
+"R6","47kR","TopLayer","RESC1005X04L","6.1000mm","-0.9000mm","90","Res, 47kR, 1%, 0.063W, 0402"
+"R5","10R","TopLayer","RESC1005X04L","11.4000mm","0.0750mm","90","Res, 10R, 1%, 0.063W, 0402"
+"L1","SRP7050TA-5R6M","TopLayer","INDP7366X50L","14.6000mm","-5.2000mm","270","Coil, 5.6uH, 49mR, 6A, 20%, 6A, 2626"
+"J1","MPT 0.5/ 2-2.54 - 1725656","TopLayer","PHOENIX_1725656","-15.3700mm","-6.5300mm","180","Wire to Board, Screw, 2 Pin, Pitch 2.54mm, 6A, 160V, Horizontal, THT, L6.2B5.54H12"
+"C11","100nF/50V","TopLayer","CAPC1005X05L","12.0900mm","-19.7950mm","180","Cap MLCC, 100nF, 50V, X7R, 10%, 0402"
+"C10","100nF/50V","TopLayer","CAPC1005X05L","-10.5000mm","-10.0200mm","90","Cap MLCC, 100nF, 50V, X7R, 10%, 0402"
+"C9","22nF/50V","TopLayer","CAPC1005X05L","7.6700mm","-4.9000mm","0","Cap MLCC, 22nF, 50V, X7R, 10%, 0402"
+"C8","100nF/50V","TopLayer","CAPC1005X05L","8.7000mm","-0.1000mm","270","Cap MLCC, 100nF, 50V, X7R, 10%, 0402"
+"C7","47uF/16V","TopLayer","CAPC3225X25L","13.0000mm","-17.5000mm","180","Cap MLCC, 47uF, 16V, X5R, 20%, 1210"
+"C6","47uF/16V","TopLayer","CAPC3225X25L","13.0000mm","-14.3000mm","180","Cap MLCC, 47uF, 16V, X5R, 20%, 1210"
+"C5","47uF/16V","TopLayer","CAPC3225X25L","13.0000mm","-11.1000mm","180","Cap MLCC, 47uF, 16V, X5R, 20%, 1210"
+"C4","15pF/50V","TopLayer","CAPC1005X05L","5.2000mm","-0.9000mm","90","Cap MLCC, 15pF, 50V, C0G, 5%, 0402"
+"C3","10uF/50V","TopLayer","CAPC3225X25L","6.1500mm","-8.4167mm","270","Cap MLCC, 10uF, 50V, X7R, 20%, 1210"
+"C2","10uF/50V","TopLayer","CAPC3225X25L","9.3500mm","-8.4167mm","270","Cap MLCC, 10uF, 50V, X7R, 20%, 1210"
+"C1","100nF/50V","TopLayer","CAPC1005X05L","12.8300mm","0.5000mm","180","Cap MLCC, 100nF, 50V, X7R, 10%, 0402"
+"ZD2","SZMM5Z13VT1G","TopLayer","SODFL160X70-2L","-13.5251mm","1.5000mm","90","Zener Diode, 13.25V±0.85V, 5mA, 30R, 500mW, SOD-523-2"
+"ZD1","SZMM5Z13VT1G","TopLayer","SODFL160X70-2L","-5.7001mm","-1.1000mm","90","Zener Diode, 13.25V±0.85V, 5mA, 30R, 500mW, SOD-523-2"
+"U1","BTS4142N","TopLayer","SOT230P700X180-4L","-4.2000mm","-8.8000mm","0","High-Side Switch, 1 Ch, 12..45V, 1.4A, SOT-223-4"
+"T2","SIRA64DP","TopLayer","SON127P620X110-9T400X365L","-9.5000mm","2.7000mm","270","MOSFET N-Enh, 30V, 60A, 100Ap, 2.1mR, 27.8W, SO-8"
+"T1","SIRA64DP","TopLayer","SON127P620X110-9T400X365L","-1.5250mm","2.7000mm","270","MOSFET N-Enh, 30V, 60A, 100Ap, 2.1mR, 27.8W, SO-8"
+"R1","9.1kR","TopLayer","RESC1608X06L","-0.2000mm","-2.6000mm","90","Res, 9.1kR, 1%, 0.1W, 0603"
+"R2","100kR","TopLayer","RESC1608X06L","-4.3000mm","-2.5750mm","90","Res, 100kR, 1%, 0.1W, 0603"
+"R3","9.1kR","TopLayer","RESC1608X06L","-8.5000mm","-2.6000mm","90","Res, 9.1kR, 1%, 0.1W, 0603"
+"R4","100kR","TopLayer","RESC1608X06L","-12.3250mm","-1.0000mm","90","Res, 100kR, 1%, 0.1W, 0603"
+"LED2","LTST-C190KRKT","TopLayer","LEDSC160X80X80-2Lrd","-7.0250mm","-1.1000mm","90","LED, Red, 20mA, 2.0V, 0603"
+"LED1","LTST-C190KRKT","TopLayer","LEDSC160X80X80-2Lrd","-1.5000mm","-1.2000mm","90","LED, Red, 20mA, 2.0V, 0603"
+"J4","RASM722X","TopLayer","SWITCHCRAFT_RASM722X","9.5000mm","9.5000mm","90","Barrel Power Jack, 3 Pin, Male, 5A, 250V, Horizontal, SMD, L14.4B9H11, Diameter 2.0/5.5mm"
+"F1","1210L050YR","TopLayer","FUSER3225X08L","3.0000mm","-3.6000mm","270","Resettable Fuse, Ihold 500mA, Itrip 1A, 13.2V, 1210"
+"D1","SMF15CA","TopLayer","SODFL370X110-2L","4.7000mm","1.9000mm","0","TVS Diode, bidirectional, 15V, 8.2A, 200W, SOD-123FL-2"
+"BAT 2","PRPC003SGAN-M71RC","TopLayer","HD254_1x3_MH","-4.0400mm","8.5000mm","180","Header, 1x3Pin, Pitch 2.54mm, Male, Horizontal, THT"
+"BAT 1","PRPC003SGAN-M71RC","TopLayer","HD254_1x3_MH","-14.0400mm","8.5000mm","180","Header, 1x3Pin, Pitch 2.54mm, Male, Horizontal, THT"

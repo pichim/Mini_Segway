@@ -46,8 +46,8 @@ IMU::ImuData IMU::update()
     // the alignment was chosen so that roll can be used for controlling
     // the segway since yaw has a singularity at +/-90 deg
     //   when standing upright, the IMU is mounted on the robot with:
-    //   - the x-axis pointing to the left
-    //   - the y-axis pointing backwards
+    //   - the x-axis pointing to the right
+    //   - the y-axis pointing forwards
     //   - the z-axis pointing upwards
     Eigen::Vector3f gyro(m_ImuMPU6500.gyroX, -m_ImuMPU6500.gyroZ, m_ImuMPU6500.gyroY);
     Eigen::Vector3f acc(m_ImuMPU6500.accX, -m_ImuMPU6500.accZ, m_ImuMPU6500.accY);

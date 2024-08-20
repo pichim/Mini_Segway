@@ -1,0 +1,710 @@
+UNITS=MM
+#
+#Component attribute names
+#
+@0 .comp_mount_type
+@1 .comp_height
+
+# CMP 0
+CMP 6 6.19999776 -17.10000136 90 N J5 MPT_0.5/_2-2.54_-_1725656 ;0=2,1=8.5000
+PRP Angle 'Horizontal'
+PRP Connection 'Screw'
+PRP Family_Name 'MPT'
+PRP Gender ''
+PRP Manufacturer 'Phoenix'
+PRP Mating_Part ''
+PRP Max_Current '6A'
+PRP Max_Voltage '160V'
+PRP Mounting_Technology 'THT'
+PRP Pin_Mapping '1x2'
+PRP Pins '2'
+PRP Pitch '2.54mm'
+PRP Size 'L6.2B5.54H12'
+PRP Type 'Wire to Board'
+TOP 0 6.19999776 -17.10000136 0 N 11 9 1
+TOP 1 8.73999776 -17.10000136 0 N 19 27 2
+TOP 2 8.73999776 -19.64000136 180 N 0 3 empty-1
+TOP 3 6.19999776 -19.64000136 180 N 0 2 empty-2
+#
+# CMP 1
+CMP 6 -9.20000192 -17.10000136 90 N J2 MPT_0.5/_2-2.54_-_1725656 ;0=2,1=8.5000
+PRP Angle 'Horizontal'
+PRP Connection 'Screw'
+PRP Family_Name 'MPT'
+PRP Gender ''
+PRP Manufacturer 'Phoenix'
+PRP Mating_Part ''
+PRP Max_Current '6A'
+PRP Max_Voltage '160V'
+PRP Mounting_Technology 'THT'
+PRP Pin_Mapping '1x2'
+PRP Pins '2'
+PRP Pitch '2.54mm'
+PRP Size 'L6.2B5.54H12'
+PRP Type 'Wire to Board'
+TOP 0 -9.20000192 -17.10000136 0 N 19 29 1
+TOP 1 -6.66000192 -17.10000136 0 N 12 2 2
+TOP 2 -6.66000192 -19.64000136 180 N 0 7 empty-1
+TOP 3 -9.20000192 -19.64000136 180 N 0 6 empty-2
+#
+# CMP 2
+CMP 0 8.48000082 -5.8000011 180 N C13 100nF/50V ;0=1,1=0.5000
+PRP Case_Code_(Metric) '1005'
+PRP Case/Package '0402'
+PRP Dielectricum 'X7R'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Size ''
+PRP Tolerance '10%'
+PRP Type 'MLCC'
+PRP Value '100nF'
+PRP Voltage_Rating '50V'
+TOP 0 8.90999996 -5.8000011 90 N 13 6 1
+TOP 1 8.04999914 -5.8000011 90 N 19 15 2
+#
+# CMP 3
+CMP 1 2.94999664 -8.41674212 90 N C12 10uF/50V ;0=1,1=2.5000
+PRP Case_Code_(Metric) '3525'
+PRP Case/Package '1210'
+PRP Dielectricum 'X7R'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Size ''
+PRP Tolerance '20%'
+PRP Type 'MLCC'
+PRP Value '10µF'
+PRP Voltage_Rating '50V'
+TOP 0 2.94999664 -7.06674228 0 N 13 4 1
+TOP 1 2.94999664 -9.76674196 0 N 19 13 2
+#
+# CMP 4
+CMP 6 -1.20000014 -17.10000136 90 N J3 MPT_0.5/_2-2.54_-_1725656 ;0=2,1=8.5000
+PRP Angle 'Horizontal'
+PRP Connection 'Screw'
+PRP Family_Name 'MPT'
+PRP Gender ''
+PRP Manufacturer 'Phoenix'
+PRP Mating_Part ''
+PRP Max_Current '6A'
+PRP Max_Voltage '160V'
+PRP Mounting_Technology 'THT'
+PRP Pin_Mapping '1x2'
+PRP Pins '2'
+PRP Pitch '2.54mm'
+PRP Size 'L6.2B5.54H12'
+PRP Type 'Wire to Board'
+TOP 0 -1.20000014 -17.10000136 0 N 15 6 1
+TOP 1 1.33999986 -17.10000136 0 N 19 28 2
+TOP 2 1.33999986 -19.64000136 180 N 0 5 empty-1
+TOP 3 -1.20000014 -19.64000136 180 N 0 4 empty-2
+#
+# CMP 5
+CMP 14 9.09999704 -2.70000222 0 N U2 MP1496SGJ-x ;0=1,1=1.0000
+PRP Case/Package 'TSOP-8'
+PRP Frequency '500kHz'
+PRP Max_In_Voltage '16V'
+PRP Max_Out_Current '2A'
+PRP Max_Out_Voltage '15.2V'
+PRP Min_In_Voltage '4.5V'
+PRP Min_Out_Voltage '800mV'
+PRP Mounting_Technology 'SMD'
+PRP Size ''
+TOP 0 8.12499772 -3.97500348 180 N 3 1 1
+TOP 1 8.77499896 -3.97500348 180 N 13 7 2
+TOP 2 9.42499766 -3.97500348 180 N 6 2 3
+TOP 3 10.0749989 -3.97500348 180 N 19 20 4
+TOP 4 10.0749989 -1.4250035 180 N 9 1 5
+TOP 5 9.42499766 -1.4250035 180 N 7 2 6
+TOP 6 8.77499896 -1.4250035 180 N 4 1 7
+TOP 7 8.12499772 -1.4250035 180 N 8 1 8
+#
+# CMP 6
+CMP 7 -9.30000426 -10.0450015 270 N R12 10kR ;0=1,1=0.4000
+PRP Case_Code_(Metric) '1005'
+PRP Case/Package '0402'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Power '100mW'
+PRP Size ''
+PRP Temperature_Coefficient ''
+PRP Tolerance '1%'
+PRP Type 'Fixed'
+PRP Value '10k'
+PRP Voltage_Rating '50V'
+TOP 0 -9.30000426 -10.47000192 180 N 19 25 1
+TOP 1 -9.30000426 -9.62000108 180 N 15 3 2
+#
+# CMP 7
+CMP 7 9.49999624 -0.0999998 90 N R11 47kR ;0=1,1=0.4000
+PRP Case_Code_(Metric) '1005'
+PRP Case/Package '0402'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Power '63mW'
+PRP Size ''
+PRP Temperature_Coefficient ''
+PRP Tolerance '1%'
+PRP Type 'Fixed'
+PRP Value '47k'
+PRP Voltage_Rating '50V'
+TOP 0 9.49999624 0.32500062 0 N 19 17 1
+TOP 1 9.49999624 -0.52500022 0 N 7 1 2
+#
+# CMP 8
+CMP 7 10.29999718 -0.12500102 90 N R10 100kR ;0=1,1=0.4000
+PRP Case_Code_(Metric) '1005'
+PRP Case/Package '0402'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Power '100mW'
+PRP Size ''
+PRP Temperature_Coefficient ''
+PRP Tolerance '1%'
+PRP Type 'Fixed'
+PRP Value '100k'
+PRP Voltage_Rating '50V'
+TOP 0 10.29999718 0.2999994 0 N 15 2 1
+TOP 1 10.29999718 -0.55000144 0 N 7 0 2
+#
+# CMP 9
+CMP 7 6.59999696 0.2999994 180 N R9 3.3kR ;0=1,1=0.4000
+PRP Case_Code_(Metric) '1005'
+PRP Case/Package '0402'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Power '63mW'
+PRP Size ''
+PRP Tolerance '1%'
+PRP Type 'Fixed'
+PRP Value '3.3k'
+PRP Voltage_Rating '50V'
+TOP 0 7.02499738 0.2999994 90 N 1 1 1
+TOP 1 6.17499654 0.2999994 90 N 19 19 2
+#
+# CMP 10
+CMP 7 7.8999969 -0.0999998 270 N R8 5.6kR ;0=1,1=0.4000
+PRP Case_Code_(Metric) '1005'
+PRP Case/Package '0402'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Power '63mW'
+PRP Size ''
+PRP Temperature_Coefficient ''
+PRP Tolerance '1%'
+PRP Type 'Fixed'
+PRP Value '5.6k'
+PRP Voltage_Rating '50V'
+TOP 0 7.8999969 -0.52500022 180 N 2 1 1
+TOP 1 7.8999969 0.32500062 180 N 1 0 2
+#
+# CMP 11
+CMP 7 6.9999987 -0.90000074 270 N R7 33kR ;0=1,1=0.4000
+PRP Case_Code_(Metric) '1005'
+PRP Case/Package '0402'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Power '63mW'
+PRP Size ''
+PRP Temperature_Coefficient ''
+PRP Tolerance '1%'
+PRP Type 'Fixed'
+PRP Value '33k'
+PRP Voltage_Rating '50V'
+TOP 0 6.9999987 -1.32500116 180 N 8 0 1
+TOP 1 6.9999987 -0.47500032 180 N 2 0 2
+#
+# CMP 12
+CMP 7 6.09999796 -0.90000074 270 N R6 47kR ;0=1,1=0.4000
+PRP Case_Code_(Metric) '1005'
+PRP Case/Package '0402'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Power '63mW'
+PRP Size ''
+PRP Temperature_Coefficient ''
+PRP Tolerance '1%'
+PRP Type 'Fixed'
+PRP Value '47k'
+PRP Voltage_Rating '50V'
+TOP 0 6.09999796 -1.32500116 180 N 11 3 1
+TOP 1 6.09999796 -0.47500032 180 N 2 3 2
+#
+# CMP 13
+CMP 7 11.39999752 0.07499858 270 N R5 10R ;0=1,1=0.4000
+PRP Case_Code_(Metric) '1005'
+PRP Case/Package '0402'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Power '63mW'
+PRP Size ''
+PRP Temperature_Coefficient ''
+PRP Tolerance '1%'
+PRP Type 'Fixed'
+PRP Value '10'
+PRP Voltage_Rating '50V'
+TOP 0 11.39999752 -0.35000184 180 N 9 0 1
+TOP 1 11.39999752 0.499999 180 N 5 1 2
+#
+# CMP 14
+CMP 4 14.59999874 -5.2000023 90 N L1 SRP7050TA-5R6M ;0=1,1=5.0000
+PRP Case_Code_(Metric) ''
+PRP Case/Package '2626'
+PRP Current '6A'
+PRP Inductivity '5.6µH'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Resistance_DC '49m'
+PRP Size ''
+PRP Tolerance '20%'
+TOP 0 14.59999874 -2.50000262 0 N 6 3 1
+TOP 1 14.59999874 -7.90000198 0 N 11 4 2
+#
+# CMP 15
+CMP 6 -14.10000228 -5.25999964 180 N J1 MPT_0.5/_2-2.54_-_1725656 ;0=2,1=8.5000
+PRP Angle 'Horizontal'
+PRP Connection 'Screw'
+PRP Family_Name 'MPT'
+PRP Gender ''
+PRP Manufacturer 'Phoenix'
+PRP Mating_Part ''
+PRP Max_Current '6A'
+PRP Max_Voltage '160V'
+PRP Mounting_Technology 'THT'
+PRP Pin_Mapping '1x2'
+PRP Pins '2'
+PRP Pitch '2.54mm'
+PRP Size 'L6.2B5.54H12'
+PRP Type 'Wire to Board'
+TOP 0 -14.10000228 -5.25999964 90 N 13 8 1
+TOP 1 -14.10000228 -7.79999964 90 N 15 5 2
+TOP 2 -16.64000228 -7.79999964 270 N 0 1 empty-1
+TOP 3 -16.64000228 -5.25999964 270 N 0 0 empty-2
+#
+# CMP 16
+CMP 0 12.09000376 -19.79500486 180 N C11 100nF/50V ;0=1,1=0.5000
+PRP Case_Code_(Metric) '1005'
+PRP Case/Package '0402'
+PRP Dielectricum 'X7R'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Size ''
+PRP Tolerance '10%'
+PRP Type 'MLCC'
+PRP Value '100nF'
+PRP Voltage_Rating '50V'
+TOP 0 12.5200029 -19.79500486 90 N 11 6 1
+TOP 1 11.66000208 -19.79500486 90 N 19 22 2
+#
+# CMP 17
+CMP 0 -10.5000044 -10.02000028 270 N C10 100nF/50V ;0=1,1=0.5000
+PRP Case_Code_(Metric) '1005'
+PRP Case/Package '0402'
+PRP Dielectricum 'X7R'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Size ''
+PRP Tolerance '10%'
+PRP Type 'MLCC'
+PRP Value '100nF'
+PRP Voltage_Rating '50V'
+TOP 0 -10.5000044 -10.44999942 180 N 19 26 1
+TOP 1 -10.5000044 -9.5899986 180 N 15 4 2
+#
+# CMP 18
+CMP 0 7.66999736 -4.90000036 0 N C9 22nF/50V ;0=1,1=0.5000
+PRP Case_Code_(Metric) '1005'
+PRP Case/Package '0402'
+PRP Dielectricum 'X7R'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Size ''
+PRP Tolerance '10%'
+PRP Type 'MLCC'
+PRP Value '22nF'
+PRP Voltage_Rating '50V'
+TOP 0 7.23999822 -4.90000036 270 N 19 16 1
+TOP 1 8.09999904 -4.90000036 270 N 3 0 2
+#
+# CMP 19
+CMP 0 8.69999784 -0.0999998 90 N C8 100nF/50V ;0=1,1=0.5000
+PRP Case_Code_(Metric) '1005'
+PRP Case/Package '0402'
+PRP Dielectricum 'X7R'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Size ''
+PRP Tolerance '10%'
+PRP Type 'MLCC'
+PRP Value '100nF'
+PRP Voltage_Rating '50V'
+TOP 0 8.69999784 0.32999934 0 N 19 18 1
+TOP 1 8.69999784 -0.53000148 0 N 4 0 2
+#
+# CMP 20
+CMP 1 12.9999994 -17.5000031 180 N C7 47uF/16V ;0=1,1=2.5000
+PRP Case_Code_(Metric) '3525'
+PRP Case/Package '1210'
+PRP Dielectricum 'X5R'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Size ''
+PRP Tolerance '20%'
+PRP Type 'MLCC'
+PRP Value '47µF'
+PRP Voltage_Rating '16V'
+TOP 0 14.34999924 -17.5000031 90 N 11 5 1
+TOP 1 11.64999956 -17.5000031 90 N 19 21 2
+#
+# CMP 21
+CMP 1 12.9999994 -14.30000188 180 N C6 47uF/16V ;0=1,1=2.5000
+PRP Case_Code_(Metric) '3525'
+PRP Case/Package '1210'
+PRP Dielectricum 'X5R'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Size ''
+PRP Tolerance '20%'
+PRP Type 'MLCC'
+PRP Value '47µF'
+PRP Voltage_Rating '16V'
+TOP 0 14.34999924 -14.30000188 90 N 11 7 1
+TOP 1 11.64999956 -14.30000188 90 N 19 23 2
+#
+# CMP 22
+CMP 1 12.9999994 -11.10000066 180 N C5 47uF/16V ;0=1,1=2.5000
+PRP Case_Code_(Metric) '3525'
+PRP Case/Package '1210'
+PRP Dielectricum 'X5R'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Size ''
+PRP Tolerance '20%'
+PRP Type 'MLCC'
+PRP Value '47µF'
+PRP Voltage_Rating '16V'
+TOP 0 14.34999924 -11.10000066 90 N 11 8 1
+TOP 1 11.64999956 -11.10000066 90 N 19 24 2
+#
+# CMP 23
+CMP 0 5.19999722 -0.90000074 270 N C4 15pF/50V ;0=1,1=0.5000
+PRP Case_Code_(Metric) '1005'
+PRP Case/Package '0402'
+PRP Dielectricum 'C0G'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Size ''
+PRP Tolerance '5%'
+PRP Type 'MLCC'
+PRP Value '15pF'
+PRP Voltage_Rating '50V'
+TOP 0 5.19999722 -1.32999988 180 N 11 2 1
+TOP 1 5.19999722 -0.46999906 180 N 2 2 2
+#
+# CMP 24
+CMP 1 6.14999786 -8.41674212 90 N C3 10uF/50V ;0=1,1=2.5000
+PRP Case_Code_(Metric) '3525'
+PRP Case/Package '1210'
+PRP Dielectricum 'X7R'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Size ''
+PRP Tolerance '20%'
+PRP Type 'MLCC'
+PRP Value '10µF'
+PRP Voltage_Rating '50V'
+TOP 0 6.14999786 -7.06674228 0 N 13 1 1
+TOP 1 6.14999786 -9.76674196 0 N 19 6 2
+#
+# CMP 25
+CMP 1 9.34999908 -8.41674212 90 N C2 10uF/50V ;0=1,1=2.5000
+PRP Case_Code_(Metric) '3525'
+PRP Case/Package '1210'
+PRP Dielectricum 'X7R'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Size ''
+PRP Tolerance '20%'
+PRP Type 'MLCC'
+PRP Value '10µF'
+PRP Voltage_Rating '50V'
+TOP 0 9.34999908 -7.06674228 0 N 13 5 1
+TOP 1 9.34999908 -9.76674196 0 N 19 14 2
+#
+# CMP 26
+CMP 0 12.82999974 0.499999 180 N C1 100nF/50V ;0=1,1=0.5000
+PRP Case_Code_(Metric) '1005'
+PRP Case/Package '0402'
+PRP Dielectricum 'X7R'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Size ''
+PRP Tolerance '10%'
+PRP Type 'MLCC'
+PRP Value '100nF'
+PRP Voltage_Rating '50V'
+TOP 0 13.25999888 0.499999 90 N 6 1 1
+TOP 1 12.39999806 0.499999 90 N 5 0 2
+#
+# CMP 27
+CMP 9 -13.5250047 1.49999954 270 N ZD2 SZMM5Z13VT1G ;0=1,1=0.7000
+PRP Case_Code_(Metric) ''
+PRP Case/Package 'SOD-523-2'
+PRP Connection ''
+PRP Current '100nA'
+PRP Mounting_Technology 'SMD'
+PRP Power '500mW'
+PRP Size ''
+PRP Type 'Zener'
+PRP Voltage '13.25V'
+TOP 0 -13.52508598 0.7999984 180 N 10 0 1
+TOP 1 -13.52508598 2.20000068 180 N 19 7 2
+#
+# CMP 28
+CMP 9 -5.70000384 -1.10000034 270 N ZD1 SZMM5Z13VT1G ;0=1,1=0.7000
+PRP Case_Code_(Metric) ''
+PRP Case/Package 'SOD-523-2'
+PRP Connection ''
+PRP Current '100nA'
+PRP Mounting_Technology 'SMD'
+PRP Power '500mW'
+PRP Size ''
+PRP Type 'Zener'
+PRP Voltage '13.25V'
+TOP 0 -5.70008512 -1.80000148 180 N 16 2 1
+TOP 1 -5.70008512 -0.3999992 180 N 21 10 2
+#
+# CMP 29
+CMP 12 -4.20000176 -8.80000018 0 N U1 BTS4142N ;0=1,1=1.8000
+PRP Case/Package 'SOT-223-4'
+PRP Channels '1'
+PRP Function 'High-Side Switch'
+PRP Max_Current '1.4A'
+PRP Max_Logic_Voltage '45V'
+PRP Max_Power_Voltage '45V'
+PRP Min_Logic_Voltage '12V'
+PRP Min_Power_Voltage '12V'
+PRP Mounting_Technology 'SMD'
+PRP Peak_Current ''
+PRP Size ''
+TOP 0 -6.50000224 -11.62500088 180 N 12 1 1
+TOP 1 -4.20000176 -11.62500088 180 N 19 11 2
+TOP 2 -1.90000128 -11.62500088 180 N 15 1 3
+TOP 3 -4.20000176 -5.97500202 180 N 13 2 4
+#
+# CMP 30
+CMP 11 -9.50000132 2.69999968 90 N T2 SIRA64DP ;0=1,1=1.1000
+PRP Case/Package 'PowerPAK-SO-8'
+PRP Current '60A'
+PRP Current_peak '100A'
+PRP Mounting_Technology 'SMD'
+PRP Power '27.8W'
+PRP Resistance '2.1m'
+PRP Size ''
+PRP Technology 'N-enh'
+PRP Type 'MOSFET'
+PRP Voltage '30V'
+TOP 0 -12.31000078 4.60499968 270 N 19 8 1
+TOP 1 -12.31000078 3.33499968 270 N 19 9 2
+TOP 2 -12.31000078 2.06499968 270 N 19 10 3
+TOP 3 -12.31000078 0.79499968 270 N 10 2 4
+TOP 4 -6.69000186 0.79499968 270 N 21 5 5
+TOP 5 -6.69000186 2.06499968 270 N 21 4 6
+TOP 6 -6.69000186 3.33499968 270 N 21 3 7
+TOP 7 -6.69000186 4.60499968 270 N 21 1 8
+TOP 8 -8.8250014 2.69999968 90 N 21 2 8
+#
+# CMP 31
+CMP 11 -1.5250033 2.69999968 90 N T1 SIRA64DP ;0=1,1=1.1000
+PRP Case/Package 'PowerPAK-SO-8'
+PRP Current '60A'
+PRP Current_peak '100A'
+PRP Mounting_Technology 'SMD'
+PRP Power '27.8W'
+PRP Resistance '2.1m'
+PRP Size ''
+PRP Technology 'N-enh'
+PRP Type 'MOSFET'
+PRP Voltage '30V'
+TOP 0 -4.33500276 4.60499968 270 N 21 7 1
+TOP 1 -4.33500276 3.33499968 270 N 21 8 2
+TOP 2 -4.33500276 2.06499968 270 N 21 9 3
+TOP 3 -4.33500276 0.79499968 270 N 16 0 4
+TOP 4 1.28499616 0.79499968 270 N 22 6 5
+TOP 5 1.28499616 2.06499968 270 N 22 5 6
+TOP 6 1.28499616 3.33499968 270 N 22 4 7
+TOP 7 1.28499616 4.60499968 270 N 22 2 8
+TOP 8 -0.85000338 2.69999968 90 N 22 3 8
+#
+# CMP 32
+CMP 8 -0.20000214 -2.59999988 270 N R1 9.1kR ;0=1,1=0.5500
+PRP Case_Code_(Metric) '1608'
+PRP Case/Package '0603'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Power '100mW'
+PRP Size ''
+PRP Temperature_Coefficient ''
+PRP Tolerance '1%'
+PRP Type 'Fixed'
+PRP Value '9.1k'
+PRP Voltage_Rating '75V'
+TOP 0 -0.20000214 -3.2749998 180 N 14 4 1
+TOP 1 -0.20000214 -1.92499996 180 N 18 1 2
+#
+# CMP 33
+CMP 8 -4.3000041 -2.5750012 270 N R2 100kR ;0=1,1=0.5500
+PRP Case_Code_(Metric) '1608'
+PRP Case/Package '0603'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Power '100mW'
+PRP Size ''
+PRP Temperature_Coefficient ''
+PRP Tolerance '1%'
+PRP Type 'Fixed'
+PRP Value '100k'
+PRP Voltage_Rating '50V'
+TOP 0 -4.3000041 -3.25000112 180 N 14 3 1
+TOP 1 -4.3000041 -1.90000128 180 N 16 1 2
+#
+# CMP 34
+CMP 8 -8.50000332 -2.59999988 270 N R3 9.1kR ;0=1,1=0.5500
+PRP Case_Code_(Metric) '1608'
+PRP Case/Package '0603'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Power '100mW'
+PRP Size ''
+PRP Temperature_Coefficient ''
+PRP Tolerance '1%'
+PRP Type 'Fixed'
+PRP Value '9.1k'
+PRP Voltage_Rating '75V'
+TOP 0 -8.50000332 -3.2749998 180 N 14 2 1
+TOP 1 -8.50000332 -1.92499996 180 N 17 0 2
+#
+# CMP 35
+CMP 8 -12.32500456 -1.00000054 270 N R4 100kR ;0=1,1=0.5500
+PRP Case_Code_(Metric) '1608'
+PRP Case/Package '0603'
+PRP Mounting_Technology 'SMD'
+PRP Pitch ''
+PRP Power '100mW'
+PRP Size ''
+PRP Temperature_Coefficient ''
+PRP Tolerance '1%'
+PRP Type 'Fixed'
+PRP Value '100k'
+PRP Voltage_Rating '50V'
+TOP 0 -12.32500456 -1.67500046 180 N 14 1 1
+TOP 1 -12.32500456 -0.32500062 180 N 10 1 2
+#
+# CMP 36
+CMP 5 -7.025005 -1.10000034 270 N LED2 LTST-C190KRKT ;0=1,1=0.9000
+PRP Case/Package '0603'
+PRP Color 'Red'
+PRP Forward_Voltage '2V'
+PRP Mounting_Technology 'SMD'
+PRP Rated_Current '20mA'
+PRP Size 'L1.6B0.8H0.8'
+PRP Wavelength ''
+TOP 0 -7.025005 -1.85000138 270 N 17 1 1
+TOP 1 -7.025005 -0.3499993 270 N 21 6 2
+#
+# CMP 37
+CMP 5 -1.50000208 -1.20000014 270 N LED1 LTST-C190KRKT ;0=1,1=0.9000
+PRP Case/Package '0603'
+PRP Color 'Red'
+PRP Forward_Voltage '2V'
+PRP Mounting_Technology 'SMD'
+PRP Rated_Current '20mA'
+PRP Size 'L1.6B0.8H0.8'
+PRP Wavelength ''
+TOP 0 -1.50000208 -1.95000118 270 N 18 0 1
+TOP 1 -1.50000208 -0.4499991 270 N 22 1 2
+#
+# CMP 38
+CMP 13 9.49999624 9.49999878 270 N J4 RASM722X ;0=1,1=11.0000
+PRP Angle 'Horizontal'
+PRP Connection 'Pluggable'
+PRP Family_Name ''
+PRP Gender 'Male'
+PRP Manufacturer 'Switchcraft'
+PRP Mating_Part 'S760'
+PRP Max_Current '5A'
+PRP Max_Voltage '250V'
+PRP Mounting_Technology 'SMD'
+PRP Pin_Mapping '2+1'
+PRP Pins '3'
+PRP Pitch '0mm'
+PRP Size 'L14.5B9H11'
+PRP Type 'Jack'
+TOP 0 8.95499352 4.92999776 0 N 14 7 1
+TOP 1 16.14499438 14.06999726 0 N 22 7 2
+TOP 2 2.85499302 14.06999726 0 N 22 8 3
+#
+# CMP 39
+CMP 2 2.99999654 -3.60000042 90 N F1 1210L050YR ;0=1,1=0.8500
+PRP Case/Package '1210'
+PRP Ihold '500mA'
+PRP Itrip '1A'
+PRP Mounting_Technology 'SMD'
+PRP Size ''
+PRP Voltage_Rating '13.2V'
+TOP 0 2.99999654 -2.10000088 0 N 14 5 1
+TOP 1 2.99999654 -5.09999996 0 N 13 3 2
+#
+# CMP 40
+CMP 10 4.69999822 1.89999874 0 N D1 SMF15CA ;0=1,1=1.1000
+PRP Case_Code_(Metric) ''
+PRP Case/Package 'SOD-123FL-2'
+PRP Connection 'single'
+PRP Direction 'bidirectional'
+PRP Mounting_Technology 'SMD'
+PRP Peak_Current '8.2A'
+PRP Peak_Power '200W'
+PRP Rated_Voltage '15V'
+PRP Size '0'
+TOP 0 3.09999888 1.89999874 270 N 14 6 1
+TOP 1 6.3000001 1.89999874 270 N 19 12 2
+#
+# CMP 41
+CMP 3 -1.50000208 8.49999824 180 N BAT_2 PRPC003SGAN-M71RC ;0=2,1=2.4100
+PRP Angle 'Horizontal'
+PRP Gender 'Male'
+PRP Insulation_Height '2.5mm'
+PRP Manufacturer 'Sullins Connector Solutions'
+PRP Mating_Length '8.08m'
+PRP Mounting_Technology 'THT'
+PRP Overall_Contact_Length '0mm'
+PRP Pin_Mapping '1x3'
+PRP Pins '3'
+PRP Pitch '2.54mm'
+PRP Pitch_Row '2.54mm'
+PRP Plating ''
+PRP Size ''
+PRP Termination_Length '3.05mm'
+TOP 0 -1.50000208 8.49999824 180 N 21 11 1
+TOP 1 -4.04000208 8.49999824 180 N 20 3 2
+TOP 2 -6.58000208 8.49999824 180 N 21 12 3
+#
+# CMP 42
+CMP 3 -11.5000024 8.49999824 180 N BAT_1 PRPC003SGAN-M71RC ;0=2,1=2.4100
+PRP Angle 'Horizontal'
+PRP Gender 'Male'
+PRP Insulation_Height '2.5mm'
+PRP Manufacturer 'Sullins Connector Solutions'
+PRP Mating_Length '8.08m'
+PRP Mounting_Technology 'THT'
+PRP Overall_Contact_Length '0mm'
+PRP Pin_Mapping '1x3'
+PRP Pins '3'
+PRP Pitch '2.54mm'
+PRP Pitch_Row '2.54mm'
+PRP Plating ''
+PRP Size ''
+PRP Termination_Length '3.05mm'
+TOP 0 -11.5000024 8.49999824 180 N 20 1 1
+TOP 1 -14.0400024 8.49999824 180 N 14 8 2
+TOP 2 -16.5800024 8.49999824 180 N 20 2 3
+#

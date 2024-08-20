@@ -1,0 +1,25 @@
+Output: Gerber X2 Files
+Type  : GerberX2
+From  : PCB Document [Segway_Charging_Board_PCB.PcbDoc]
+   Generated File[Segway_Charging_Board_V1.0_Copper_Signal_Top.gbr]
+   Generated File[Segway_Charging_Board_V1.0_Copper_Signal_Bot.gbr]
+   Generated File[Segway_Charging_Board_V1.0_Legend_Top.gbr]
+   Generated File[Segway_Charging_Board_V1.0_Legend_Bot.gbr]
+   Generated File[Segway_Charging_Board_V1.0_Soldermask_Top.gbr]
+   Generated File[Segway_Charging_Board_V1.0_Soldermask_Bot.gbr]
+   Generated File[Segway_Charging_Board_V1.0_Paste_Top.gbr]
+   Generated File[Segway_Charging_Board_V1.0_Paste_Bot.gbr]
+   Generated File[Segway_Charging_Board_V1.0_M1-Outline.gbr]
+   Generated File[Segway_Charging_Board_V1.0_Profile.gbr]
+   Generated File[Segway_Charging_Board_V1.0_NPTH_Drill.gbr]
+   Generated File[Segway_Charging_Board_V1.0_PTH_Drill.gbr]
+   Generated File[Segway_Charging_Board_V1.0_Drawing_1.gbr]
+   Generated File[Segway_Charging_Board_V1.0_Drillmap_1.gbr]
+   Generated File[Segway_Charging_Board_V1.0.EXTREP]
+   Generated File[Segway_Charging_Board_V1.0.REP]
+
+
+Files Generated   : 16
+Documents Printed : 0
+
+Finished Output Generation At 13:24:09 On 20.08.2024

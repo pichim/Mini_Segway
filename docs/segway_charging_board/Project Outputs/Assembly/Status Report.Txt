@@ -1,0 +1,10 @@
+Output: IPC-D-356 Netlist
+Type  : Test Points
+From  : PCB Document [Segway_Charging_Board_PCB.PcbDoc]
+   Generated File[Segway_Charging_Board_Assy_Files_V1.0.ipc]
+
+
+Files Generated   : 1
+Documents Printed : 0
+
+Finished Output Generation At 13:22:33 On 20.08.2024

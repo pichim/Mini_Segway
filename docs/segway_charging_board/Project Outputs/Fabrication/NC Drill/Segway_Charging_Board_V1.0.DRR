@@ -1,0 +1,19 @@
+----------------------------------------------------------------------------------------------------------------------------------
+NCDrill File Report For: Segway_Charging_Board_PCB.PcbDoc   20.08.2024  13:24:01
+----------------------------------------------------------------------------------------------------------------------------------
+
+Layer Pair : Top Layer to Bottom Layer
+ASCII Plated RoundHoles File : Segway_Charging_Board_V1.0-Plated.TXT
+ASCII Non-Plated RoundHoles File : Segway_Charging_Board_V1.0-NonPlated.TXT
+
+Tool       Hole Size               Hole Tolerance               Hole Type       Hole Count   Plated         Tool Travel
+----------------------------------------------------------------------------------------------------------------------------------
+T1      0.2mm (8mil)                                              Round             124       PTH        339.40mm (13.36inch)
+T2      0.3mm (12mil)                                             Round             16        PTH        54.16mm (2.13inch)
+T3      1mm (39mil)                                               Round             6         PTH        15.08mm (0.59inch)
+T4      1.1mm (43mil)                                             Round             8         PTH        66.00mm (2.60inch)
+T5      1.1mm (43mil)                                             Round             8         NPTH       72.84mm (2.87inch)
+----------------------------------------------------------------------------------------------------------------------------------
+Totals                                                                              162
+
+Total Processing Time (hh:mm:ss) : 00:00:00

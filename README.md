@@ -1,7 +1,11 @@
 # MiniSegway
 The Segway is a robot that has the ability to balance itself using two motors and an IMU sensor. It is controlled with a radio transmitter in two modes, a car where it moves on the ground maintaining three points of support but also as a segway, that is, balancing on two wheels. 
 
-<!-- TODO picture of the robot -->
+<p align="center">
+    <img src="docs/png/segway.png" alt="Segway" width="600"/> </br>
+    <i>Segway with radio</i>
+</p>
+
 ## Table of Contents
 1. [Repository structure](#repository-structure)
 2. [Hardware](#hardware)
@@ -19,9 +23,14 @@ The Segway is a robot that has the ability to balance itself using two motors an
 ## Hardware
 Mechanical components (ordered) employed in design: 
 - [Scooter/Skate Wheel 84×24mm][12] <br>
-- [Pololu Aluminum Scooter Wheel Adapter for 4mm Shaft][13] 
+- [Pololu Aluminum Scooter Wheel Adapter for 4mm Shaft][13] <br>
+- 2 x [Pololu Ball Caster with 1/2″ Plastic Ball][17] 
 
-All frame parts 3D models are localized in docs/cad/ folder
+All frame parts 3D models are localized in ``docs/cad/`` folder
+
+The list of eletric components varies from version to version, as a special PCB has been designed to eliminate some of the components and allow the battery to be charged directly on the robot. In the absence of a PCB, a list of stock components is provided.
+
+**VERSION WITHOUT PCB**
 
 Electrical components and sensors:
 
@@ -36,11 +45,45 @@ Electrical components and sensors:
 - 3 x [Mini Pushbutton Switch: PCB-Mount][9] <br>
 - 2 x [Conrad energy NiMH battery packs 6V, 2300mAh][10] <br>
 - [RadioMaster Pocket Radio Controller (ELRS)][11]<br>
+- [Micro BEC 7-21V to 5V/12V-ADJ][15] <br>
+- [Charger model 220v 0.5a 1a volcraft mw6168v][16] <br>
 - 2 x LED diode <br>
 - Jumper wires
 
 The electronics connection is included in the file, which can be found [HERE](/docs/hardware/Segway_connection_diagram_F446RE.pdf)
 
+**VERSION WITH PCB**
+
+- [Nucleo-F446RE][1] <br> 
+- [Pololu Dual MC33926 Motor Driver Shield for Arduino][2] <br>
+- 2 x [47:1 Metal Gearmotor 25Dx67L mm MP 12V with 48 CPR Encoder][3] <br>
+- [MPU6500 - 6DOF IMU][4] <br>
+- [OpenLager Blackbox][5] <br>
+- [RadioMaster RP2 ELRS 2.4GHz Nano Receiver][6] <br>
+- [0,28" Mini Digital-Voltmeter mit LED Anzeige, 3,2-30V, 2-Wire, red][7] <br>
+- [Mini Slide Switch: 3-Pin, SPDT, 0.3A][14] <br>
+- 2 x [Mini Pushbutton Switch: PCB-Mount][9] <br>
+- 2 x [Conrad energy NiMH battery packs 6V, 2300mAh][10] <br>
+- [RadioMaster Pocket Radio Controller (ELRS)][11]<br>
+- [Charger model 220v 0.5a 1a volcraft mw6168v][16] <br>
+- Custom PCB
+- 2 x LED diode <br>
+- Jumper wires
+
+The electronics connection is included in the file, which can be found [HERE](/docs/hardware/Segway_connection_diagram_F446RE_with_PCB.pdf) <br>
+All the files related to PCB can be found in ``docs/segway_charging_board/``
+
+Below there is components placement shown:
+
+<p align="center">
+    <img src="docs/png/front.png" alt="Front" width="300"/> </br>
+    <i>Front</i>
+</p>
+
+<p align="center">
+    <img src="docs/png/back.png" alt="Back" width="300"/> </br>
+    <i>Back</i>
+</p>
 
 ## Prerequisites
 - Mbed Studio
@@ -62,9 +105,14 @@ In order to use the robot you must follow the steps below:
 - Start the radio controller that is paired with the receiver on the robot
 - Turn on the power supply on the robot (in this situation both LED, green and blue will start blinking)
 - Arm the radio controler (SD button) (in such case the green LED will start to shine continuously)
-- Then the USER button on the robot can be pressed, which will lead the robot to CAR mode (blue LED will start to shine continuously)
+- Then the USER button on the robot can be pressed, which will lead the robot to CAR mode (blue LED will start to shine continuously) [picture below]
 - To use the robot as segway, raise it to a standing position and wait until the robot visibly starts to balance.
 - By default, the robot is in normal mode, however, when you press the button on the radio transmitter (SA button), the robot will go into fast mode, and its speed will be increased (**NOTES: In normal mode, the robot is practically unturnable when controlling the radio transmitter (as long as there is no collision, of course), however, in fast mode there is the possibility of such control, which will lead to loss of balance.**)
+
+<p align="center">
+    <img src="docs/png/buttons_layout.png" alt="Buttons layout" width="300"/> </br>
+    <i>Button layout</i>
+</p>
 
 ## Software
 
@@ -127,7 +175,33 @@ This state-space controller is designed to keep a Segway in a vertical position 
 
 
 ## Notes:
-- Update dependencies after releasing drivers! 
+In the event that a version of Segway will be assembled that does not have a custom PCB, the arrangement of additional hardware will cause the IMU to be on the other side of the robot. In this case, changes must be made to the software in order for the robot to function properly. In the 45th line of **IMU.cpp** file located in ``src`` folder, is following code, that is working only with the version with custom PCB:
+
+```
+    // segway imu alignment:
+    // the alignment was chosen so that roll can be used for controlling
+    // the segway since yaw has a singularity at +/-90 deg
+    //   when standing upright, the IMU is mounted on the robot with:
+    //   - the x-axis pointing to the right
+    //   - the y-axis pointing forwards
+    //   - the z-axis pointing upwards
+    Eigen::Vector3f gyro(m_ImuMPU6500.gyroX, -m_ImuMPU6500.gyroZ, m_ImuMPU6500.gyroY);
+    Eigen::Vector3f acc(m_ImuMPU6500.accX, -m_ImuMPU6500.accZ, m_ImuMPU6500.accY);
+```
+
+To match the code to a different orientation of the IMU, i.e., located on the other side of the robot, you need to change the characters of the data coming from each axis as shown in the illustration below.
+
+```
+    // segway imu alignment:
+    // the alignment was chosen so that roll can be used for controlling
+    // the segway since yaw has a singularity at +/-90 deg
+    //   when standing upright, the IMU is mounted on the robot with:
+    //   - the x-axis pointing to the left
+    //   - the y-axis pointing backwards
+    //   - the z-axis pointing upwards
+    Eigen::Vector3f gyro(-m_ImuMPU6500.gyroX, m_ImuMPU6500.gyroZ, m_ImuMPU6500.gyroY);
+    Eigen::Vector3f acc(-m_ImuMPU6500.accX, m_ImuMPU6500.accZ, m_ImuMPU6500.accY);
+```
 
 [1]: https://os.mbed.com/platforms/ST-Nucleo-F446RE/
 [2]: https://www.play-zone.ch/en/pololu-dual-mc33926-motor-driver-shield-for-arduino.html
@@ -140,6 +214,10 @@ This state-space controller is designed to keep a Segway in a vertical position 
 [9]: https://www.pololu.com/product/1400
 [10]: https://www.conrad.ch/de/p/reely-modellbau-akkupack-nimh-6-v-2300-mah-zellen-zahl-5-mignon-aa-side-by-side-jr-buchse-2613252.html
 [11]: https://fpvracing.ch/de/funksystem/3785-radiomaster-pocket-radio-controller-elrs.html?
+[14]: https://www.pololu.com/product/1408
+[15]: https://www.mateksys.com/?portfolio=mbec2a#tab-id-2
+[16]: https://eclats-antivols.fr/en/ean/24811-chargeur-de-modelisme-220-v-1-a-voltcraft-mw6168v-nicd-nimh-4016138642414.html
 
 [12]: https://www.pololu.com/product/3275
 [13]: https://www.pololu.com/product/2672
+[17]: https://www.pololu.com/product/952
