@@ -4,6 +4,10 @@
 // 
 // source .platformio/penv/bin/activate
 // pip install setuptools
+// -  Python 3.8.10
+// 
+// - framework-mbed @ 6.61700.231105 (6.17.0) 
+// - toolchain-gccarmnoneeabi @ 1.90201.191206 (9.2.1)
 
 #include "mbed.h"
 
