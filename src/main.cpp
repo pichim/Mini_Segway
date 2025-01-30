@@ -1,13 +1,33 @@
-// /home/pichim/.platformio/packages/framework-mbed/platformio/package_deps/py3/past/builtins/misc.py
-// 45: # from imp import reload
-// 46: from importlib import reload
-// 
-// source .platformio/penv/bin/activate
-// pip install setuptools
-// -  Python 3.8.10
-// 
-// - framework-mbed @ 6.61700.231105 (6.17.0) 
-// - toolchain-gccarmnoneeabi @ 1.90201.191206 (9.2.1)
+// Notes:
+// - Last updated and tested on 30.01.2025
+// - PlatformIO Build is not working, but does not matter. Simply flash by drag and drop.
+//
+
+// TODO:
+// - Check latest changes to SBus and RC according to ROS1 package: https://github.com/rtlab-ims-pub/elrs_sbus_teleop
+
+// Processing nucleo_f446re (platform: ststm32; board: nucleo_f446re; framework: mbed)
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// Verbose mode can be enabled via `-v, --verbose` option
+// CONFIGURATION: https://docs.platformio.org/page/boards/ststm32/nucleo_f446re.html
+// PLATFORM: ST STM32 (17.6.0) > ST Nucleo F446RE
+// HARDWARE: STM32F446RET6 180MHz, 128KB RAM, 512KB Flash
+// DEBUG: Current (stlink) On-board (stlink) External (blackmagic, cmsis-dap, jlink)
+// PACKAGES: 
+//  - framework-mbed @ 6.61700.231105 (6.17.0) 
+//  - toolchain-gccarmnoneeabi @ 1.90201.191206 (9.2.1)
+// Collecting mbed sources...
+// LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+// LDF Modes: Finder ~ chain, Compatibility ~ soft
+// Found 19 compatible libraries
+// Scanning dependencies...
+// Dependency Graph
+// |-- Eigen @ 0.0.0+sha.13a5d365ba16
+// |-- DebounceIn
+// |-- MiniSegway
+// |-- RC
+// Building in release mode
+
 
 #include "mbed.h"
 
