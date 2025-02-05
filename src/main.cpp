@@ -1,7 +1,19 @@
 // Notes:
 // - Last updated and tested on 30.01.2025
-// - PlatformIO Build is not working, but does not matter. Simply flash by drag and drop.
+// - PlatformIO upload is not working, but does not matter. Simply use build and flash the binary by drag and drop.
+
+// PlatformIO on Linux:
+// (penv) pichim@T14Subu24:~/Mbed Programs/Mini_Segway$ source ../../.platformio/penv/bin/activate
+// (penv) (penv) pichim@T14Subu24:~/Mbed Programs/Mini_Segway$ deactivate
+// (penv) pichim@T14Subu24:~/Mbed Programs/Mini_Segway$ deactivate
+// pichim@T14Subu24:~/Mbed Programs/Mini_Segway$ source ../../.platformio/penv/bin/activate
+// (penv) pichim@T14Subu24:~/Mbed Programs/Mini_Segway$ python --version
+// Python 3.12.3
+// (penv) pichim@T14Subu24:~/Mbed Programs/Mini_Segway$ pip install setuptools
 //
+// you also need to replace the following imports:
+// code /home/pichim/.platformio/packages/framework-mbed/platformio/package_deps/py3/past/builtins/misc.py
+// In line 45 replace: from importlib import reload # from imp import reload 
 
 // TODO:
 // - Check latest changes to SBus and RC according to ROS1 package: https://github.com/rtlab-ims-pub/elrs_sbus_teleop
