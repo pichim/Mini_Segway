@@ -1,14 +1,14 @@
 #include "FastPWM.h"
 
-FastPWM::FastPWM(PinName pin, int prescaler) : PwmOut(pin) {
+FastPWM::FastPWM(PinName pin, int us) : PwmOut(pin) {
     fast_obj = NULL;
     initFastPWM();
-    this->prescaler(prescaler);
+    this->prescaler(-1);
     
     //Set duty cycle on 0%, period on 20ms
     //period(0.02);
     //write(0.5f);
-    period_mus(50);
+    period_mus(us);
     write(0.5f);
 }
 

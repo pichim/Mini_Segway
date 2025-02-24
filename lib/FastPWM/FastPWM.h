@@ -35,7 +35,7 @@ public:
     * @param pin - PWM pin to connect to
     * @param prescaler - Clock prescaler, -1 is dynamic (default), 0 is bit random, everything else normal
     */
-    FastPWM(PinName pin, int prescaler = -1);
+    FastPWM(PinName pin, int us = 50);
     ~FastPWM(); 
     
     /**

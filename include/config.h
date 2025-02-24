@@ -135,3 +135,11 @@
     #define MINI_SEGWAY_AIN_ADDITIONAL_M1 PA_0
     #define MINI_SEGWAY_AIN_ADDITIONAL_M2 PA_1
 #endif
+
+// gimbal servo (can only be used if no analog current sensor is used, see above)
+#define MINI_SEGWAY_SERVO_PWM PA_0
+#define MINI_SEGWAY_SERVO_PERIOD_US 20000
+#define MINI_SEGWAY_SERVO_VALUE_MIN 0.028f // maps approx. to -97 deg
+#define MINI_SEGWAY_SERVO_VALUE_MAX 0.131f // maps approx. to  97 deg
+#define MINI_SEGWAY_SERVO_VALUE_RAD_MAX (97.0f * M_PIf / 180.0f)
+#define MINI_SEGWAY_SERVO_VALUE_CLAMP_RAD_MAX (60.0f * M_PIf / 180.0f) // clamp angle to (-MINI_SEGWAY_SERVO_VALUE_CLAMP_RAD_MAX, MINI_SEGWAY_SERVO_VALUE_CLAMP_RAD_MAX)

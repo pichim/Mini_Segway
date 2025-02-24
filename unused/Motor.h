@@ -2,7 +2,7 @@
 
 #include "config.h"
 
-#include "FastPWM/FastPWM.h"
+#include "FastPWM.h"
 #include "IIRFilter.h"
 #include "ThreadFlag.h"
 
