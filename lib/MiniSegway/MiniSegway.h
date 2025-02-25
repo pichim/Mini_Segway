@@ -15,6 +15,7 @@
 #include "Motor.h"
 #include "RC.h"
 #include "SerialStream.h"
+#include "Servo.h"
 #include "ThreadFlag.h"
 
 #ifndef M_PIf

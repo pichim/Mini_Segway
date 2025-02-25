@@ -1,9 +1,11 @@
 #include "Servo.h"
 
-Servo::Servo(PinName pin) : _Thread(osPriorityNormal, 4096)
-                          , _DigitalOut(pin)
-                          , _val(0.0f)
+Servo::Servo(PinName pin, int us) : _Thread(osPriorityNormal, 4096)
+                                  , _FastPWM(pin, us)
+                                  , _val(0.0f)
+                            
 {
+    writeAngleAsPWM(0.0f);
     _Thread.start(callback(this, &Servo::threadTask));
     _Ticker.attach(callback(this, &Servo::sendThreadFlag), microseconds{MINI_SEGWAY_SERVO_PERIOD_US});
 }
@@ -11,7 +13,6 @@ Servo::Servo(PinName pin) : _Thread(osPriorityNormal, 4096)
 Servo::~Servo()
 {
     _Ticker.detach();
-    _Timeout.detach();
     _Thread.terminate();
 }
 
@@ -25,11 +26,11 @@ void Servo::threadTask()
     while (true) {
         ThisThread::flags_wait_any(_ThreadFlag);
 
-        writeAngleAsSoftPWM(_val);
+        writeAngleAsPWM(_val);
     }
 }
 
-void Servo::writeAngleAsSoftPWM(float val)
+void Servo::writeAngleAsPWM(float val)
 {
     // if calibrated, input argument val is in radians
 
@@ -44,22 +45,8 @@ void Servo::writeAngleAsSoftPWM(float val)
     // map from (0.0f, 1.0f) -> (MINI_SEGWAY_SERVO_VALUE_MIN, MINI_SEGWAY_SERVO_VALUE_MAX)
     val = _normalised_gain * val + _normalised_offset;
 
-    // convert to pulse width
-    const uint16_t pulse_mus = static_cast<uint16_t>(val * static_cast<float>(MINI_SEGWAY_SERVO_PERIOD_US));
-
-    // enable digital output and attach disableDigitalOutput() to timeout for soft PWM
-    enableDigitalOutput();
-    _Timeout.attach(callback(this, &Servo::disableDigitalOutput), microseconds{pulse_mus});
-}
-
-void Servo::enableDigitalOutput()
-{
-    _DigitalOut = 1;
-}
-
-void Servo::disableDigitalOutput()
-{
-    _DigitalOut = 0;
+    // write pwm to servo
+    _FastPWM.write(val);
 }
 
 void Servo::sendThreadFlag()

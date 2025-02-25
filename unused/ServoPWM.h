@@ -2,6 +2,7 @@
 
 #include "config.h"
 
+#include "FastPWM.h"
 #include "ThreadFlag.h"
 
 using namespace std::chrono;
@@ -9,7 +10,7 @@ using namespace std::chrono;
 class Servo
 {
 public:
-    explicit Servo(PinName pin);
+    explicit Servo(PinName pin, int us);
     ~Servo();
 
     void write(float val);
@@ -19,8 +20,7 @@ private:
     Ticker _Ticker;
     ThreadFlag _ThreadFlag;
 
-    DigitalOut _DigitalOut;
-    Timeout _Timeout;
+    FastPWM _FastPWM;
 
     float _val;
 
@@ -31,10 +31,7 @@ private:
     const float _normalised_gain = MINI_SEGWAY_SERVO_VALUE_MAX - MINI_SEGWAY_SERVO_VALUE_MIN;
     const float _normalised_offset = MINI_SEGWAY_SERVO_VALUE_MIN;
 
-    void writeAngleAsSoftPWM(float val);
-
-    void enableDigitalOutput();
-    void disableDigitalOutput();
+    void writeAngleAsPWM(float val);
 
     void threadTask();
     void sendThreadFlag();

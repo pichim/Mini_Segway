@@ -95,10 +95,10 @@ void MiniSegway::threadTask()
     robotSetPointIntegrator[0].integratorInit(MINI_SEGWAY_TS);
     robotSetPointIntegrator[1].integratorInit(MINI_SEGWAY_TS);
     IIRFilter accLowPass1;
-    accLowPass1.lowPass1Init(MINI_SEGWAY_FORWARD_CPD_VEL_FCUT_D,
+    accLowPass1.lowPass1Init(MINI_SEGWAY_FORWARD_CPD_VEL_D_FILTER_FREQUENCY_HZ,
                              MINI_SEGWAY_TS);
     IIRFilter gyroLowPass1;
-    gyroLowPass1.lowPass1Init(MINI_SEGWAY_FORWARD_CPD_ANG_FCUT_D,
+    gyroLowPass1.lowPass1Init(MINI_SEGWAY_FORWARD_CPD_ANG_D_FILTER_FREQUENCY_HZ,
                               MINI_SEGWAY_TS);
 
     // states for state machine
@@ -124,6 +124,14 @@ void MiniSegway::threadTask()
     float current_additional_M1;
     float current_additional_M2;
 #endif
+
+    // gimbal servo
+    Servo gimbalServo(MINI_SEGWAY_SERVO_DOUT);
+    float gimbal_angle = MINI_SEGWAY_SERVO_ANGLE_OFFSET_RAD;
+    gimbalServo.write(gimbal_angle);
+    IIRFilter gimbalAngleLowPass1;
+    gimbalAngleLowPass1.lowPass1Init(MINI_SEGWAY_SERVO_ANGLE_FILTER_FREQUENCY_HZ,
+                                     MINI_SEGWAY_TS);
  
     while (true) {
         ThisThread::flags_wait_any(_ThreadFlag);
@@ -232,6 +240,9 @@ void MiniSegway::threadTask()
                         robot_vel_input << flip_mixer_sign *         MINI_SEGWAY_MIXER_GAIN  * rc_pkg.forward_speed * forward_speed_max_scaled, 
                                                       -1.0 * (1.0f - MINI_SEGWAY_MIXER_GAIN) * rc_pkg.turn_rate * turn_rate_max_scaled;
 
+                        // set gimbal angle to zero in car mode
+                        gimbal_angle = MINI_SEGWAY_SERVO_ANGLE_OFFSET_RAD;
+
                         // if the absolute angle is small enough we switch to segway mode
                         if (fabs(imu_data.rpy(0)) < MINI_SEGWAY_ABS_ANGLE_START_BALANCE_RAD) {
                             encoder_M1.reset();
@@ -272,6 +283,10 @@ void MiniSegway::threadTask()
                         // proportional controller
                         robot_vel_input(1) = MINI_SEGWAY_TURN_CP_POS_KP * (robotSetPointIntegrator[1].apply(robot_vel_setpoint(1)) - robot_pos(1));
 
+                        // TODO: Check sign, offset (MINI_SEGWAY_SERVO_ANGLE_OFFSET_RAD) and servo calibration, all in config.h
+                        // set gimbal angle to minus the angle of the robot
+                        gimbal_angle = imu_data.rpy(0) + MINI_SEGWAY_SERVO_ANGLE_OFFSET_RAD;
+
                         // if the absolute angle is bigger than a certain threshold we switch back car mode
                         if (fabs(imu_data.rpy(0)) > MINI_SEGWAY_ABS_ANGLE_STOP_BALANCE_RAD) {
                             robot_state = RobotState::CAR;
@@ -284,6 +299,10 @@ void MiniSegway::threadTask()
                 const Eigen::Vector2f voltage = Cwheel2robot.inverse() * robot_vel_input / k_voltage2wheel_speed;
                 motor_M1.setVoltage(voltage(0));
                 motor_M2.setVoltage(voltage(1));
+
+                // write angle to gimbal servo, servo runs at 50 Hz as an own thread, we update the data faster anyways
+                const float gimbal_angle_filtered = gimbalAngleLowPass1.apply(gimbal_angle);
+                gimbalServo.write(gimbal_angle_filtered);
 
                 // send data to serial stream (openlager or laptop / pc)
                 serialStream.write( dtime_us );                      //  0 micro seconds
@@ -324,6 +343,10 @@ void MiniSegway::threadTask()
 
                 serialStream.write( robot_vel_setpoint(0) );         // 28 forward speed setpoint in m/sec
                 serialStream.write( robot_vel_setpoint(1) );         // 29 turn rate setpoint in rad/sec
+
+                // TODO: check if it is even possible to log these additional two values, otherwise remove two from above
+                serialStream.write( gimbal_angle );                  // 30 gimbal angle in rad
+                serialStream.write( gimbal_angle_filtered );         // 31 filtered gimbal angle in rad
                 serialStream.send();
 
             } else {
