@@ -125,7 +125,7 @@
 
 // current sensors from h-bridge
 #define MINI_SEGWAY_CURRENT_AIN_M1 PC_1
-#define MINI_SEGWAY_CURRENT_AIN_M2 PB_0
+#define MINI_SEGWAY_CURRENT_AIN_M2 PC_0
 #define MINI_SEGWAY_CURRENT_FILTER_FREQUENCY_HZ 10.0f
 #define MINI_SEGWAY_CURRENT_FILTER_DAMPING (sqrtf(3.0f) / 2.0f)
 
@@ -137,7 +137,7 @@
 #endif
 
 // gimbal servo (can only be used if no analog current sensor is used, see above)
-#define MINI_SEGWAY_SERVO_PWM PA_0
+#define MINI_SEGWAY_SERVO_PWM PB_0
 #define MINI_SEGWAY_SERVO_PERIOD_US 20000
 #define MINI_SEGWAY_SERVO_VALUE_MIN 0.028f // maps approx. to -97 deg
 #define MINI_SEGWAY_SERVO_VALUE_MAX 0.131f // maps approx. to  97 deg

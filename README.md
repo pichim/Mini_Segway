@@ -1,4 +1,5 @@
 # MiniSegway
+
 The Segway is a robot that has the ability to balance itself using two motors and an IMU sensor. It is controlled with a radio transmitter in two modes, a car where it moves on the ground maintaining three points of support but also as a segway, that is, balancing on two wheels. 
 
 <p align="center">
@@ -7,6 +8,7 @@ The Segway is a robot that has the ability to balance itself using two motors an
 </p>
 
 ## Table of Contents
+
 1. [Repository structure](#repository-structure)
 2. [Hardware](#hardware)
 3. [Prerequisites](#prerequisites)
@@ -15,13 +17,16 @@ The Segway is a robot that has the ability to balance itself using two motors an
 6. [Notes](#notes)
 
 ## Repository structure
+
 - ``/docs/cad`` - cad files with division into different extensions, including print-ready STL files and STEP files. <br>
 - ``/docs/hardware`` - folder contains all hardware's datasheets and list <br>
 - ``/docs/matlab`` - folder contains all development files in matlab <br>
 - ``/docs/papers`` - folder contains all scientific papers regarding segway development 
 
 ## Hardware
+
 Mechanical components (ordered) employed in design: 
+
 - [Scooter/Skate Wheel 84×24mm][12] <br>
 - [Pololu Aluminum Scooter Wheel Adapter for 4mm Shaft][13] <br>
 - 2 x [Pololu Ball Caster with 1/2″ Plastic Ball][17] 
@@ -86,6 +91,7 @@ Below there is components placement shown:
 </p>
 
 ## Prerequisites
+
 - Mbed Studio
 - Libraries:
     - mbed-os 6.17.0
@@ -96,11 +102,13 @@ All the libraries you need are included in the repository. Software is mostly ba
 ## User manual
 
 ### Running the project for the first time
+
 In order to run the project you need to import program to Mbed Studio and follow next steps:
 - as the board is using external power source, board has jumper JP5 switched to E5V postion which requires to first supply board with external power and then plug it in to the computer
 - now program can be compiled and flashed to the board
 
 ### Using robot
+
 In order to use the robot you must follow the steps below:
 - Start the radio controller that is paired with the receiver on the robot
 - Turn on the power supply on the robot (in this situation both LED, green and blue will start blinking)
@@ -117,19 +125,24 @@ In order to use the robot you must follow the steps below:
 ## Software
 
 ### main.cpp
+
 The *main.cpp* file contains only the declaration of the rc class, which handles communication with the radio transmitter, and the minisegway, which contains all the program logic. Inside the file you can also find the declaration of an additional button that serves as the RESET of the system.
 
 ### config.h
+
 The *config.h* file is very important due to the fact that it contains all the declarations of the robot's parameters and the names of the pins used to connect the hardware. Importantly, it also contains options for changing the robot's configuration, i.e. enabling or disabling certain options such as data transfer (over the link or to an SD card), measurements with additional current sensors, or a function for testing the frequency response with a chirp signal. 
 This file should be used for all configurations related to changing the parameters of the robot, changing the parameters of the filters and any changes to the pin maps.
 
 ### minisegway.cpp
+
 Minisegway is a class that operates in its own thread with a frequency of 1kHz. In it there are declarations of all objects communicating with the hardware that is mounted on the robot. Inside the class you can find the state machine, because as mentioned the robot moves in two modes, as a car or as a segway. The file also includes additional functions, used during debugging and testing of the hardware operation.
 
 #### IMU
+
 The IMU class is initialized when the MiniSegway class is initialized, the first step that is performed inside the IMU is to configure and check the connection which is signaled by returning the device ID to the output window.The device is then calibrated, with the first thousand measurement points omitted due to the fact that they deviate significantly from the norm and there are fluctuations associated with the initialization process.
 
 In addition, position mapping is performed due to the target position of the robot and the positioning of the IMU on the robot:
+
 1. **Roll Control Advantage**: The alignment allows the use of roll for controlling the Segway. Roll control is preferred because yaw control can encounter singularities (undefined or unstable behavior) at angles of ±90 degrees when the Segway is upright.
 
 2. **IMU Orientation**:
@@ -140,6 +153,7 @@ In addition, position mapping is performed due to the target position of the rob
 In case of completion of the calibration process, a flag is sent confirming the completion of the process so that further execution of the program in the minisegway class can be executed.
 
 #### State space controller
+
 This state-space controller is designed to keep a Segway in a vertical position by controlling the robot's velocity input based on various sensor readings and setpoints. The control strategy involves multiple proportional (P) and derivative (D) components applied to different states of the system:
 
 1. **Position Control ( u_p_{pos} )**:
@@ -175,6 +189,7 @@ This state-space controller is designed to keep a Segway in a vertical position 
 
 
 ## Notes:
+
 In the event that a version of Segway will be assembled that does not have a custom PCB, the arrangement of additional hardware will cause the IMU to be on the other side of the robot. In this case, changes must be made to the software in order for the robot to function properly. In the 45th line of **IMU.cpp** file located in ``src`` folder, is following code, that is working only with the version with custom PCB:
 
 ```
@@ -214,10 +229,9 @@ To match the code to a different orientation of the IMU, i.e., located on the ot
 [9]: https://www.pololu.com/product/1400
 [10]: https://www.conrad.ch/de/p/reely-modellbau-akkupack-nimh-6-v-2300-mah-zellen-zahl-5-mignon-aa-side-by-side-jr-buchse-2613252.html
 [11]: https://fpvracing.ch/de/funksystem/3785-radiomaster-pocket-radio-controller-elrs.html?
+[12]: https://www.pololu.com/product/3275
 [14]: https://www.pololu.com/product/1408
+[13]: https://www.pololu.com/product/2672
 [15]: https://www.mateksys.com/?portfolio=mbec2a#tab-id-2
 [16]: https://eclats-antivols.fr/en/ean/24811-chargeur-de-modelisme-220-v-1-a-voltcraft-mw6168v-nicd-nimh-4016138642414.html
-
-[12]: https://www.pololu.com/product/3275
-[13]: https://www.pololu.com/product/2672
 [17]: https://www.pololu.com/product/952

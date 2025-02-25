@@ -37,3 +37,9 @@ Pololu mini push-button switch with reverse polarity protection
 - https://www.conrad.ch/de/p/reely-modellbau-akkupack-nimh-6-v-2300-mah-zellen-zahl-5-mignon-aa-side-by-side-jr-buchse-2613252.html
 
 Jumper wires	
+
+GS-9018 Servo
+- http://www.goteckrc.com/ProductShow.asp?ID=10
+
+CADDXFPV Nebula Pro Vista Kit
+- https://caddxfpv.com/products/nebula-pro-vista-kit-720p-120fps-low-latency-hd-digital-fpv-system

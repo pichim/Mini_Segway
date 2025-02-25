@@ -54,7 +54,8 @@ int main()
 
         if (do_execute_main_task) {
 
-            gimbalServo.write( 45.0f * M_PIf / 180.0f * sinf(2.0f * M_PIf * 1.0f * time) );
+            const float frequency = 0.5f;
+            gimbalServo.write( 45.0f * M_PIf / 180.0f * sinf(2.0f * M_PIf * frequency * time) );
 
         } else {
             // the following code block gets executed only once
