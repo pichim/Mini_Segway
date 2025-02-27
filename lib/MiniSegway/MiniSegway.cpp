@@ -5,9 +5,9 @@ MiniSegway::MiniSegway(RC& rc) : _Thread(osPriorityHigh, 4096)
                                , _imu(MINI_SEGWAY_IMU_MOSI,
                                       MINI_SEGWAY_IMU_MISO,
                                       MINI_SEGWAY_IMU_CLK,
-                                      MINI_SEGWAY_IMU_CS)
-                               , _button(MINI_SEGWAY_BLUE_BUTTON, PullUp)
-                               , _additional_button(MINI_SEGWAY_ADD_BLUE_BUTTON, PullUp)
+                                      MINI_SEGWAY_IMU_CS_DOUT)
+                               , _button(MINI_SEGWAY_BLUE_BUTTON_GPIO, PullUp)
+                               , _additional_button(MINI_SEGWAY_ADD_BLUE_BUTTON_GPIO, PullUp)
 {
     _button.fall(callback(this, &MiniSegway::toggleDoExecute));
     _additional_button.fall(callback(this, &MiniSegway::toggleDoExecute));
@@ -25,8 +25,8 @@ MiniSegway::~MiniSegway()
 void MiniSegway::threadTask()
 {
     // additional leds
-    Led led1(MINI_SEGWAY_LED1);
-    Led led2(MINI_SEGWAY_LED2);
+    Led led1(MINI_SEGWAY_LED1_DOUT);
+    Led led2(MINI_SEGWAY_LED2_DOUT);
 
     // timer to measure delta time
     Timer timer;
@@ -35,38 +35,38 @@ void MiniSegway::threadTask()
 
     // serial stream either to matlab or to the openlager
     SerialStream serialStream(MINI_SEGWAY_NUM_OF_FLOATS,
-                              MINI_SEGWAY_TX,
-                              MINI_SEGWAY_RX,
+                              MINI_SEGWAY_UART_TX,
+                              MINI_SEGWAY_UART_RX,
                               MINI_SEGWAY_BAUDRATE);
 
     // motor driver enable
-    DigitalOut enable_motor_driver(MINI_SEGWAY_ENABLE_MOTOR_DRIVER);
+    DigitalOut enable_motor_driver(MINI_SEGWAY_ENABLE_MOTOR_DRIVER_GPIO);
 
     // encoders
-    Encoder encoder_M1(MINI_SEGWAY_ENCA_M1,
-                       MINI_SEGWAY_ENCB_M1,
+    Encoder encoder_M1(MINI_SEGWAY_MOTOR1_ENCA,
+                       MINI_SEGWAY_MOTOR1_ENCB,
                        MINI_SEGWAY_MOTOR_COUNTS_PER_TURN,
                        MINI_SEGWAY_MOTOR_VELOCITY_FILTER_FREQUENCY_HZ,
                        MINI_SEGWAY_MOTOR_VELOCITY_FILTER_DAMPING,
                        MINI_SEGWAY_TS);
-    Encoder encoder_M2(MINI_SEGWAY_ENCA_M2,
-                       MINI_SEGWAY_ENCB_M2,
+    Encoder encoder_M2(MINI_SEGWAY_MOTOR2_ENCA,
+                       MINI_SEGWAY_MOTOR2_ENCB,
                        MINI_SEGWAY_MOTOR_COUNTS_PER_TURN,
                        MINI_SEGWAY_MOTOR_VELOCITY_FILTER_FREQUENCY_HZ,
                        MINI_SEGWAY_MOTOR_VELOCITY_FILTER_DAMPING,
                        MINI_SEGWAY_TS);
 
     // motors
-    Motor motor_M1(MINI_SEGWAY_PWM_M1,
-                   MINI_SEGWAY_PWM_DIR_M1,
+    Motor motor_M1(MINI_SEGWAY_MOTOR1_PWM,
+                   MINI_SEGWAY_MOTOR1_PWM_DIR_DOUT,
                    MINI_SEGWAY_MOTOR_VOLTAGE_MAX);
-    Motor motor_M2(MINI_SEGWAY_PWM_M2,
-                   MINI_SEGWAY_PWM_DIR_M2,
+    Motor motor_M2(MINI_SEGWAY_MOTOR2_PWM,
+                   MINI_SEGWAY_MOTOR2_PWM_DIR_DOUT,
                    MINI_SEGWAY_MOTOR_VOLTAGE_MAX);
 
     // current sensor
-    AnalogIn analog_in_M1(MINI_SEGWAY_CURRENT_AIN_M1);
-    AnalogIn analog_in_M2(MINI_SEGWAY_CURRENT_AIN_M2);
+    AnalogIn analog_in_M1(MINI_SEGWAY_CURRENT_MOTOR1_AIN);
+    AnalogIn analog_in_M2(MINI_SEGWAY_CURRENT_MOTOR2_AIN);
     IIRFilter currentLowPass2[2];
     currentLowPass2[0].lowPass2Init(MINI_SEGWAY_CURRENT_FILTER_FREQUENCY_HZ,
                                     MINI_SEGWAY_CURRENT_FILTER_DAMPING,

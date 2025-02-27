@@ -4,13 +4,13 @@
 #include "MiniSegway.h"
 #include "RC.h"
 
-RC rc(MINI_SEGWAY_RC_RX); // rc needs to be declared here and passed to miniSegway
+RC rc(MINI_SEGWAY_RC_UART_RX); // rc needs to be declared here and passed to miniSegway
 MiniSegway miniSegway(rc);
 
 int main()
 {
     // additional reset button
-    DebounceIn additionalResetButton(MINI_SEGWAY_RESET_BUTTON, PullUp);
+    DebounceIn additionalResetButton(MINI_SEGWAY_RESET_BUTTON_GPIO, PullUp);
     additionalResetButton.fall(&NVIC_SystemReset);
 
     DigitalOut led1(LED1);
