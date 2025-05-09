@@ -3,11 +3,12 @@
 #include "mbed.h"
 #include <Eigen/Dense>
 
-#include "config.h"
+// #include "config.h"
 
 #include "IIRFilter.h"
 #include "Mahony.h"
-#include "mpu6500_spi.h"
+#include "MPU6500_I2C.h"
+#include "config.h"
 
 #ifndef M_PIf
     #define M_PIf 3.14159265358979323846f /* pi */
@@ -16,7 +17,7 @@
 class IMU
 {
 public:
-    explicit IMU(PinName pin_mosi, PinName pin_miso, PinName pin_clk, PinName pin_cl);
+    explicit IMU(PinName pin_sdc, PinName pin_scl);
     virtual ~IMU() {};
 
     class ImuData
@@ -42,8 +43,8 @@ public:
     bool isCalibrated() const { return m_is_calibrated; };
 
 private:
-    SPI m_spi;
-    mpu6500_spi m_ImuMPU6500;
+    I2C m_i2c;
+    MPU6500_I2C m_ImuMPU6500;
     Mahony m_Mahony;
     ImuData m_ImuData;
     IIRFilter m_gyro_filter[3];

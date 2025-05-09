@@ -2,10 +2,8 @@
 
 MiniSegway::MiniSegway(RC& rc) : _Thread(osPriorityHigh, 4096)
                                , _rc(rc)
-                               , _imu(MINI_SEGWAY_IMU_MOSI,
-                                      MINI_SEGWAY_IMU_MISO,
-                                      MINI_SEGWAY_IMU_CLK,
-                                      MINI_SEGWAY_IMU_CS_DOUT)
+                               , _imu(MINI_SEGWAY_IMU_SDA,
+                                      MINI_SEGWAY_IMU_SCL)
                                , _button(MINI_SEGWAY_BLUE_BUTTON_GPIO, PullUp)
                                , _additional_button(MINI_SEGWAY_ADD_BLUE_BUTTON_GPIO, PullUp)
 {

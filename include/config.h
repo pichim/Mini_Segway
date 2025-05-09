@@ -4,6 +4,8 @@
     #define M_PIf 3.14159265358979323846f /* pi */
 #endif
 
+#include "pes_board_pinmap.h"
+
 // currently used hardware
 // - 1 x openlager (UART)                                              (ok)
 // - 1 x serial via programming port to laptop / pc (UART)             (ok)
@@ -45,23 +47,23 @@
 // serial data stream, tested up to 20 floats at 2 kHz
 #if DO_USE_OPENLAGER_FOR_DATA_STREAM
     // openlager
-    #define MINI_SEGWAY_UART_TX PC_6 // UART6_TX
-    #define MINI_SEGWAY_UART_RX NC
+    #define MINI_SEGWAY_UART_TX PB_UART3_TX // UART6_TX
+    #define MINI_SEGWAY_UART_RX PB_UART3_RX
 #else
     // // serial via usb to matlab
     // #define MINI_SEGWAY_UART_TX USBTX // PA_2, UART2_TX
     // #define MINI_SEGWAY_UART_RX USBRX // PA_3, UART2_RX
     // usb 2.0-cable TTL serial 6 pin to computer
-    #define MINI_SEGWAY_UART_TX PC_10 // UART3_TX
-    #define MINI_SEGWAY_UART_RX PC_11 // UART3_RX
+    #define MINI_SEGWAY_UART_TX PB_UART3_TX // UART3_TX
+    #define MINI_SEGWAY_UART_RX PB_UART3_RX // UART3_RX
 #endif
 // openlager runs at 2000000 baudrate
 #define MINI_SEGWAY_BAUDRATE 2000000
 #define MINI_SEGWAY_NUM_OF_FLOATS 30 // tested up to 20 floats at 2 kHz, so 30 floats at 1 kHz should work
 
 // remote control receiver, radiomaster elrs rx, running at 111 Hz := ~9000 mus
-#define MINI_SEGWAY_RC_UART_TX NC
-#define MINI_SEGWAY_RC_UART_RX PA_10 // UART1_RX
+#define MINI_SEGWAY_RC_UART_TX PB_UART5_TX
+#define MINI_SEGWAY_RC_UART_RX PB_UART5_RX // UART1_RX
 #define MINI_SEGWAY_RC_NUM_OF_ALLOWED_INVALID_DATA_PKG (10 * (9000 / MINI_SEGWAY_PERIOD_US + 1))
 #define MINI_SEGWAY_RC_NUM_OF_NECESSARY_VALID_DATA_PKG MINI_SEGWAY_RC_NUM_OF_ALLOWED_INVALID_DATA_PKG
 #define MINI_SEGWAY_RC_ARMING_CHANNEL 7        // top right switch
@@ -82,14 +84,14 @@
 
 // additional leds
 #define MINI_SEGWAY_LED_PERIOD_US 250000
-#define MINI_SEGWAY_LED1_DOUT PB_5
-#define MINI_SEGWAY_LED2_DOUT PA_7
+#define MINI_SEGWAY_LED1_DOUT PB_DIO_2
+#define MINI_SEGWAY_LED2_DOUT PB_DIO_3
 
 // encoders
-#define MINI_SEGWAY_MOTOR1_ENCA PA_6
-#define MINI_SEGWAY_MOTOR1_ENCB PC_7
-#define MINI_SEGWAY_MOTOR2_ENCA PB_6
-#define MINI_SEGWAY_MOTOR2_ENCB PB_7
+#define MINI_SEGWAY_MOTOR1_ENCA PB_DC_MOT1_ENC_A
+#define MINI_SEGWAY_MOTOR1_ENCB PB_DC_MOT1_ENC_B
+#define MINI_SEGWAY_MOTOR2_ENCA PB_DC_MOT2_ENC_A
+#define MINI_SEGWAY_MOTOR2_ENCB PB_DC_MOT2_ENC_B
 
 // motors
 #define MINI_SEGWAY_MOTOR_GEAR_RATIO 46.85f
@@ -100,22 +102,20 @@
 #define MINI_SEGWAY_MOTOR_VELOCITY_FILTER_FREQUENCY_HZ 3.0f
 
 // motor driver (h-bridge)
-#define MINI_SEGWAY_ENABLE_MOTOR_DRIVER_GPIO PB_15
+#define MINI_SEGWAY_ENABLE_MOTOR_DRIVER_GPIO PB_DC_MOT_ENABLE
 
 // pwm
-#define MINI_SEGWAY_MOTOR1_PWM PB_13
-#define MINI_SEGWAY_MOTOR1_PWM_DIR_DOUT PB_9
-#define MINI_SEGWAY_MOTOR2_PWM PA_9
-#define MINI_SEGWAY_MOTOR2_PWM_DIR_DOUT PA_8
+#define MINI_SEGWAY_MOTOR1_PWM PB_DC_MOT1_PWM
+#define MINI_SEGWAY_MOTOR1_PWM_DIR_DOUT PB_DC_MOT1_DIR
+#define MINI_SEGWAY_MOTOR2_PWM PB_DC_MOT2_PWM
+#define MINI_SEGWAY_MOTOR2_PWM_DIR_DOUT PB_DC_MOT2_DIR
 #define MINI_SEGWAY_MOTOR_PWM_PERIOD_US 200
 #define MINI_SEGWAY_MOTOR_PWM_MIN_VALUE 0.01f
 #define MINI_SEGWAY_MOTOR_PWM_MAX_VALUE 0.99f
 
 // imu
-#define MINI_SEGWAY_IMU_MOSI PC_3
-#define MINI_SEGWAY_IMU_MISO PC_2
-#define MINI_SEGWAY_IMU_CLK PB_10
-#define MINI_SEGWAY_IMU_CS_DOUT PB_4
+#define MINI_SEGWAY_IMU_SDA PB_I2C_SDA
+#define MINI_SEGWAY_IMU_SCL PB_I2C_SCL
 #define MINI_SEGWAY_IMU_USE_ADDITIONAL_FILTERS true
 #define MINI_SEGWAY_IMU_GYRO_FILTER_FREQUENCY_HZ 60.0f
 #define MINI_SEGWAY_IMU_ACC_FILTER_FREQUENCY_HZ 60.0f
@@ -139,8 +139,8 @@
 #endif
 
 // current sensors from h-bridge
-#define MINI_SEGWAY_CURRENT_MOTOR1_AIN PC_1
-#define MINI_SEGWAY_CURRENT_MOTOR2_AIN PC_0
+#define MINI_SEGWAY_CURRENT_MOTOR1_AIN PB_DC_MOT1_FB
+#define MINI_SEGWAY_CURRENT_MOTOR2_AIN PB_DC_MOT2_FB
 #define MINI_SEGWAY_CURRENT_FILTER_FREQUENCY_HZ 10.0f
 #define MINI_SEGWAY_CURRENT_FILTER_DAMPING (sqrtf(3.0f) / 2.0f)
 
@@ -152,7 +152,7 @@
 #endif
 
 // gimbal servo (can only be used if no analog current sensor is used, see above)
-#define MINI_SEGWAY_SERVO_DOUT PB_8
+#define MINI_SEGWAY_SERVO_DOUT PB_SERVO_0
 #define MINI_SEGWAY_SERVO_PERIOD_US 20000
 #define MINI_SEGWAY_SERVO_VALUE_MIN 0.028f // maps approx. to -97 deg
 #define MINI_SEGWAY_SERVO_VALUE_MAX 0.131f // maps approx. to  97 deg

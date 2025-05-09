@@ -1,11 +1,9 @@
 #include "IMU.h"
 
-IMU::IMU(PinName pin_mosi,
-         PinName pin_miso,
-         PinName pin_clk,
-         PinName pin_cl) : m_spi(pin_mosi, pin_miso, pin_clk)
-                         , m_ImuMPU6500(m_spi, pin_cl)
-                         , m_Mahony(MINI_SEGWAY_IMU_KP_XY, MINI_SEGWAY_IMU_KP_XY, MINI_SEGWAY_IMU_KP_Z,
+IMU::IMU(PinName pin_sda,
+         PinName pin_scl) : m_i2c(pin_sda, pin_scl),
+                            m_ImuMPU6500(m_i2c),
+                            m_Mahony(MINI_SEGWAY_IMU_KP_XY, MINI_SEGWAY_IMU_KP_XY, MINI_SEGWAY_IMU_KP_Z,
                                     MINI_SEGWAY_IMU_KI_XY, MINI_SEGWAY_IMU_KI_XY, MINI_SEGWAY_IMU_KI_Z,
                                     MINI_SEGWAY_TS)
                          
@@ -33,8 +31,8 @@ IMU::ImuData IMU::update()
     static Eigen::Vector3f acc_offset = (Eigen::Vector3f() << 0.0f, 0.0f, 0.0f).finished();
 
     // update imu
-    m_ImuMPU6500.readGyro();
-    m_ImuMPU6500.readAcc();
+    m_ImuMPU6500.readGYRAll();
+    m_ImuMPU6500.readACCAll();
 
     // skip first Nskip runs
     if (skip_cntr < Nskip) {
@@ -49,8 +47,8 @@ IMU::ImuData IMU::update()
     //   - the x-axis pointing to the right
     //   - the y-axis pointing forwards
     //   - the z-axis pointing upwards
-    Eigen::Vector3f gyro(m_ImuMPU6500.gyroX, -m_ImuMPU6500.gyroZ, m_ImuMPU6500.gyroY);
-    Eigen::Vector3f acc(m_ImuMPU6500.accX, -m_ImuMPU6500.accZ, m_ImuMPU6500.accY);
+    Eigen::Vector3f gyro(m_ImuMPU6500.getGYRX(), -m_ImuMPU6500.getGYRZ(), m_ImuMPU6500.getGYRY());
+    Eigen::Vector3f acc(m_ImuMPU6500.getACCX(), -m_ImuMPU6500.getACCZ(), m_ImuMPU6500.getACCY());
 
     if (!m_is_calibrated) {
         avg_cntr++;
