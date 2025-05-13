@@ -1,0 +1,24 @@
+Total duty = 8192
+
+================Extreme==============
+
+Duty = 325
+Normalized = 0.0397, duty cycle = 0.793 ms
+Angle = 0
+
+Duty = 480
+Normalized = 0.0586, duty cycle = 1.172 ms
+Angle = 130
+
+Duty = 891
+Normalized = 0.1088, duty cycle = 2.175 ms
+Angle = 130
+================with boundary==============
+
+Duty = 410
+Normalized = 0.05, duty cycle = 1 ms
+Angle = 0
+
+Duty = 819
+Normalized = 0.1, duty cycle = 2 ms
+Angle = 90
