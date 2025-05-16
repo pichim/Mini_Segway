@@ -79,8 +79,8 @@
 
 // button
 #define MINI_SEGWAY_BLUE_BUTTON_GPIO        PB_DIO_3  // PC_13, blue button
-// #define MINI_SEGWAY_ADD_BLUE_BUTTON_GPIO    PC_5    // additional blue button
-// #define MINI_SEGWAY_RESET_BUTTON_GPIO       PB_1    // additional reset button
+#define MINI_SEGWAY_ADD_BLUE_BUTTON_GPIO    PB_DIO_3    // additional blue button
+#define MINI_SEGWAY_RESET_BUTTON_GPIO       PB_AIN_0    // additional reset button
 
 // additional leds
 #define MINI_SEGWAY_LED_PERIOD_US 250000
@@ -154,8 +154,8 @@
 // gimbal servo (can only be used if no analog current sensor is used, see above)
 #define MINI_SEGWAY_SERVO_DOUT PB_SERVO_0
 #define MINI_SEGWAY_SERVO_PERIOD_US 20000
-#define MINI_SEGWAY_SERVO_VALUE_MIN 0.028f // maps approx. to -97 deg
-#define MINI_SEGWAY_SERVO_VALUE_MAX 0.131f // maps approx. to  97 deg
+#define MINI_SEGWAY_SERVO_VALUE_MIN 0.0397f // maps approx. to -97 deg
+#define MINI_SEGWAY_SERVO_VALUE_MAX 0.0586f // maps approx. to  97 deg
 #define MINI_SEGWAY_SERVO_VALUE_RAD_MAX (97.0f * M_PIf / 180.0f)
 #define MINI_SEGWAY_SERVO_VALUE_CLAMP_RAD_MAX (60.0f * M_PIf / 180.0f)
 #define MINI_SEGWAY_SERVO_ANGLE_OFFSET_RAD (0.0f * M_PIf / 180.0f)
