@@ -4,6 +4,15 @@
 #include "MiniSegway.h"
 #include "RC.h"
 
+// TODOs:
+// - fix additional blue button
+// - remove pes_board_pinmap.h (maybe)
+// - check imu filter configuration
+// - check imu alignment
+// - maybe sampling time needs to be adjusted to 2 ms (500 Hz)
+// - update and fix config.h, also NC, check TODO's
+// - update README.md
+
 RC rc(MINI_SEGWAY_RC_UART_RX); // rc needs to be declared here and passed to miniSegway
 MiniSegway miniSegway(rc);
 

@@ -4,8 +4,8 @@ IMU::IMU(PinName pin_sda,
          PinName pin_scl) : m_i2c(pin_sda, pin_scl),
                             m_ImuMPU6500(m_i2c),
                             m_Mahony(MINI_SEGWAY_IMU_KP_XY, MINI_SEGWAY_IMU_KP_XY, MINI_SEGWAY_IMU_KP_Z,
-                                    MINI_SEGWAY_IMU_KI_XY, MINI_SEGWAY_IMU_KI_XY, MINI_SEGWAY_IMU_KI_Z,
-                                    MINI_SEGWAY_TS)
+                                     MINI_SEGWAY_IMU_KI_XY, MINI_SEGWAY_IMU_KI_XY, MINI_SEGWAY_IMU_KI_Z,
+                                     MINI_SEGWAY_TS)
                          
 {
     m_gyro_filter[0].lowPass1Init(MINI_SEGWAY_IMU_GYRO_FILTER_FREQUENCY_HZ, MINI_SEGWAY_TS);

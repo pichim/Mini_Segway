@@ -3,12 +3,11 @@
 #include "mbed.h"
 #include <Eigen/Dense>
 
-// #include "config.h"
+#include "config.h"
 
 #include "IIRFilter.h"
 #include "Mahony.h"
 #include "MPU6500_I2C.h"
-#include "config.h"
 
 #ifndef M_PIf
     #define M_PIf 3.14159265358979323846f /* pi */
