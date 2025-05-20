@@ -39,7 +39,7 @@ private:
     IMU _imu;
 
     DebounceIn _button;
-    DebounceIn _additional_button; // TODO: fix this
+    DebounceIn _additional_button;
     bool _do_execute{false};
 
     void threadTask();

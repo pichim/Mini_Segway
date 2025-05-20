@@ -48,21 +48,21 @@
 #if DO_USE_OPENLAGER_FOR_DATA_STREAM
     // openlager
     #define MINI_SEGWAY_UART_TX PB_UART3_TX // UART6_TX
-    #define MINI_SEGWAY_UART_RX NC // TODO: check if this can be NC
+    #define MINI_SEGWAY_UART_RX NC
 #else
     // // serial via usb to matlab
     // #define MINI_SEGWAY_UART_TX USBTX // PA_2, UART2_TX
     // #define MINI_SEGWAY_UART_RX USBRX // PA_3, UART2_RX
     // usb 2.0-cable TTL serial 6 pin to computer
-    #define MINI_SEGWAY_UART_TX PB_UART3_TX // UART3_TX
-    #define MINI_SEGWAY_UART_RX PB_UART3_RX // UART3_RX
+    #define MINI_SEGWAY_UART_TX PB_UART3_TX // UART3_TX (PC_10)
+    #define MINI_SEGWAY_UART_RX PB_UART3_RX // UART3_RX (PC_11)
 #endif
 // openlager runs at 2000000 baudrate
 #define MINI_SEGWAY_BAUDRATE 2000000
 #define MINI_SEGWAY_NUM_OF_FLOATS 30 // tested up to 20 floats at 2 kHz, so 30 floats at 1 kHz should work
 
 // remote control receiver, radiomaster elrs rx, running at 111 Hz := ~9000 mus
-#define MINI_SEGWAY_RC_UART_TX NC // TODO: check if this can be NC
+#define MINI_SEGWAY_RC_UART_TX NC
 #define MINI_SEGWAY_RC_UART_RX PB_UART5_RX // UART2_RX
 #define MINI_SEGWAY_RC_NUM_OF_ALLOWED_INVALID_DATA_PKG (10 * (9000 / MINI_SEGWAY_PERIOD_US + 1))
 #define MINI_SEGWAY_RC_NUM_OF_NECESSARY_VALID_DATA_PKG MINI_SEGWAY_RC_NUM_OF_ALLOWED_INVALID_DATA_PKG
@@ -80,12 +80,11 @@
 // button
 #define MINI_SEGWAY_BLUE_BUTTON_GPIO     PB_DIO_3 // PC_13, blue button
 #define MINI_SEGWAY_ADD_BLUE_BUTTON_GPIO PB_DIO_2 // additional blue button
-#define MINI_SEGWAY_RESET_BUTTON_GPIO    PB_AIN_0 // additional reset button
 
 // additional leds
 #define MINI_SEGWAY_LED_PERIOD_US 250000
-#define MINI_SEGWAY_LED1_DOUT PB_DIO_0  // blue
-#define MINI_SEGWAY_LED2_DOUT PB_DIO_1  // green          
+#define MINI_SEGWAY_LED1_DOUT PB_DIO_0 // blue
+#define MINI_SEGWAY_LED2_DOUT PB_DIO_1 // green
 
 // encoders
 #define MINI_SEGWAY_MOTOR1_ENCA PB_DC_MOT1_ENC_A
@@ -94,9 +93,9 @@
 #define MINI_SEGWAY_MOTOR2_ENCB PB_DC_MOT2_ENC_B
 
 // motors
-#define MINI_SEGWAY_MOTOR_GEAR_RATIO 35.0f
-#define MINI_SEGWAY_MOTOR_COUNTS_PER_TURN (1024.0f * MINI_SEGWAY_MOTOR_GEAR_RATIO)
-#define MINI_SEGWAY_MOTOR_KN (170.0f / 12.0f)
+#define MINI_SEGWAY_MOTOR_GEAR_RATIO (4554.0f / 130.0f)
+#define MINI_SEGWAY_MOTOR_COUNTS_PER_TURN (4.0f * 1024.0f * MINI_SEGWAY_MOTOR_GEAR_RATIO)
+#define MINI_SEGWAY_MOTOR_KN (224.0f / 12.0f) // measured by pmic 20.05.2025
 #define MINI_SEGWAY_MOTOR_VOLTAGE_MAX 12.0f
 #define MINI_SEGWAY_MOTOR_VELOCITY_FILTER_DAMPING 1.0f
 #define MINI_SEGWAY_MOTOR_VELOCITY_FILTER_FREQUENCY_HZ 3.0f
@@ -109,7 +108,7 @@
 #define MINI_SEGWAY_MOTOR1_PWM_DIR_DOUT PB_DC_MOT1_DIR
 #define MINI_SEGWAY_MOTOR2_PWM          PB_DC_MOT2_PWM
 #define MINI_SEGWAY_MOTOR2_PWM_DIR_DOUT PB_DC_MOT2_DIR
-#define MINI_SEGWAY_MOTOR_PWM_PERIOD_US 200
+#define MINI_SEGWAY_MOTOR_PWM_PERIOD_US 50
 #define MINI_SEGWAY_MOTOR_PWM_MIN_VALUE 0.01f
 #define MINI_SEGWAY_MOTOR_PWM_MAX_VALUE 0.99f
 

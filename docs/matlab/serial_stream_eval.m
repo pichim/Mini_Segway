@@ -2,7 +2,7 @@ clc, clear all
 addpath fcns\
 %%
 
-port = 'COM20';
+port = 'COM12';
 baudrate = 2e6;
 
 if (~exist('serialStream', 'var'))
@@ -107,6 +107,9 @@ ax(3) = subplot(223);
 plot(data.time, [data.values(:,ind.rpy), ...
                  0 *cumtrapz(data.time, data.values(:,ind.gyro))] * 180/pi), grid on
 ylabel('RPY (deg)')
+legend('Roll', ...
+       'Pitch', ...
+       'Yaw')
 ax(4) = subplot(224);
 plot(data.time(1:end-1), diff(data.values(:,ind.rpy)) / Ts * 180/pi), grid on
 ylabel('dRPY (deg)'), xlabel('Time (sec)')

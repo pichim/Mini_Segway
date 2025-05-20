@@ -5,6 +5,10 @@
 #include <stdint.h>
 #include "mbed.h"
 
+#ifndef M_PIf
+    #define M_PIf 3.14159265358979323846f /* pi */
+#endif
+
 #define MPU6500_I2C_ADDRESS     0x68U<<1   // MPU6500 I2C address
 
 #define SELF_TEST_X             0x0DU   /* R/W */
@@ -141,19 +145,26 @@ class MPU6500_I2C{
         uint16_t getACCRawX(), getACCRawY(), getACCRawZ();
         uint16_t getGYRRawX(), getGYRRawY(), getGYRRawZ();
         uint16_t getTempRaw();
-        float getACCX(), getACCY(), getACCZ();
-        float getGYRX(), getGYRY(), getGYRZ();
-        float getTemp();                                         
+
+        // interfaces for the user, acc in (m^2/sec), gyro in rad/sec
+        float getAccX(), getAccY(), getAccZ();
+        float getGyroX(), getGyroY(), getGyroZ();
+
+        float getTemp();
 
         void readACCX();
         void readACCY();
         void readACCZ();
-        void readACCAll();
+
+        // update the acc data
+        void readAccAll();
 
         void readGYRX();
         void readGYRY();
         void readGYRZ();
-        void readGYRAll();
+
+        // update the gyro data
+        void readGyroAll();
 
         void readTemp();
         void readAll();
@@ -175,8 +186,8 @@ class MPU6500_I2C{
         char m_buffer[14] = {0};
         uint16_t m_ACCrawX, m_ACCrawY, m_ACCrawZ = 0;
         uint16_t m_GYRrawX, m_GYRrawY, m_GYRrawZ = 0;
-        float m_Tempraw = 0.0;
-        float m_ACCfsr, m_GYRfsr = 0.0;
+        float m_Tempraw = 0.0f;
+        float m_ACCfsr, m_GYRfsr = 0.0f;
 };
 
 #endif // MPU6500_I2C_H_

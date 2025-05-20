@@ -4,13 +4,22 @@
 #include "MiniSegway.h"
 #include "RC.h"
 
+// Notes:
+// - Acc signal has a clear offset, this was different via spi with the imu breakout board
+
 // TODOs:
-// - fix additional blue button
-// - remove pes_board_pinmap.h (maybe) for what ever reason
-// - check imu filter configuration
-// - check imu alignment
-// - maybe sampling time needs to be adjusted to 2 ms (500 Hz)
-// - update and fix config.h, also NC, check TODO's
+// - check motor constant kn                                     ok, measured
+// - check motor cpr at gear end                                 ok
+// - check motor pwm                                             ok, increased from 5 kHz to 20 kHz (now at max)
+// - remove pes_board_pinmap.h (maybe) for what ever reason      can't, otherwise Camille is mad
+// - check imu filter configuration                              ok, according to the code, did not check spectras
+// - check imu alignment                                         ok, adjusted based on measurement
+// - check imu units                                             ok, adjusted based on measurement
+// - maybe sampling time needs to be adjusted to 2 ms (500 Hz)   ok, we leave it at 1 kHz
+// - check sd card logging
+// - check the sign of all data when logging while driving
+// - adjust controller parameters
+// - check all TODOs
 // - update README.md
 
 RC rc(MINI_SEGWAY_RC_UART_RX); // rc needs to be declared here and passed to miniSegway
@@ -18,13 +27,7 @@ MiniSegway miniSegway(rc);
 
 int main()
 {
-    // additional reset button
-    // DebounceIn additionalResetButton(MINI_SEGWAY_RESET_BUTTON_GPIO, PullUp);
-    // additionalResetButton.fall(&NVIC_SystemReset);
-
-    DigitalOut led1(LED1);
     while (true) {
-        led1 = !led1; // main thread is just blinking the green led on the nucleo
         thread_sleep_for(1000);
     }
 }

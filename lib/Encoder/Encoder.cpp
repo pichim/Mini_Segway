@@ -2,11 +2,11 @@
 
 Encoder::Encoder(PinName a,
                  PinName b,
-                 uint16_t counts_per_turn,
+                 float counts_per_turn,
                  float fcut,
                  float D,
                  float Ts) : _EncoderCounter(a, b)
-                           , _counts_per_turn(static_cast<float>(counts_per_turn))
+                           , _counts_per_turn(counts_per_turn)
                            , _Ts(Ts)
 {
     _lowPass2.lowPass2Init(fcut, D, Ts);
@@ -22,14 +22,14 @@ void Encoder::reset()
     _encoder_signals.rotations = 0.0f;
 }
 
-Encoder::encoder_signals_t Encoder::read()
+Encoder::encoder_signals_t Encoder::read(float sign)
 {
     static float velocity_gain = 2.0f * M_PIf / _Ts;
     static float rotation_gain = 2.0f * M_PIf / _counts_per_turn;
 
     const float rotation_increment = updateEncoderAndReturnDeltaCounts();
-    _encoder_signals.velocity = _lowPass2.apply(velocity_gain * rotation_increment);
-    _encoder_signals.rotations = rotation_gain * static_cast<float>(_encoder_signals.counts);
+    _encoder_signals.velocity = _lowPass2.apply(sign * velocity_gain * rotation_increment);
+    _encoder_signals.rotations = sign * rotation_gain * static_cast<float>(_encoder_signals.counts);
     return _encoder_signals;
 }
 

@@ -51,7 +51,7 @@ bool MPU6500_I2C::init()
 
 bool MPU6500_I2C::configuration(void)
 {
-        // set gyro and acc lpf to highest common setting
+    // set gyro and acc lpf to highest common setting
     // gyro: BW 184 Hz (delay 2.9 ms) at Fs 1 kHz
     // acc : BW 184 Hz (delay 5.8 ms) at Fs 1 kHz
     writeRegister(CONFIG, DLPF_CFG_184HZ_188HZ_NA);
@@ -103,39 +103,39 @@ uint16_t MPU6500_I2C::getTempRaw()
     return m_Tempraw;
 }
 
-float MPU6500_I2C::getACCX()
+float MPU6500_I2C::getAccX()
 {
-    return (float)((int16_t)m_ACCrawX)*m_ACCfsr;
+    return (float)((int16_t)m_ACCrawX) * m_ACCfsr;
 }
 
-float MPU6500_I2C::getACCY()
+float MPU6500_I2C::getAccY()
 {
-    return (float)((int16_t)m_ACCrawY)*m_ACCfsr;
+    return (float)((int16_t)m_ACCrawY) * m_ACCfsr;
 }
 
-float MPU6500_I2C::getACCZ()
+float MPU6500_I2C::getAccZ()
 {
-    return (float)((int16_t)m_ACCrawZ)*m_ACCfsr;
+    return (float)((int16_t)m_ACCrawZ) * m_ACCfsr;
 }
 
-float MPU6500_I2C::getGYRX()
+float MPU6500_I2C::getGyroX()
 {
-    return (float)((int16_t)m_GYRrawX)*m_GYRfsr;
+    return (float)((int16_t)m_GYRrawX) * m_GYRfsr;
 }
 
-float MPU6500_I2C::getGYRY()
+float MPU6500_I2C::getGyroY()
 {
-    return (float)((int16_t)m_GYRrawY)*m_GYRfsr;
+    return (float)((int16_t)m_GYRrawY) * m_GYRfsr;
 }
 
-float MPU6500_I2C::getGYRZ()
+float MPU6500_I2C::getGyroZ()
 {
-    return (float)((int16_t)m_GYRrawZ)*m_GYRfsr;
+    return (float)((int16_t)m_GYRrawZ) * m_GYRfsr;
 }
 
 float MPU6500_I2C::getTemp()
 {
-    return ((float)((int16_t)m_Tempraw)/340) + 36.53; // Temperature in Celsius, on page 31
+    return (float)((int16_t)m_Tempraw) / 340.0f + 36.53f; // Temperature in Celsius, on page 31
 }
 
 void MPU6500_I2C::readACCX()
@@ -159,7 +159,7 @@ void MPU6500_I2C::readACCZ()
     return;
 }
 
-void MPU6500_I2C::readACCAll()
+void MPU6500_I2C::readAccAll()
 {
     readRegister(ACCEL_XOUT_H, 6);
     m_ACCrawX = (((uint16_t)m_buffer[0] << 8) | (uint16_t)m_buffer[1]);
@@ -189,7 +189,7 @@ void MPU6500_I2C::readGYRZ()
     return;
 }   
 
-void MPU6500_I2C::readGYRAll()
+void MPU6500_I2C::readGyroAll()
 {
     readRegister(GYRO_XOUT_H, 6);
     m_GYRrawX = (((uint16_t)m_buffer[0] << 8) | (uint16_t)m_buffer[1]);
@@ -227,13 +227,13 @@ void MPU6500_I2C::set_gyro_scale(uint8_t config)
     // Confirm the change
     readRegister(GYRO_CONFIG, 1);
     if (m_buffer[0] == FS_SEL_250DPS) {
-        m_GYRfsr = 250.0 / 32768.0;
+        m_GYRfsr = (M_PIf / 180.0f) * (250.0f / 32768.0f);
     } else if (m_buffer[0] == FS_SEL_500DPS) {
-        m_GYRfsr = 500.0 / 32768.0;
+        m_GYRfsr = (M_PIf / 180.0f) * (500.0f / 32768.0f);
     } else if (m_buffer[0] == FS_SEL_1000DPS) {
-        m_GYRfsr = 1000.0 / 32768.0;
+        m_GYRfsr = (M_PIf / 180.0f) * (1000.0f / 32768.0f);
     } else if (m_buffer[0] == FS_SEL_2000DPS) {
-        m_GYRfsr = 2000.0 / 32768.0;
+        m_GYRfsr = (M_PIf / 180.0f) * (2000.0f / 32768.0f);
     }
 }
 
@@ -246,13 +246,13 @@ void MPU6500_I2C::set_acc_scale(uint8_t config)
     // Confirm the change
     readRegister(ACCEL_CONFIG, 1);
     if (m_buffer[0] == AFS_SEL_2G) {
-        m_ACCfsr = 2.0 / 32768.0;
+        m_ACCfsr = (9.81f * 2.0f) / 32768.0f;
     } else if (m_buffer[0] == AFS_SEL_4G) {
-        m_ACCfsr = 4.0 / 32768.0;
+        m_ACCfsr = (9.81f * 4.0f) / 32768.0f;
     } else if (m_buffer[0] == AFS_SEL_8G) {
-        m_ACCfsr = 8.0 / 32768.0;
+        m_ACCfsr = (9.81f * 8.0f) / 32768.0f;
     } else if (m_buffer[0] == AFS_SEL_16G) {
-        m_ACCfsr = 16.0 / 32768.0;
+        m_ACCfsr = (9.81f * 16.0f) / 32768.0f;
     }
 }
 

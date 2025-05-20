@@ -12,7 +12,7 @@ class Encoder
 public:
     explicit Encoder(PinName a,
                      PinName b,
-                     uint16_t counts_per_turn,
+                     float counts_per_turn,
                      float fcut,
                      float D,
                      float Ts);
@@ -26,7 +26,7 @@ public:
     } encoder_signals_t;
 
     void reset();
-    encoder_signals_t read();
+    encoder_signals_t read(float sign = 1.0f);
 
 private:
     EncoderCounter _EncoderCounter;

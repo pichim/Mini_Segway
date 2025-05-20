@@ -31,8 +31,8 @@ IMU::ImuData IMU::update()
     static Eigen::Vector3f acc_offset = (Eigen::Vector3f() << 0.0f, 0.0f, 0.0f).finished();
 
     // update imu
-    m_ImuMPU6500.readGYRAll();
-    m_ImuMPU6500.readACCAll();
+    m_ImuMPU6500.readGyroAll();
+    m_ImuMPU6500.readAccAll();
 
     // skip first Nskip runs
     if (skip_cntr < Nskip) {
@@ -47,8 +47,8 @@ IMU::ImuData IMU::update()
     //   - the x-axis pointing to the right
     //   - the y-axis pointing forwards
     //   - the z-axis pointing upwards
-    Eigen::Vector3f gyro(m_ImuMPU6500.getGYRY(), m_ImuMPU6500.getGYRZ(), m_ImuMPU6500.getGYRX());
-    Eigen::Vector3f acc(m_ImuMPU6500.getACCY()*9.81f, m_ImuMPU6500.getACCZ()*9.81f, m_ImuMPU6500.getACCX()*9.81f);
+    Eigen::Vector3f gyro(-m_ImuMPU6500.getGyroY(), -m_ImuMPU6500.getGyroZ(), m_ImuMPU6500.getGyroX());
+    Eigen::Vector3f acc(-m_ImuMPU6500.getAccY(), -m_ImuMPU6500.getAccZ(), m_ImuMPU6500.getAccX());
 
     if (!m_is_calibrated) {
         avg_cntr++;

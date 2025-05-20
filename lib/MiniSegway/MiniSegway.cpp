@@ -5,10 +5,10 @@ MiniSegway::MiniSegway(RC& rc) : _Thread(osPriorityHigh, 4096)
                                , _imu(MINI_SEGWAY_IMU_SDA,
                                       MINI_SEGWAY_IMU_SCL)
                                , _button(MINI_SEGWAY_BLUE_BUTTON_GPIO, PullUp)
-                               , _additional_button(MINI_SEGWAY_ADD_BLUE_BUTTON_GPIO, PullUp)  // TODO: fix this
+                               , _additional_button(MINI_SEGWAY_ADD_BLUE_BUTTON_GPIO, PullUp)
 {
     _button.fall(callback(this, &MiniSegway::toggleDoExecute));
-    _additional_button.fall(callback(this, &MiniSegway::toggleDoExecute));  // TODO: fix this
+    _additional_button.fall(callback(this, &MiniSegway::toggleDoExecute));
 
     _Thread.start(callback(this, &MiniSegway::threadTask));
     _Ticker.attach(callback(this, &MiniSegway::sendThreadFlag), microseconds{MINI_SEGWAY_PERIOD_US});
@@ -194,8 +194,8 @@ void MiniSegway::threadTask()
                     enable_motor_driver = 1;
 
                 // read encoder signals
-                const Encoder::encoder_signals_t encoder_signals_M1 = encoder_M1.read();
-                const Encoder::encoder_signals_t encoder_signals_M2 = encoder_M2.read();
+                const Encoder::encoder_signals_t encoder_signals_M1 = encoder_M1.read( 1.0f);
+                const Encoder::encoder_signals_t encoder_signals_M2 = encoder_M2.read(-1.0f);
 
 #if MINI_SEGWAY_AIN_USE_ADDITIONAL_CURRENT_SENSOR
                 // read additional current sensor
@@ -236,7 +236,7 @@ void MiniSegway::threadTask()
                         if (imu_data.rpy(0) < 0.0f)
                             flip_mixer_sign = -1.0f;
                         robot_vel_input << flip_mixer_sign *         MINI_SEGWAY_MIXER_GAIN  * rc_pkg.forward_speed * forward_speed_max_scaled, 
-                                                      -1.0 * (1.0f - MINI_SEGWAY_MIXER_GAIN) * rc_pkg.turn_rate * turn_rate_max_scaled;
+                                                             (1.0f - MINI_SEGWAY_MIXER_GAIN) * rc_pkg.turn_rate     * turn_rate_max_scaled;
 
                         // set gimbal angle to zero in car mode
                         gimbal_angle = MINI_SEGWAY_SERVO_ANGLE_OFFSET_RAD;
@@ -253,8 +253,8 @@ void MiniSegway::threadTask()
                     }
                     case RobotState::SEGWAY: {
                         // mix wheel speed based on rc input
-                        robot_vel_setpoint <<                 MINI_SEGWAY_MIXER_GAIN * rc_pkg.forward_speed * forward_speed_max_scaled, 
-                                              -1.0f * (1.0f - MINI_SEGWAY_MIXER_GAIN) * rc_pkg.turn_rate * turn_rate_max_scaled;
+                        robot_vel_setpoint << -1.0f *         MINI_SEGWAY_MIXER_GAIN  * rc_pkg.forward_speed * forward_speed_max_scaled, 
+                                                      (1.0f - MINI_SEGWAY_MIXER_GAIN) * rc_pkg.turn_rate     * turn_rate_max_scaled;
 
 #if MINI_SEGWAY_CHIRP_USE_CHIRP
                         float exc = MINI_SEGWAY_CHIRP_OFFSET;
@@ -295,8 +295,8 @@ void MiniSegway::threadTask()
 
                 // write velocity setpoints to motors
                 const Eigen::Vector2f voltage = Cwheel2robot.inverse() * robot_vel_input / k_voltage2wheel_speed;
-                motor_M1.setVoltage(voltage(0));
-                motor_M2.setVoltage(voltage(1));
+                motor_M1.setVoltage(-voltage(0));
+                motor_M2.setVoltage( voltage(1));
 
                 // write angle to gimbal servo, servo runs at 50 Hz as an own thread, we update the data faster anyways
                 const float gimbal_angle_filtered = gimbalAngleLowPass1.apply(gimbal_angle);
@@ -342,9 +342,11 @@ void MiniSegway::threadTask()
                 serialStream.write( robot_vel_setpoint(0) );         // 28 forward speed setpoint in m/sec
                 serialStream.write( robot_vel_setpoint(1) );         // 29 turn rate setpoint in rad/sec
 
-                // TODO: check if it is even possible to log these additional two values, otherwise remove two from above
-                serialStream.write( gimbal_angle );                  // 30 gimbal angle in rad
-                serialStream.write( gimbal_angle_filtered );         // 31 filtered gimbal angle in rad
+                // to log the below data you need to comment the above 2 lines out
+                // serialStream.write( gimbal_angle );                  // 28 gimbal angle in rad
+                // serialStream.write( gimbal_angle_filtered );         // 29 filtered gimbal angle in rad
+
+                // do NOT send more than 30 floats!
                 serialStream.send();
 
             } else {
