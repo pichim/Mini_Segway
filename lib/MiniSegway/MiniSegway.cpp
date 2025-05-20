@@ -5,10 +5,10 @@ MiniSegway::MiniSegway(RC& rc) : _Thread(osPriorityHigh, 4096)
                                , _imu(MINI_SEGWAY_IMU_SDA,
                                       MINI_SEGWAY_IMU_SCL)
                                , _button(MINI_SEGWAY_BLUE_BUTTON_GPIO, PullUp)
-                            //    , _additional_button(MINI_SEGWAY_ADD_BLUE_BUTTON_GPIO, PullUp)  // TODO: fix this
+                               , _additional_button(MINI_SEGWAY_ADD_BLUE_BUTTON_GPIO, PullUp)  // TODO: fix this
 {
     _button.fall(callback(this, &MiniSegway::toggleDoExecute));
-    // _additional_button.fall(callback(this, &MiniSegway::toggleDoExecute));  // TODO: fix this
+    _additional_button.fall(callback(this, &MiniSegway::toggleDoExecute));  // TODO: fix this
 
     _Thread.start(callback(this, &MiniSegway::threadTask));
     _Ticker.attach(callback(this, &MiniSegway::sendThreadFlag), microseconds{MINI_SEGWAY_PERIOD_US});
