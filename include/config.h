@@ -46,7 +46,7 @@
 #define DO_USE_OPENLAGER_FOR_DATA_STREAM true
 // serial data stream, tested up to 20 floats at 2 kHz
 #if DO_USE_OPENLAGER_FOR_DATA_STREAM
-    // openlager
+    // openlager, needs to be stopped via blue botton, otherwise no valid data
     #define MINI_SEGWAY_UART_TX PB_UART3_TX // UART6_TX
     #define MINI_SEGWAY_UART_RX NC
 #else

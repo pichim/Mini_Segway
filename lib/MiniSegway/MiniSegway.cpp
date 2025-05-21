@@ -111,8 +111,6 @@ void MiniSegway::threadTask()
                 MINI_SEGWAY_CHIRP_F1,
                 MINI_SEGWAY_CHIRP_T1,
                 MINI_SEGWAY_TS);
-    float voltage = MINI_SEGWAY_CHIRP_OFFSET;
-    float sinarg = 0.0f;
 #endif
 
 #if MINI_SEGWAY_AIN_USE_ADDITIONAL_CURRENT_SENSOR
@@ -186,8 +184,13 @@ void MiniSegway::threadTask()
             time_previous_us = time_us;
 
 
+#if MINI_SEGWAY_CHIRP_USE_CHIRP
+            // arming switch is used to trigger the chirp signal generator
+            if (_do_execute) {
+#else
             // user button was pressed and systems is armed
             if (_do_execute && rc_pkg.armed) {
+#endif
 
                 // enable h-bridges
                 if (enable_motor_driver == 0)
@@ -257,13 +260,11 @@ void MiniSegway::threadTask()
                                                       (1.0f - MINI_SEGWAY_MIXER_GAIN) * rc_pkg.turn_rate     * turn_rate_max_scaled;
 
 #if MINI_SEGWAY_CHIRP_USE_CHIRP
+                        // chirp signal generator
                         float exc = MINI_SEGWAY_CHIRP_OFFSET;
-                        // just change if (_do_execute) { // && rc_pkg.armed) {
-                        // so that you can start the chirp generator with the arming switch
                         if (rc_pkg.armed) {
-                            if (chirp.update()) {
+                            if (chirp.update())
                                 exc = MINI_SEGWAY_CHIRP_AMPLITUDE * chirp.getExc() + MINI_SEGWAY_CHIRP_OFFSET;
-                            } 
                         } else {
                             chirp.reset();
                         }

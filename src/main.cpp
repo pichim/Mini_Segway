@@ -16,8 +16,8 @@
 // - check imu alignment                                         ok, adjusted based on measurement
 // - check imu units                                             ok, adjusted based on measurement
 // - maybe sampling time needs to be adjusted to 2 ms (500 Hz)   ok, we leave it at 1 kHz
-// - check sd card logging
-// - check the sign of all data when logging while driving
+// - check sd card logging                                       ok, you need to use the blue button to end the logging to get valid data
+// - check the sign of all data when logging while driving       ok
 // - adjust controller parameters
 // - add gimbal, set paramters in config.h and remove TODOs
 // - check all TODOs
