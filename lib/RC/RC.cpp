@@ -8,6 +8,9 @@ RC::RC(PinName pin) : _rc(pin)
     _upsamplingLowPass2[1].lowPass2Init(MINI_SEGWAY_RC_FORWARD_SPEED_UPSAMPLING_FILTER_FREQUENCY_HZ,
                                         MINI_SEGWAY_RC_UPSAMPLING_FILTER_DAMPING,
                                         MINI_SEGWAY_TS);
+    _upsamplingLowPass2[2].lowPass2Init(MINI_SEGWAY_RC_FORWARD_SPEED_UPSAMPLING_FILTER_FREQUENCY_HZ,
+                                        MINI_SEGWAY_RC_UPSAMPLING_FILTER_DAMPING,
+                                        MINI_SEGWAY_TS);
 }
 
 void RC::processReceivedData()
@@ -22,13 +25,14 @@ float RC::getPeriod()
 
 RC::rc_pkg_t RC::update()
 {
-    static uint16_t valid_rc_pkg_cntr = 0;
+    static uint16_t valid_rc_pkg_cntr   = 0;
     static uint16_t invalid_rc_pkg_cntr = 0;
 
-    static float turn_rate = 0.0f;
-    static float forward_speed = 0.0f;
+    static float turn_rate             = 0.0f;
+    static float forward_speed         = 0.0f;
+    static float gimbal_angle_setpoint = 0.0f;
     static bool armed = false;
-    static bool mode = false;
+    static bool mode  = false;
 
     static bool reset_filters = true;
 
@@ -53,7 +57,7 @@ RC::rc_pkg_t RC::update()
                    _rc.getNumOfDecoderErrorFrames(),
                    _rc.getNumOfLostFrames(),
                    _rc.getNumOfSkippedStartFrames());
-            printf("ch0: %d, ch1: %d, ch2: %d, ch3: %d, ch4: %d, ch5: %d, ch6: %d, ch7: %d\n",
+            printf("ch0: %d, ch1: %d, ch2: %d, ch3: %d, ch4: %d, ch5: %d, ch6: %d, ch7: %d, ch8: %d, ch9: %d\n",
                    _rc.getChannel(0),
                    _rc.getChannel(1),
                    _rc.getChannel(2),
@@ -61,7 +65,9 @@ RC::rc_pkg_t RC::update()
                    _rc.getChannel(4),
                    _rc.getChannel(5),
                    _rc.getChannel(6),
-                   _rc.getChannel(7));
+                   _rc.getChannel(7),
+                   _rc.getChannel(8),
+                   _rc.getChannel(9));
         }
 #endif
 
@@ -78,8 +84,10 @@ RC::rc_pkg_t RC::update()
         turn_rate     = _rc.getChannelMinusToPlusOne(MINI_SEGWAY_RC_TURN_RATE_CHANNEL);
         forward_speed = _rc.getChannelMinusToPlusOne(MINI_SEGWAY_RC_FORWARD_SPEED_CHANNEL);
 #endif
+        // no expo for gimbal angle setpoint
+        gimbal_angle_setpoint = _rc.getChannelMinusToPlusOne(MINI_SEGWAY_RC_GIMBAL_ANGLE_SETPOINT_CHANNEL);
         armed = _rc.isHigh(MINI_SEGWAY_RC_ARMING_CHANNEL);
-        mode = _rc.isHigh(MINI_SEGWAY_RC_MODE_CHANNEL);
+        mode  = _rc.isHigh(MINI_SEGWAY_RC_MODE_CHANNEL);
         _rc.setPkgValidFalse();
     } else {
         invalid_rc_pkg_cntr++;
@@ -93,22 +101,26 @@ RC::rc_pkg_t RC::update()
     // upsampling rc_pkg data
     if (valid_rc_pkg_cntr < MINI_SEGWAY_RC_NUM_OF_NECESSARY_VALID_DATA_PKG ||
         invalid_rc_pkg_cntr == MINI_SEGWAY_RC_NUM_OF_ALLOWED_INVALID_DATA_PKG) {
-        _rc_pkg.turn_rate     = 0.0f;
-        _rc_pkg.forward_speed = 0.0f;
+        _rc_pkg.turn_rate             = 0.0f;
+        _rc_pkg.forward_speed         = 0.0f;
+        _rc_pkg.gimbal_angle_setpoint = 0.0f;
         _rc_pkg.armed = false;
-        _rc_pkg.mode = false;
+        _rc_pkg.mode  = false;
     } else {
 #if MINI_SEGWAY_RC_USE_UPSAMPLING_FILTERS
         if (reset_filters) {
             reset_filters = false;
             _upsamplingLowPass2[0].reset(turn_rate);
             _upsamplingLowPass2[1].reset(forward_speed);
+            _upsamplingLowPass2[2].reset(gimbal_angle_setpoint);
         }
-        _rc_pkg.turn_rate     = _upsamplingLowPass2[0].apply(turn_rate);
-        _rc_pkg.forward_speed = _upsamplingLowPass2[1].apply(forward_speed);
+        _rc_pkg.turn_rate             = _upsamplingLowPass2[0].apply(turn_rate);
+        _rc_pkg.forward_speed         = _upsamplingLowPass2[1].apply(forward_speed);
+        _rc_pkg.gimbal_angle_setpoint = _upsamplingLowPass2[2].apply(gimbal_angle_setpoint);
 #else
-        _rc_pkg.turn_rate     = turn_rate;
-        _rc_pkg.forward_speed = forward_speed;
+        _rc_pkg.turn_rate             = turn_rate;
+        _rc_pkg.forward_speed         = forward_speed;
+        _rc_pkg.gimbal_angle_setpoint = gimbal_angle_setpoint;
 #endif
         _rc_pkg.armed = armed;
         _rc_pkg.mode = mode;

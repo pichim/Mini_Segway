@@ -16,6 +16,7 @@ public:
     typedef struct rc_pkg_s {
         float turn_rate{0.0f};
         float forward_speed{0.0f};
+        float gimbal_angle_setpoint{0.0f};
         bool armed{false};
         bool mode{false};
     } rc_pkg_t;
@@ -26,7 +27,7 @@ public:
 
 private:
     SBus _rc;
-    IIRFilter _upsamplingLowPass2[2];
+    IIRFilter _upsamplingLowPass2[3];
 
     rc_pkg_t _rc_pkg;
 

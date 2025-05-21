@@ -59,17 +59,18 @@
 #endif
 // openlager runs at 2000000 baudrate
 #define MINI_SEGWAY_BAUDRATE 2000000
-#define MINI_SEGWAY_NUM_OF_FLOATS 30 // tested up to 20 floats at 2 kHz, so 30 floats at 1 kHz should work
+#define MINI_SEGWAY_NUM_OF_FLOATS 31 // tested up to 20 floats at 2 kHz, so 31 floats at 1 kHz should work
 
 // remote control receiver, radiomaster elrs rx, running at 111 Hz := ~9000 mus
 #define MINI_SEGWAY_RC_UART_TX NC
 #define MINI_SEGWAY_RC_UART_RX PB_UART5_RX // UART2_RX
 #define MINI_SEGWAY_RC_NUM_OF_ALLOWED_INVALID_DATA_PKG (10 * (9000 / MINI_SEGWAY_PERIOD_US + 1))
 #define MINI_SEGWAY_RC_NUM_OF_NECESSARY_VALID_DATA_PKG MINI_SEGWAY_RC_NUM_OF_ALLOWED_INVALID_DATA_PKG
-#define MINI_SEGWAY_RC_ARMING_CHANNEL 7        // top right switch
-#define MINI_SEGWAY_RC_MODE_CHANNEL 4          // top left switch
-#define MINI_SEGWAY_RC_TURN_RATE_CHANNEL 0     // right stick left to right
-#define MINI_SEGWAY_RC_FORWARD_SPEED_CHANNEL 2 // left stick down to up
+#define MINI_SEGWAY_RC_ARMING_CHANNEL 7                // top right switch
+#define MINI_SEGWAY_RC_MODE_CHANNEL 4                  // top left switch
+#define MINI_SEGWAY_RC_TURN_RATE_CHANNEL 0             // right stick left to right
+#define MINI_SEGWAY_RC_FORWARD_SPEED_CHANNEL 2         // left stick down to up
+#define MINI_SEGWAY_RC_GIMBAL_ANGLE_SETPOINT_CHANNEL 9 // top right wheel
 #define MINI_SEGWAY_RC_USE_UPSAMPLING_FILTERS true
 #define MINI_SEGWAY_RC_UPSAMPLING_FILTER_DAMPING 1.0f
 #define MINI_SEGWAY_RC_FORWARD_SPEED_UPSAMPLING_FILTER_FREQUENCY_HZ 30.0f
@@ -157,5 +158,6 @@
 #define MINI_SEGWAY_SERVO_VALUE_MAX 0.0586f // maps approx. to  97 deg
 #define MINI_SEGWAY_SERVO_VALUE_RAD_MAX (97.0f * M_PIf / 180.0f)
 #define MINI_SEGWAY_SERVO_VALUE_CLAMP_RAD_MAX (60.0f * M_PIf / 180.0f)
-#define MINI_SEGWAY_SERVO_ANGLE_OFFSET_RAD (0.0f * M_PIf / 180.0f)
-#define MINI_SEGWAY_SERVO_ANGLE_FILTER_FREQUENCY_HZ 0.7f
+#define MINI_SEGWAY_SERVO_ANGLE_OFFSET_RAD (0.0f * M_PIf / 180.0f) // TODO: Tune this value
+#define MINI_SEGWAY_SERVO_ANGLE_GIMBAL_ANGLE_SETPOINT_RAD (30.0f * M_PIf / 180.0f) // TODO: Tune this value
+#define MINI_SEGWAY_SERVO_ANGLE_FILTER_FREQUENCY_HZ 0.7f // TODO: Tune this filter based on look and feel

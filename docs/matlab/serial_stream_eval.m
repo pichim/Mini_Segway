@@ -28,18 +28,18 @@ return
 multp_fig_nr = 1;
 
 % index
-ind.rc    = 1:4;
-ind.vel_M = 5:6;
-ind.ang_M = 7:8;
-ind.gyro  = 9:11;
-ind.acc   = 12:14;
-ind.rpy   = 15:17;
-ind.voltage_M = 18:19;
-ind.curr  = 20:21;
-ind.rob_pos = 22:23;
-ind.rob_vel = 24:25;
-ind.rob_vel_inp = 26:27;
-ind.rob_vel_sp  = 28:29;
+ind.rc    = 1:5;
+ind.vel_M = 6:7;
+ind.ang_M = 8:9;
+ind.gyro  = 10:12;
+ind.acc   = 13:15;
+ind.rpy   = 16:18;
+ind.voltage_M = 19:20;
+ind.curr  = 21:22;
+ind.rob_pos = 23:24;
+ind.rob_vel = 25:26;
+ind.rob_vel_inp = 27:28;
+ind.rob_vel_sp  = 29:30;
 
 
 Ts = mean(diff(data.time));
@@ -64,6 +64,7 @@ plot(data.time, data.values(:,ind.rc)), grid on
 ylabel('RC Data'), xlabel('Time (sec)')
 legend('Turn Rate', ...
     'Forward Speed', ...
+    'Gimbal Angle Setpoint', ...
     'Arming State', ...
     'Scaled Period', ...
     'Location', 'best')

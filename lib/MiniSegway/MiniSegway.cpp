@@ -281,9 +281,10 @@ void MiniSegway::threadTask()
                         // proportional controller
                         robot_vel_input(1) = MINI_SEGWAY_TURN_CP_POS_KP * (robotSetPointIntegrator[1].apply(robot_vel_setpoint(1)) - robot_pos(1));
 
-                        // TODO: Check sign, offset (MINI_SEGWAY_SERVO_ANGLE_OFFSET_RAD) and servo calibration, all in config.h
+                        // TODO 1: With the last measurement rc_pkg.gimbal_angle_setpoint did not scale to -1.0f to 1.0f, this might be due to calibration, check this 
+                        // TODO 2: Check sign, offset (MINI_SEGWAY_SERVO_ANGLE_OFFSET_RAD), gain (MINI_SEGWAY_SERVO_ANGLE_GIMBAL_ANGLE_SETPOINT_RAD) and servo calibration, all in config.h
                         // set gimbal angle to minus the angle of the robot
-                        gimbal_angle = imu_data.rpy(0) + MINI_SEGWAY_SERVO_ANGLE_OFFSET_RAD;
+                        gimbal_angle = imu_data.rpy(0) + MINI_SEGWAY_SERVO_ANGLE_OFFSET_RAD + rc_pkg.gimbal_angle_setpoint * MINI_SEGWAY_SERVO_ANGLE_GIMBAL_ANGLE_SETPOINT_RAD;
 
                         // if the absolute angle is bigger than a certain threshold we switch back car mode
                         if (fabs(imu_data.rpy(0)) > MINI_SEGWAY_ABS_ANGLE_STOP_BALANCE_RAD) {
@@ -307,46 +308,47 @@ void MiniSegway::threadTask()
 
                 serialStream.write( rc_pkg.turn_rate );              //  1 normalized between -1.0 and 1.0
                 serialStream.write( rc_pkg.forward_speed );          //  2 normalized between -1.0 and 1.0
-                serialStream.write( (rc_pkg.armed ? 1.0f : 0.0f) );  //  3 arming switch (1.0f (armed) or 0.0f)
-                serialStream.write( _rc.getPeriod() * 2.2222e-04f ); //  4 microseconds
+                serialStream.write( rc_pkg.gimbal_angle_setpoint );  //  3 normalized between -1.0 and 1.0
+                serialStream.write( (rc_pkg.armed ? 1.0f : 0.0f) );  //  4 arming switch (1.0f (armed) or 0.0f)
+                serialStream.write( _rc.getPeriod() * 2.2222e-04f ); //  5 microseconds
 
-                serialStream.write( encoder_signals_M1.velocity );   //  5 rad/sec
-                serialStream.write( encoder_signals_M2.velocity );   //  6 rad/sec
-                serialStream.write( encoder_signals_M1.rotations );  //  7 rad
-                serialStream.write( encoder_signals_M2.rotations );  //  8 rad
+                serialStream.write( encoder_signals_M1.velocity );   //  6 rad/sec
+                serialStream.write( encoder_signals_M2.velocity );   //  7 rad/sec
+                serialStream.write( encoder_signals_M1.rotations );  //  8 rad
+                serialStream.write( encoder_signals_M2.rotations );  //  9 rad
 
-                serialStream.write( imu_data.gyro(0) );              //  9 rad/sec
-                serialStream.write( imu_data.gyro(1) );              // 10 rad/sec
-                serialStream.write( imu_data.gyro(2) );              // 11 rad/sec
-                serialStream.write( imu_data.acc(0) );               // 12 m/sec^2
-                serialStream.write( imu_data.acc(1) );               // 13 m/sec^2
-                serialStream.write( imu_data.acc(2) );               // 14 m/sec^2
-                serialStream.write( imu_data.rpy(0) );               // 15 rad
-                serialStream.write( imu_data.rpy(1) );               // 16 rad
-                serialStream.write( imu_data.rpy(2) );               // 17 rad
+                serialStream.write( imu_data.gyro(0) );              // 10 rad/sec
+                serialStream.write( imu_data.gyro(1) );              // 11 rad/sec
+                serialStream.write( imu_data.gyro(2) );              // 12 rad/sec
+                serialStream.write( imu_data.acc(0) );               // 13 m/sec^2
+                serialStream.write( imu_data.acc(1) );               // 14 m/sec^2
+                serialStream.write( imu_data.acc(2) );               // 15 m/sec^2
+                serialStream.write( imu_data.rpy(0) );               // 16 rad
+                serialStream.write( imu_data.rpy(1) );               // 17 rad
+                serialStream.write( imu_data.rpy(2) );               // 18 rad
 
-                serialStream.write( voltage(0) );                    // 18 voltage
-                serialStream.write( voltage(1) );                    // 19 voltage
-                serialStream.write( current_M1 );                    // 20 amps (or at least approximately)
-                serialStream.write( current_M2 );                    // 21 amps (or at least approximately)
+                serialStream.write( -voltage(0) );                   // 19 voltage
+                serialStream.write(  voltage(1) );                   // 20 voltage
+                serialStream.write( current_M1 );                    // 21 amps (or at least approximately)
+                serialStream.write( current_M2 );                    // 22 amps (or at least approximately)
 
-                serialStream.write( robot_pos(0) );                  // 22 forward speed setpoint in m/sec
-                serialStream.write( robot_pos(1) );                  // 23 turn rate setpoint in rad/sec
+                serialStream.write( robot_pos(0) );                  // 23 forward speed setpoint in m/sec
+                serialStream.write( robot_pos(1) );                  // 24 turn rate setpoint in rad/sec
 
-                serialStream.write( robot_vel(0) );                  // 24 forward speed in m/sec
-                serialStream.write( robot_vel(1) );                  // 25 turn rate in rad/sec
+                serialStream.write( robot_vel(0) );                  // 25 forward speed in m/sec
+                serialStream.write( robot_vel(1) );                  // 26 turn rate in rad/sec
 
-                serialStream.write( robot_vel_input(0) );            // 26 forward speed setpoint in m/sec
-                serialStream.write( robot_vel_input(1) );            // 27 turn rate setpoint in rad/sec
+                serialStream.write( robot_vel_input(0) );            // 27 forward speed setpoint in m/sec
+                serialStream.write( robot_vel_input(1) );            // 28 turn rate setpoint in rad/sec
 
-                serialStream.write( robot_vel_setpoint(0) );         // 28 forward speed setpoint in m/sec
-                serialStream.write( robot_vel_setpoint(1) );         // 29 turn rate setpoint in rad/sec
+                serialStream.write( robot_vel_setpoint(0) );         // 29 forward speed setpoint in m/sec
+                serialStream.write( robot_vel_setpoint(1) );         // 30 turn rate setpoint in rad/sec
 
                 // to log the below data you need to comment the above 2 lines out
-                // serialStream.write( gimbal_angle );                  // 28 gimbal angle in rad
-                // serialStream.write( gimbal_angle_filtered );         // 29 filtered gimbal angle in rad
+                // serialStream.write( gimbal_angle );
+                // serialStream.write( gimbal_angle_filtered );
 
-                // do NOT send more than 30 floats!
+                // do NOT send more than 31 floats!
                 serialStream.send();
 
             } else {

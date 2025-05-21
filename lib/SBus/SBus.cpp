@@ -93,8 +93,8 @@ void SBus::processReceivedData()
                 channels[5]  = ((pkg[7]>>7 |pkg[8] <<1|pkg[9]<<9)   & SBUS_MASK);
                 channels[6]  = ((pkg[9]>>2 |pkg[10]<<6)             & SBUS_MASK);
                 channels[7]  = ((pkg[10]>>5|pkg[11]<<3)             & SBUS_MASK);
-                // channels[8]  = ((pkg[12]   |pkg[13]<<8)             & SBUS_MASK);
-                // channels[9]  = ((pkg[13]>>3|pkg[14]<<5)             & SBUS_MASK);
+                channels[8]  = ((pkg[12]   |pkg[13]<<8)             & SBUS_MASK);
+                channels[9]  = ((pkg[13]>>3|pkg[14]<<5)             & SBUS_MASK);
                 // channels[10] = ((pkg[14]>>6|pkg[15]<<2|pkg[16]<<10) & SBUS_MASK);
                 // channels[11] = ((pkg[16]>>1|pkg[17]<<7)             & SBUS_MASK);
                 // channels[12] = ((pkg[17]>>4|pkg[18]<<4)             & SBUS_MASK);

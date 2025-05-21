@@ -19,6 +19,7 @@
 // - check sd card logging
 // - check the sign of all data when logging while driving
 // - adjust controller parameters
+// - add gimbal, set paramters in config.h and remove TODOs
 // - check all TODOs
 // - update README.md
 
