@@ -151,13 +151,24 @@
     #define MINI_SEGWAY_AIN_ADDITIONAL_M2 PA_1
 #endif
 
-// gimbal servo (can only be used if no analog current sensor is used, see above)
+// // gimbal servo (can only be used if no analog current sensor is used, see above)
+// #define MINI_SEGWAY_SERVO_DOUT PB_AIN_3
+// #define MINI_SEGWAY_SERVO_PERIOD_US 20000
+// #define MINI_SEGWAY_SERVO_VALUE_MIN 0.0397f // maps approx. to -97 deg
+// #define MINI_SEGWAY_SERVO_VALUE_MAX 0.0586f // maps approx. to  97 deg
+// #define MINI_SEGWAY_SERVO_VALUE_RAD_MAX (97.0f * M_PIf / 180.0f)
+// #define MINI_SEGWAY_SERVO_VALUE_CLAMP_RAD_MAX (60.0f * M_PIf / 180.0f)
+// #define MINI_SEGWAY_SERVO_ANGLE_OFFSET_RAD (0.0f * M_PIf / 180.0f) // TODO: Tune this value
+// #define MINI_SEGWAY_SERVO_ANGLE_GIMBAL_ANGLE_SETPOINT_RAD (30.0f * M_PIf / 180.0f) // TODO: Tune this value
+// #define MINI_SEGWAY_SERVO_ANGLE_FILTER_FREQUENCY_HZ 0.7f // TODO: Tune this filter based on look and feel
+
+// simplified gimbal servo
 #define MINI_SEGWAY_SERVO_DOUT PB_AIN_3
-#define MINI_SEGWAY_SERVO_PERIOD_US 20000
-#define MINI_SEGWAY_SERVO_VALUE_MIN 0.0397f // maps approx. to -97 deg
-#define MINI_SEGWAY_SERVO_VALUE_MAX 0.0586f // maps approx. to  97 deg
-#define MINI_SEGWAY_SERVO_VALUE_RAD_MAX (97.0f * M_PIf / 180.0f)
-#define MINI_SEGWAY_SERVO_VALUE_CLAMP_RAD_MAX (60.0f * M_PIf / 180.0f)
-#define MINI_SEGWAY_SERVO_ANGLE_OFFSET_RAD (0.0f * M_PIf / 180.0f) // TODO: Tune this value
-#define MINI_SEGWAY_SERVO_ANGLE_GIMBAL_ANGLE_SETPOINT_RAD (30.0f * M_PIf / 180.0f) // TODO: Tune this value
+#define MINI_SEGWAY_SERVO_PERIOD_US 20000 // corresponds to 50 Hz
+#define MINI_SEGWAY_SERVO_VALUE_MIN 0.0397f // maps approx. to +24 degrees from CAD view, but 0 degree from servo perspective (already clamped)
+#define MINI_SEGWAY_SERVO_VALUE_MAX 0.0567f // maps approx. to -15 degrees from CAD view, but 39 degrees from servo perspective (already clamped)
+#define MINI_SEGWAY_SERVO_VALUE_RAD_MIN (0.0f * M_PIf / 180.0f)
+#define MINI_SEGWAY_SERVO_VALUE_RAD_MAX (39.0f * M_PIf / 180.0f) // 24 + 15 = 39 degrees
+#define MINI_SEGWAY_SERVO_ANGLE_OFFSET_RAD (24.0f * M_PIf / 180.0f) // robot looking forwards, when standing upright
+#define MINI_SEGWAY_SERVO_ANGLE_GIMBAL_ANGLE_SETPOINT_RAD (25.0f * M_PIf / 180.0f) // Scale value for rotating knob input
 #define MINI_SEGWAY_SERVO_ANGLE_FILTER_FREQUENCY_HZ 0.7f // TODO: Tune this filter based on look and feel

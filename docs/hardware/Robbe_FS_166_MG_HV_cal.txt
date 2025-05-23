@@ -1,24 +1,16 @@
 Total duty = 8192
+PWM Frequency = 50 Hz
 
-================Extreme==============
+================ Boundary of Mini Segway ==============
 
 Duty = 325
-Normalized = 0.0397, duty cycle = 0.793 ms
-Angle = 0
+Duty cycle = 0.0397
+Angle = starting point of servo, let's think of it as 0 degree, but it is approx. +24 degrees looking upwards from the perspective of mini_segway (from CAD)
 
-Duty = 480
-Normalized = 0.0586, duty cycle = 1.172 ms
-Angle = 130
+Duty = 425
+Duty cycle = 0.0518
+Angle = approx. 24 degrees from the servo perspective, but it is the center angle of the mini_segway (0 degree from CAD)
 
-Duty = 891
-Normalized = 0.1088, duty cycle = 2.175 ms
-Angle = 130
-================with boundary==============
-
-Duty = 410
-Normalized = 0.05, duty cycle = 1 ms
-Angle = 0
-
-Duty = 819
-Normalized = 0.1, duty cycle = 2 ms
-Angle = 90
+Duty = 465
+Duty cycle = 0.0567
+Angle = approx. 39 degrees from the servo perspective, but it is approx. -15 degrees looking downwards from the perspective of mini_segway (from CAD)

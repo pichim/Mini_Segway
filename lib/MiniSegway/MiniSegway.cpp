@@ -303,6 +303,7 @@ void MiniSegway::threadTask()
                 // write angle to gimbal servo, servo runs at 50 Hz as an own thread, we update the data faster anyways
                 const float gimbal_angle_filtered = gimbalAngleLowPass1.apply(gimbal_angle);
                 gimbalServo.write(gimbal_angle_filtered);
+                // printf("gimbal_angle: %f\n", gimbal_angle_filtered);
 
                 // send data to serial stream (openlager or laptop / pc)
                 serialStream.write( dtime_us );                      //  0 micro seconds
