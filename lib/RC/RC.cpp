@@ -50,7 +50,7 @@ RC::rc_pkg_t RC::update()
             time_previous = time;
 
             const uint8_t failsafe = _rc.isFailSafe() ? 1.0 : 0.0;
-            printf("period : %d, arming channel: %d, failsafe: %d, num of dec err.: %d, num of lost frames: %d, num of skipped start frames: %d\n",
+            printf("period : %ld, arming channel: %d, failsafe: %d, num of dec err.: %ld, num of lost frames: %ld, num of skipped start frames: %ld\n",
                    period / 100,
                    _rc.getChannel(MINI_SEGWAY_RC_ARMING_CHANNEL),
                    failsafe,
