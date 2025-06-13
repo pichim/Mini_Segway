@@ -282,8 +282,6 @@ void MiniSegway::threadTask()
                         // proportional controller
                         robot_vel_input(1) = MINI_SEGWAY_TURN_CP_POS_KP * (robotSetPointIntegrator[1].apply(robot_vel_setpoint(1)) - robot_pos(1));
 
-                        // TODO 1: With the last measurement rc_pkg.gimbal_angle_setpoint did not scale to -1.0f to 1.0f, this might be due to calibration, check this 
-                        // TODO 2: Check sign, offset (MINI_SEGWAY_SERVO_ANGLE_OFFSET_RAD), gain (MINI_SEGWAY_SERVO_ANGLE_GIMBAL_ANGLE_SETPOINT_RAD) and servo calibration, all in config.h
                         // set gimbal angle to minus the angle of the robot
                         gimbal_angle = imu_data.rpy(0) + MINI_SEGWAY_SERVO_ANGLE_OFFSET_RAD + rc_pkg.gimbal_angle_setpoint * MINI_SEGWAY_SERVO_ANGLE_GIMBAL_ANGLE_SETPOINT_RAD;
 
@@ -303,7 +301,6 @@ void MiniSegway::threadTask()
                 // write angle to gimbal servo, servo runs at 50 Hz as an own thread, we update the data faster anyways
                 const float gimbal_angle_filtered = gimbalAngleLowPass1.apply(gimbal_angle);
                 gimbalServo.write(gimbal_angle_filtered);
-                // printf("gimbal_angle: %f\n", gimbal_angle_filtered);
 
                 // send data to serial stream (openlager or laptop / pc)
                 serialStream.write( dtime_us );                      //  0 micro seconds
@@ -350,7 +347,7 @@ void MiniSegway::threadTask()
                 // serialStream.write( gimbal_angle );
                 // serialStream.write( gimbal_angle_filtered );
 
-                // do NOT send more than 31 floats!
+                // do NOT send more than 31 floats in total (0-30)!
                 serialStream.send();
 
             } else {

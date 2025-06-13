@@ -25,21 +25,21 @@
 #define MINI_SEGWAY_PERIOD_US 1000
 #define MINI_SEGWAY_TS (static_cast<float>(MINI_SEGWAY_PERIOD_US) * 1.0e-6f) // sampling time
 #define MINI_SEGWAY_ABS_ANGLE_START_BALANCE_RAD (20.0f * M_PIf / 180.0f)
-#define MINI_SEGWAY_ABS_ANGLE_STOP_BALANCE_RAD (60.0f * M_PIf / 180.0f)
-#define MINI_SEGWAY_MIXER_GAIN 0.8f // e.g. 0.7f means 70% of the control signal is used forward speed and 30% for turning
-#define MINI_SEGWAY_SCALE_SPEED_MAX_FAST 1.0f
-#define MINI_SEGWAY_SCALE_SPEED_MAX_SLOW 0.6f
+#define MINI_SEGWAY_ABS_ANGLE_STOP_BALANCE_RAD (50.0f * M_PIf / 180.0f)
+#define MINI_SEGWAY_MIXER_GAIN 0.7f // e.g. 0.7f means 70% of the control signal is used forward speed and 30% for turning
+#define MINI_SEGWAY_SCALE_SPEED_MAX_FAST 0.8f * 1.0f
+#define MINI_SEGWAY_SCALE_SPEED_MAX_SLOW 0.8f * 0.6f
 #define MINI_SEGWAY_R_WHEEL 0.039f // wheel radius in meters
 #define MINI_SEGWAY_B_WHEEL 0.125f // wheelbase, distance from wheel to wheel in meters
 
 // state space controller gains
-#define MINI_SEGWAY_FORWARD_CPD_ANG_KP 2.64f
-#define MINI_SEGWAY_FORWARD_CPD_ANG_KD 0.05f
+#define MINI_SEGWAY_FORWARD_CPD_ANG_KP 1.2f * 2.64f
+#define MINI_SEGWAY_FORWARD_CPD_ANG_KD 1.5f * 0.05f
 #define MINI_SEGWAY_FORWARD_CPD_ANG_D_FILTER_FREQUENCY_HZ 3.0f
-#define MINI_SEGWAY_FORWARD_CPD_VEL_KP 2.2f
-#define MINI_SEGWAY_FORWARD_CPD_VEL_KD 0.05f
+#define MINI_SEGWAY_FORWARD_CPD_VEL_KP 1.1f * 2.2f
+#define MINI_SEGWAY_FORWARD_CPD_VEL_KD 2.0f * 0.05f
 #define MINI_SEGWAY_FORWARD_CPD_VEL_D_FILTER_FREQUENCY_HZ 1.0f
-#define MINI_SEGWAY_FORWARD_CP_POS_KP 2.86f
+#define MINI_SEGWAY_FORWARD_CP_POS_KP 0.8f * 2.86f
 #define MINI_SEGWAY_TURN_CP_POS_KP 10.0f
 
 // streaming device, openlager or laptop / pc
@@ -99,7 +99,7 @@
 #define MINI_SEGWAY_MOTOR_KN (224.0f / 12.0f) // measured by pmic 20.05.2025
 #define MINI_SEGWAY_MOTOR_VOLTAGE_MAX 12.0f
 #define MINI_SEGWAY_MOTOR_VELOCITY_FILTER_DAMPING 1.0f
-#define MINI_SEGWAY_MOTOR_VELOCITY_FILTER_FREQUENCY_HZ 3.0f
+#define MINI_SEGWAY_MOTOR_VELOCITY_FILTER_FREQUENCY_HZ 4.0f
 
 // motor driver (h-bridge)
 #define MINI_SEGWAY_ENABLE_MOTOR_DRIVER_GPIO PB_DC_MOT_ENABLE
@@ -151,18 +151,7 @@
     #define MINI_SEGWAY_AIN_ADDITIONAL_M2 PA_1
 #endif
 
-// // gimbal servo (can only be used if no analog current sensor is used, see above)
-// #define MINI_SEGWAY_SERVO_DOUT PB_AIN_3
-// #define MINI_SEGWAY_SERVO_PERIOD_US 20000
-// #define MINI_SEGWAY_SERVO_VALUE_MIN 0.0397f // maps approx. to -97 deg
-// #define MINI_SEGWAY_SERVO_VALUE_MAX 0.0586f // maps approx. to  97 deg
-// #define MINI_SEGWAY_SERVO_VALUE_RAD_MAX (97.0f * M_PIf / 180.0f)
-// #define MINI_SEGWAY_SERVO_VALUE_CLAMP_RAD_MAX (60.0f * M_PIf / 180.0f)
-// #define MINI_SEGWAY_SERVO_ANGLE_OFFSET_RAD (0.0f * M_PIf / 180.0f) // TODO: Tune this value
-// #define MINI_SEGWAY_SERVO_ANGLE_GIMBAL_ANGLE_SETPOINT_RAD (30.0f * M_PIf / 180.0f) // TODO: Tune this value
-// #define MINI_SEGWAY_SERVO_ANGLE_FILTER_FREQUENCY_HZ 0.7f // TODO: Tune this filter based on look and feel
-
-// simplified gimbal servo
+// gimbal servo (can only be used if no analog current sensor is used, see above)
 #define MINI_SEGWAY_SERVO_DOUT PB_AIN_3
 #define MINI_SEGWAY_SERVO_PERIOD_US 20000 // corresponds to 50 Hz
 #define MINI_SEGWAY_SERVO_VALUE_MIN 0.0397f // maps approx. to +24 degrees from CAD view, but 0 degree from servo perspective (already clamped)
@@ -171,4 +160,4 @@
 #define MINI_SEGWAY_SERVO_VALUE_RAD_MAX (39.0f * M_PIf / 180.0f) // 24 + 15 = 39 degrees
 #define MINI_SEGWAY_SERVO_ANGLE_OFFSET_RAD (24.0f * M_PIf / 180.0f) // robot looking forwards, when standing upright
 #define MINI_SEGWAY_SERVO_ANGLE_GIMBAL_ANGLE_SETPOINT_RAD (25.0f * M_PIf / 180.0f) // Scale value for rotating knob input
-#define MINI_SEGWAY_SERVO_ANGLE_FILTER_FREQUENCY_HZ 0.7f // TODO: Tune this filter based on look and feel
+#define MINI_SEGWAY_SERVO_ANGLE_FILTER_FREQUENCY_HZ 10.0f
